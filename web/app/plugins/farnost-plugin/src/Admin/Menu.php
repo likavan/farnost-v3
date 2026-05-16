@@ -108,13 +108,15 @@ final class Menu
         }
 
         $desired = [
-            self::SLUG,                          // Kalendár omší (parent slug)
-            'edit.php?post_type=kostol',         // Kostoly
-            'edit.php?post_type=oznam',          // Oznamy
-            'farnost-mimoriadny-oznam',          // Mimoriadny oznam
-            'edit.php?post_type=upratovacia_skupina', // Upratovacie skupiny
-            'farnost-nastavenia',                // Nastavenia
-            'farnost-navod',                     // Návod
+            self::SLUG,                                       // Kalendár omší (parent slug)
+            'edit.php?post_type=kostol',                      // Kostoly
+            'edit.php?post_type=oznam',                       // Oznamy
+            'farnost-mimoriadny-oznam',                       // Mimoriadny oznam
+            'edit.php?post_type=omsa_vynimka',                // Výnimky (dočasne, kým nemáme kalendár)
+            'edit.php?post_type=umysel',                      // Úmysly (dočasne, kým nemáme kalendár)
+            'edit.php?post_type=upratovacia_skupina',         // Upratovacie skupiny
+            'farnost-nastavenia',                             // Nastavenia
+            'farnost-navod',                                  // Návod
         ];
 
         $byKey = [];

@@ -18,6 +18,7 @@ final class Activator
     public static function activate(): void
     {
         self::ensureRole();
+        self::ensureAdministratorCaps();
         self::ensureDefaultCategories();
         flush_rewrite_rules();
     }
@@ -51,6 +52,37 @@ final class Activator
             'delete_umysly'         => true,
             'read_umysel'           => true,
         ]);
+    }
+
+    /**
+     * Administrátorská rola nedostane automaticky custom capabilities pre `umysel` CPT
+     * (capability_type = ['umysel', 'umysly']). Treba ich pridať explicitne, inak admin
+     * nevie úmysly editovať / publikovať / mazať.
+     */
+    private static function ensureAdministratorCaps(): void
+    {
+        $admin = get_role('administrator');
+        if ($admin === null) {
+            return;
+        }
+        $caps = [
+            'read_umysel',
+            'read_private_umysly',
+            'edit_umysel',
+            'edit_umysly',
+            'edit_others_umysly',
+            'edit_published_umysly',
+            'edit_private_umysly',
+            'publish_umysly',
+            'delete_umysel',
+            'delete_umysly',
+            'delete_others_umysly',
+            'delete_published_umysly',
+            'delete_private_umysly',
+        ];
+        foreach ($caps as $cap) {
+            $admin->add_cap($cap, true);
+        }
     }
 
     private static function ensureDefaultCategories(): void
