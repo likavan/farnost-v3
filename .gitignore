@@ -1,0 +1,30 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Dependencies (rozšíri sa po `composer create-project roots/bedrock`)
+node_modules/
+vendor/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Build artefakty
+dist/
+build/
+*.zip
