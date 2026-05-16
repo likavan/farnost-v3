@@ -146,11 +146,7 @@ final class Menu
 
     public static function renderSettings(): void
     {
-        self::renderPlaceholder(
-            __('Nastavenia farnosti', 'farnost-plugin'),
-            __('Tu pribudne nastavenia farnosti (identita, kontakt, financie, sociálne, branding, moduly, oznamový rytmus, citáty).', 'farnost-plugin'),
-            __('Detaily v doc/02-datovy-model.md → „Per-farnosť settings".', 'farnost-plugin')
-        );
+        SettingsPage::render();
     }
 
     public static function renderNavod(): void

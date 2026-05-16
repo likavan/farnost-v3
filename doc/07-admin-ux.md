@@ -7,6 +7,7 @@ Tento dokument popisuje **administrátorskú stránku** projektu — ako vyzerá
 - **Najčastejšia úloha musí byť najpohodlnejšia.** Farár trávi najviac času **oznamami** — všetko ostatné UX je optimalizované, aby mu prácu s nimi zjednodušilo (predvyplnená šablóna, auto-dotiahnuté úmysly, jeden klik na publikáciu).
 - **Žiadne nútenie** používať naše dátové entity — niektorí farári si úmysly vedú mimo systému a píšu ich rovno do oznamu. Niektorí dokonca celý oznam píšu vo Worde a chcú len nahrať PDF. Systém musí fungovať aj pre nich, štruktúrovaná verzia je voliteľná.
 - **Gutenberg ako default editor** — používame čo WordPress poskytuje, nestaviame paralelné admin obrazovky bez dobrého dôvodu. Custom obrazovky (napr. kalendár úmyslov) majú byť odôvodnené tým, že Gutenberg by danú úlohu robil príliš ťažkopádnu.
+- **Statické form-stránky v PHP, React tam kde naozaj treba.** Settings, Návod, jednoduché placeholder stránky sú klasické WP PHP formy (Settings API style). React build (`@wordpress/scripts`) zapíname až pri stránkach s reálnou interaktivitou — kalendár omší, setup wizard, Gutenberg sidebar panely, custom bloky. Vďaka tomu nemáme build závislosť tam, kde HTML form stačí.
 
 ## Režimy — zapínateľné funkcie
 
