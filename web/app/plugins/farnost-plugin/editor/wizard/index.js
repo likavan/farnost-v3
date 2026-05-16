@@ -14,7 +14,7 @@
  * POST /wp/v2/kostoly so základným kostolom. Po úspechu redirect na Farnosť dashboard.
  */
 
-import { createRoot, useState } from '@wordpress/element';
+import { createRoot, useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { Button, TextControl, TextareaControl, RadioControl, Spinner } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
@@ -23,10 +23,11 @@ const TOTAL_STEPS = 4;
 
 function App({ homeUrl }) {
 	const [ step, setStep ] = useState( 1 );
+	const [ loading, setLoading ] = useState( true );
 	const [ saving, setSaving ] = useState( false );
 	const [ error, setError ] = useState( null );
 
-	// Štruktúrované polia
+	// Štruktúrované polia (predvyplnia sa z existujúcich settings v useEffect)
 	const [ identita, setIdentita ] = useState( {
 		nazov: '',
 		patrocinium: '',
@@ -39,10 +40,67 @@ function App({ homeUrl }) {
 		iban: '',
 	} );
 	const [ kostol, setKostol ] = useState( {
+		id: 0,           // 0 = nový, > 0 = update existujúceho
 		nazov: '',
 		adresa: '',
 	} );
 	const [ rezim, setRezim ] = useState( 'full' );
+
+	useEffect( () => {
+		let cancelled = false;
+		Promise.all( [
+			apiFetch( { path: '/wp/v2/settings' } ),
+			apiFetch( { path: '/wp/v2/kostoly?per_page=100&_fields=id,title,meta&status=publish' } ),
+		] )
+			.then( ( [ settings, kostoly ] ) => {
+				if ( cancelled ) return;
+				const fs = settings.farnost_settings || {};
+
+				setIdentita( {
+					nazov:       fs.identita?.nazov || '',
+					patrocinium: fs.identita?.patrocinium || '',
+					dioceza:     fs.identita?.dioceza || '',
+				} );
+
+				const firstPhone = fs.kontakt?.telefony?.[ 0 ]?.cislo || '';
+				const firstEmail = fs.kontakt?.emaily?.[ 0 ]?.adresa || '';
+				setKontakt( {
+					adresa:  fs.kontakt?.adresa || '',
+					telefon: firstPhone,
+					email:   firstEmail,
+					iban:    fs.financie?.iban || '',
+				} );
+
+				// Pre kostol uprednostníme ten s je_hlavny = true, inak prvý.
+				const hlavny = kostoly.find( ( k ) => k.meta?.farnost_je_hlavny ) || kostoly[ 0 ];
+				if ( hlavny ) {
+					setKostol( {
+						id:     hlavny.id,
+						nazov:  hlavny.title?.rendered || '',
+						adresa: hlavny.meta?.farnost_adresa || '',
+					} );
+				}
+
+				// Režim: ak je oznamy alebo úmysly aspoň jedno vypnuté, považuj za lite.
+				const m = fs.moduly || {};
+				if ( m.oznamy_zapnute === false || m.umysly_zapnute === false ) {
+					setRezim( 'lite' );
+				} else {
+					setRezim( 'full' );
+				}
+
+				setLoading( false );
+			} )
+			.catch( ( e ) => {
+				if ( cancelled ) return;
+				// Pri chybe nezablokujeme wizard — necháme prázdne polia.
+				setError( e.message || String( e ) );
+				setLoading( false );
+			} );
+		return () => {
+			cancelled = true;
+		};
+	}, [] );
 
 	const canProceedFromStep = ( s ) => {
 		if ( s === 1 ) return identita.nazov.trim() !== '';
@@ -111,19 +169,34 @@ function App({ homeUrl }) {
 				data: { farnost_settings: next },
 			} );
 
-			// 2) Vytvor prvý kostol
-			await apiFetch( {
-				path: '/wp/v2/kostoly',
-				method: 'POST',
-				data: {
-					title:  kostol.nazov,
-					status: 'publish',
-					meta: {
-						farnost_adresa:    kostol.adresa,
-						farnost_je_hlavny: true,
+			// 2) Vytvor alebo aktualizuj hlavný kostol
+			if ( kostol.id > 0 ) {
+				await apiFetch( {
+					path: `/wp/v2/kostoly/${ kostol.id }`,
+					method: 'POST',
+					data: {
+						title:  kostol.nazov,
+						status: 'publish',
+						meta: {
+							farnost_adresa:    kostol.adresa,
+							farnost_je_hlavny: true,
+						},
 					},
-				},
-			} );
+				} );
+			} else {
+				await apiFetch( {
+					path: '/wp/v2/kostoly',
+					method: 'POST',
+					data: {
+						title:  kostol.nazov,
+						status: 'publish',
+						meta: {
+							farnost_adresa:    kostol.adresa,
+							farnost_je_hlavny: true,
+						},
+					},
+				} );
+			}
 
 			// 3) Redirect na Farnosť dashboard
 			window.location.href = homeUrl;
@@ -185,10 +258,21 @@ function App({ homeUrl }) {
 				<div className="farnost-wizard-error">{ error }</div>
 			) }
 
-			{ step === 1 && <StepIdentita value={ identita } onChange={ setIdentita } /> }
-			{ step === 2 && <StepKontakt value={ kontakt } onChange={ setKontakt } /> }
-			{ step === 3 && <StepKostol value={ kostol } onChange={ setKostol } /> }
-			{ step === 4 && <StepRezim value={ rezim } onChange={ setRezim } /> }
+			{ loading ? (
+				<div style={ { textAlign: 'center', padding: '40px 0' } }>
+					<Spinner />
+					<p style={ { color: '#6b7280', marginTop: 12 } }>
+						{ __( 'Načítavam vaše uložené nastavenia…', 'farnost-plugin' ) }
+					</p>
+				</div>
+			) : (
+				<>
+					{ step === 1 && <StepIdentita value={ identita } onChange={ setIdentita } /> }
+					{ step === 2 && <StepKontakt value={ kontakt } onChange={ setKontakt } /> }
+					{ step === 3 && <StepKostol value={ kostol } onChange={ setKostol } /> }
+					{ step === 4 && <StepRezim value={ rezim } onChange={ setRezim } /> }
+				</>
+			) }
 
 			<div className="farnost-wizard-buttons">
 				<Button
