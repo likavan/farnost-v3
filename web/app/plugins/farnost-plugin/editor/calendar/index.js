@@ -2,13 +2,13 @@
  * Kalendár omší a úmyslov — custom admin page (Farnosť → Kalendár omší).
  *
  * Mesačný grid (po–ne), per deň karta s pravidelnými omšami z rozpisu + výnimkami.
- * Tento prvý prírastok: read-only zobrazenie. Interakcia (modal pre úmysel / pridanie
- * mimoriadnej omše) príde v nasledujúcich commitoch.
+ * Klik na omšu otvorí modal editor úmyslu (CPT umysel pre pravidelné, inline meta
+ * pre výnimky).
  */
 
 import { createRoot, useEffect, useMemo, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
-import { Button } from '@wordpress/components';
+import { Button, Modal, TextareaControl, ToggleControl, Spinner } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 
 const DAY_KEYS = [ 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' ];
@@ -43,10 +43,9 @@ function isoDate( year, monthIdx0, day ) {
 }
 
 function dayKey( dateIso ) {
-	// JS getDay: 0=Sun..6=Sat. Premapujeme na náš formát mon..sun.
 	const d = new Date( dateIso + 'T12:00:00' );
-	const js = d.getDay(); // 0..6
-	const idx = js === 0 ? 6 : js - 1; // 0=mon..6=sun
+	const js = d.getDay();
+	const idx = js === 0 ? 6 : js - 1;
 	return DAY_KEYS[ idx ];
 }
 
@@ -66,11 +65,8 @@ function getMonthGrid( year, monthIdx0 ) {
 	const firstDay = new Date( year, monthIdx0, 1 );
 	const lastDay = new Date( year, monthIdx0 + 1, 0 );
 	const daysInMonth = lastDay.getDate();
-
-	// Posun na pondelok — JS getDay: 0=Ne..6=So, my potrebujeme týždeň Po..Ne.
-	const firstWeekday = firstDay.getDay(); // 0..6
+	const firstWeekday = firstDay.getDay();
 	const leadingBlanks = firstWeekday === 0 ? 6 : firstWeekday - 1;
-
 	const cells = [];
 	for ( let i = 0; i < leadingBlanks; i++ ) {
 		cells.push( null );
@@ -84,6 +80,145 @@ function getMonthGrid( year, monthIdx0 ) {
 	return cells;
 }
 
+/**
+ * Modal pre úmysel.
+ *
+ * Pravidelná omša: úmysel žije v samostatnom CPT `umysel`. Save = create alebo update,
+ * Odstrániť = DELETE postu (?force=true, lebo trash nedáva tu zmysel).
+ *
+ * Výnimka: úmysel je inline meta `farnost_umysel` na CPT `omsa_vynimka`. Save = update
+ * meta, Odstrániť = vyprázdni meta.
+ */
+function UmyselModal( { mass, onClose, onSaved } ) {
+	const [ text, setText ] = useState( mass.umysel || '' );
+	const [ anonymny, setAnonymny ] = useState( !! mass.anonymny );
+	const [ saving, setSaving ] = useState( false );
+	const [ error, setError ] = useState( null );
+
+	const handleSave = async () => {
+		setSaving( true );
+		setError( null );
+		try {
+			if ( mass.source === 'vynimka' ) {
+				await apiFetch( {
+					path: `/wp/v2/omsa-vynimky/${ mass.vynimka_id }`,
+					method: 'POST',
+					data: {
+						meta: { farnost_umysel: text },
+					},
+				} );
+			} else if ( mass.umysel_id ) {
+				if ( text === '' ) {
+					// úmysel sa odstraňuje
+					await apiFetch( {
+						path: `/wp/v2/umysly/${ mass.umysel_id }?force=true`,
+						method: 'DELETE',
+					} );
+				} else {
+					await apiFetch( {
+						path: `/wp/v2/umysly/${ mass.umysel_id }`,
+						method: 'POST',
+						data: {
+							meta: {
+								farnost_text:     text,
+								farnost_anonymny: anonymny,
+							},
+						},
+					} );
+				}
+			} else if ( text !== '' ) {
+				// nový úmysel
+				await apiFetch( {
+					path: '/wp/v2/umysly',
+					method: 'POST',
+					data: {
+						title:  `Úmysel ${ mass.date } ${ mass.time }`,
+						status: 'publish',
+						meta:   {
+							farnost_datum:     mass.date,
+							farnost_cas:       mass.time,
+							farnost_kostol_id: mass.kostol_id,
+							farnost_text:      text,
+							farnost_anonymny:  anonymny,
+						},
+					},
+				} );
+			}
+			onSaved();
+		} catch ( e ) {
+			setError( e.message || String( e ) );
+		} finally {
+			setSaving( false );
+		}
+	};
+
+	const formattedDate = new Date( mass.date + 'T12:00:00' ).toLocaleDateString( 'sk-SK', {
+		weekday: 'long',
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric',
+	} );
+
+	const showAnonymousToggle = mass.source !== 'vynimka';
+	const hasExistingUmysel   = mass.source === 'vynimka' ? !! mass.umysel : !! mass.umysel_id;
+
+	return (
+		<Modal
+			title={ __( 'Úmysel sv. omše', 'farnost-plugin' ) }
+			onRequestClose={ onClose }
+			style={ { maxWidth: 520 } }
+		>
+			<div style={ { marginBottom: 12, color: '#374151', fontSize: 13 } }>
+				<div><strong>{ formattedDate }</strong> · { mass.time }</div>
+				<div style={ { color: '#6b7280', marginTop: 2 } }>
+					{ mass.kostol_title }
+					{ mass.oznacenie && <span> · { mass.oznacenie }</span> }
+					{ mass.source === 'vynimka' && <span> · { __( 'mimoriadna omša', 'farnost-plugin' ) }</span> }
+				</div>
+			</div>
+
+			<TextareaControl
+				label={ __( 'Text úmyslu', 'farnost-plugin' ) }
+				value={ text }
+				onChange={ setText }
+				rows={ 3 }
+				placeholder={ __( 'Napr. Za zdravie rodiny / † Mária Nováková', 'farnost-plugin' ) }
+				help={ hasExistingUmysel && text === ''
+					? __( 'Prázdny text = úmysel sa odstráni.', 'farnost-plugin' )
+					: undefined }
+				__nextHasNoMarginBottom
+			/>
+
+			{ showAnonymousToggle && (
+				<div style={ { marginTop: 12 } }>
+					<ToggleControl
+						label={ __( 'Anonymný úmysel', 'farnost-plugin' ) }
+						checked={ anonymny }
+						onChange={ setAnonymny }
+						help={ __( 'Skryť mená na verejnom webe.', 'farnost-plugin' ) }
+						__nextHasNoMarginBottom
+					/>
+				</div>
+			) }
+
+			{ error && (
+				<p style={ { color: '#b32d2e', marginTop: 12 } }>
+					{ sprintf( __( 'Chyba: %s', 'farnost-plugin' ), error ) }
+				</p>
+			) }
+
+			<div style={ { display: 'flex', gap: 8, marginTop: 20, justifyContent: 'flex-end' } }>
+				<Button variant="tertiary" onClick={ onClose } disabled={ saving }>
+					{ __( 'Zatvoriť', 'farnost-plugin' ) }
+				</Button>
+				<Button variant="primary" onClick={ handleSave } disabled={ saving }>
+					{ saving ? <Spinner /> : __( 'Uložiť', 'farnost-plugin' ) }
+				</Button>
+			</div>
+		</Modal>
+	);
+}
+
 function App() {
 	const today = new Date();
 	const [ year, setYear ] = useState( today.getFullYear() );
@@ -95,33 +230,29 @@ function App() {
 	const [ loading, setLoading ] = useState( true );
 	const [ error, setError ] = useState( null );
 
-	useEffect( () => {
-		let cancelled = false;
+	const [ openMass, setOpenMass ] = useState( null );
+
+	const fetchData = () => {
 		setLoading( true );
-		Promise.all( [
+		return Promise.all( [
 			apiFetch( { path: '/wp/v2/kostoly?per_page=100&_fields=id,title,meta' } ),
 			apiFetch( { path: '/wp/v2/omsa-vynimky?per_page=100&_fields=id,meta&status=publish' } ),
 			apiFetch( { path: '/wp/v2/umysly?per_page=100&_fields=id,meta&status=publish' } ),
 		] )
 			.then( ( [ k, v, u ] ) => {
-				if ( cancelled ) {
-					return;
-				}
 				setKostoly( k );
 				setVynimky( v );
 				setUmysly( u );
 				setLoading( false );
 			} )
 			.catch( ( err ) => {
-				if ( cancelled ) {
-					return;
-				}
 				setError( err.message || String( err ) );
 				setLoading( false );
 			} );
-		return () => {
-			cancelled = true;
-		};
+	};
+
+	useEffect( () => {
+		fetchData();
 	}, [] );
 
 	const kostolyById = useMemo( () => {
@@ -139,8 +270,6 @@ function App() {
 
 	const grid = getMonthGrid( year, monthIdx0 );
 
-	// Pre každý deň v aktuálnom mesiaci vyrátaj zoznam omší (zlúčenie rozpis + výnimky)
-	// + napárovanie úmyslov na omšu cez (dátum, čas, kostol_id).
 	const dayEvents = useMemo( () => {
 		const out = {};
 		grid.forEach( ( d ) => {
@@ -151,24 +280,23 @@ function App() {
 			const dk = dayKey( dateIso );
 			const masses = [];
 
-			// pravidelné z rozpisu
 			Object.values( kostolyById ).forEach( ( k ) => {
 				k.rozpis.forEach( ( slot ) => {
 					if ( slot.day_of_week === dk && slot.time ) {
 						masses.push( {
-							kostol_id: k.id,
+							date:         dateIso,
+							kostol_id:    k.id,
 							kostol_title: k.title,
 							kostol_color: k.color,
-							time: slot.time,
-							oznacenie: slot.oznacenie || '',
-							umysel: '',
-							source: 'rozpis',
+							time:         slot.time,
+							oznacenie:    slot.oznacenie || '',
+							umysel:       '',
+							source:       'rozpis',
 						} );
 					}
 				} );
 			} );
 
-			// výnimky pre tento deň
 			vynimky.forEach( ( v ) => {
 				const meta = v.meta || {};
 				if ( meta.farnost_datum !== dateIso ) {
@@ -180,18 +308,18 @@ function App() {
 					color: '#6b7280',
 				};
 				masses.push( {
-					kostol_id: k.id,
+					date:         dateIso,
+					kostol_id:    k.id,
 					kostol_title: k.title,
 					kostol_color: k.color,
-					time: meta.farnost_cas || '',
-					oznacenie: meta.farnost_oznacenie || '',
-					umysel: meta.farnost_umysel || '',
-					source: 'vynimka',
+					time:         meta.farnost_cas || '',
+					oznacenie:    meta.farnost_oznacenie || '',
+					umysel:       meta.farnost_umysel || '',
+					source:       'vynimka',
+					vynimka_id:   v.id,
 				} );
 			} );
 
-			// napáruj úmysly z CPT na omše (dátum + čas + kostol_id) — výnimky majú
-			// úmysel inline, takže ich nepárujeme, len pravidelné slot-y dopĺňame.
 			masses.forEach( ( m ) => {
 				if ( m.source !== 'rozpis' ) {
 					return;
@@ -199,15 +327,15 @@ function App() {
 				const u = umysly.find( ( x ) => {
 					const xm = x.meta || {};
 					return (
-						xm.farnost_datum === dateIso &&
+						xm.farnost_datum === m.date &&
 						xm.farnost_cas === m.time &&
 						Number( xm.farnost_kostol_id ) === Number( m.kostol_id )
 					);
 				} );
 				if ( u ) {
-					m.umysel = u.meta?.farnost_text || '';
+					m.umysel    = u.meta?.farnost_text || '';
 					m.umysel_id = u.id;
-					m.anonymny = !! u.meta?.farnost_anonymny;
+					m.anonymny  = !! u.meta?.farnost_anonymny;
 				}
 			} );
 
@@ -218,29 +346,18 @@ function App() {
 	}, [ grid, year, monthIdx0, kostolyById, vynimky, umysly ] );
 
 	const prevMonth = () => {
-		if ( monthIdx0 === 0 ) {
-			setMonthIdx0( 11 );
-			setYear( year - 1 );
-		} else {
-			setMonthIdx0( monthIdx0 - 1 );
-		}
+		if ( monthIdx0 === 0 ) { setMonthIdx0( 11 ); setYear( year - 1 ); }
+		else                   { setMonthIdx0( monthIdx0 - 1 ); }
 	};
-
 	const nextMonth = () => {
-		if ( monthIdx0 === 11 ) {
-			setMonthIdx0( 0 );
-			setYear( year + 1 );
-		} else {
-			setMonthIdx0( monthIdx0 + 1 );
-		}
+		if ( monthIdx0 === 11 ) { setMonthIdx0( 0 ); setYear( year + 1 ); }
+		else                    { setMonthIdx0( monthIdx0 + 1 ); }
 	};
-
 	const todayMonth = () => {
 		const n = new Date();
 		setYear( n.getFullYear() );
 		setMonthIdx0( n.getMonth() );
 	};
-
 	const todayIso = isoDate( today.getFullYear(), today.getMonth(), today.getDate() );
 
 	return (
@@ -277,7 +394,9 @@ function App() {
 				.farnost-mass {
 					font-size: 11px; line-height: 1.3; padding: 3px 5px; margin-bottom: 2px;
 					border-left: 3px solid; border-radius: 2px; background: #f9fafb;
+					cursor: pointer;
 				}
+				.farnost-mass:hover { background: #eef2ff; }
 				.farnost-mass-time { font-weight: 600; }
 				.farnost-mass-um { color: #6b7280; }
 				.farnost-mass-um.empty { color: #d1d5db; font-style: italic; }
@@ -327,6 +446,7 @@ function App() {
 										className="farnost-mass"
 										style={ { borderColor: m.kostol_color, color: '#111827' } }
 										title={ `${ m.kostol_title }${ m.oznacenie ? ' · ' + m.oznacenie : '' }${ m.source === 'vynimka' ? ' (mimoriadna)' : '' }` }
+										onClick={ () => setOpenMass( m ) }
 									>
 										<span className="farnost-mass-time">{ m.time }</span>
 										{ m.oznacenie && <span> · { m.oznacenie }</span> }
@@ -339,6 +459,17 @@ function App() {
 						);
 					} ) }
 				</div>
+			) }
+
+			{ openMass && (
+				<UmyselModal
+					mass={ openMass }
+					onClose={ () => setOpenMass( null ) }
+					onSaved={ () => {
+						setOpenMass( null );
+						fetchData();
+					} }
+				/>
 			) }
 		</div>
 	);
