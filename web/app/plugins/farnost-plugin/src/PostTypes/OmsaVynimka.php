@@ -26,7 +26,7 @@ final class OmsaVynimka
             'show_ui'      => true,
             'show_in_menu' => false, // vzniká z kalendára a editora oznamu, nemá vlastné menu
             'has_archive'  => false,
-            'supports'     => ['title'],
+            'supports'     => ['title', 'custom-fields'],
             'show_in_rest' => true,
             'rest_base'    => 'omsa-vynimky',
         ]);

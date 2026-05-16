@@ -28,7 +28,7 @@ final class Kostol
             'public'       => true,
             'has_archive'  => 'kostoly',
             'rewrite'      => ['slug' => 'kostoly'],
-            'supports'     => ['title', 'editor', 'thumbnail', 'excerpt', 'revisions'],
+            'supports'     => ['title', 'editor', 'thumbnail', 'excerpt', 'revisions', 'custom-fields'],
             'show_in_rest' => true,
             'rest_base'    => 'kostoly',
             'show_in_menu' => Menu::SLUG,

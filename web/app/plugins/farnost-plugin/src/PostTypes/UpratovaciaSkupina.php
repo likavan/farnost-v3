@@ -27,7 +27,7 @@ final class UpratovaciaSkupina
             'public'       => false,
             'show_ui'      => true,
             'has_archive'  => false,
-            'supports'     => ['title', 'page-attributes'],
+            'supports'     => ['title', 'page-attributes', 'custom-fields'],
             'show_in_rest' => true,
             'rest_base'    => 'upratovacie-skupiny',
             'show_in_menu' => Menu::SLUG,

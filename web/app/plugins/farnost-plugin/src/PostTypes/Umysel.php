@@ -25,7 +25,7 @@ final class Umysel
             'public'       => true,
             'has_archive'  => 'umysly',
             'rewrite'      => ['slug' => 'umysly'],
-            'supports'     => ['title', 'author'],
+            'supports'     => ['title', 'author', 'custom-fields'],
             'show_in_rest' => true,
             'rest_base'    => 'umysly',
             'show_in_menu' => false, // vzniká z kalendára, nemá vlastné menu

@@ -28,7 +28,7 @@ final class Oznam
             'public'       => true,
             'has_archive'  => 'oznamy',
             'rewrite'      => ['slug' => 'oznamy'],
-            'supports'     => ['title', 'editor', 'thumbnail', 'excerpt', 'revisions', 'author'],
+            'supports'     => ['title', 'editor', 'thumbnail', 'excerpt', 'revisions', 'author', 'custom-fields'],
             'show_in_rest' => true,
             'rest_base'    => 'oznamy',
             'show_in_menu' => Menu::SLUG,
