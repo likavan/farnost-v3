@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Farnost\Plugin;
 
 use Farnost\Plugin\Admin\CommentsHide;
+use Farnost\Plugin\Admin\EditorAssets;
 use Farnost\Plugin\Admin\Menu;
 use Farnost\Plugin\Admin\PostRelabel;
 use Farnost\Plugin\Meta\CategoryMeta;
@@ -47,6 +48,7 @@ final class Plugin
         if (is_admin()) {
             Menu::register();
             PostRelabel::register();
+            EditorAssets::register();
         }
     }
 

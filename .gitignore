@@ -64,6 +64,9 @@ wp-cli.local.yml
 dist/
 build/
 *.zip
+# Plugin build/ je výstup `npm run build` a patrí do release ZIP-u — tracking povolený.
+!web/app/plugins/farnost-plugin/build/
+!web/app/plugins/farnost-plugin/build/**
 
 # DDEV — keep config but ignore generated files
 .ddev/*

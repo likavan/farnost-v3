@@ -173,7 +173,7 @@ final class SettingsPage
                     </tr>
                 </table>
 
-                <h2><?php esc_html_e('Branding', 'farnost-plugin'); ?></h2>
+                <h2><?php esc_html_e('Logo a farby', 'farnost-plugin'); ?></h2>
                 <table class="form-table" role="presentation">
                     <tr>
                         <th scope="row"><?php esc_html_e('Logo farnosti', 'farnost-plugin'); ?></th>

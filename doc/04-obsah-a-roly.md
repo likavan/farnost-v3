@@ -45,7 +45,7 @@ Po nasadení Bedrock inštalácie a aktivácii pluginu + témy:
    2. **Kontakt** — adresa, telefón, e‑mail, úradné hodiny.
    3. **Prvý kostol** — názov, adresa, prvý draft pravidelného rozpisu (môže byť prázdny, doplní sa neskôr).
    4. **Vyber dizajn** — výber z 5–10 vizuálnych variantov (style variations). Wizard ukáže náhľadové screenshoty, farár klikne na preferovaný a wizard aktivuje zvolenú variant v Site Editore. Voľba sa dá kedykoľvek zmeniť cez `Vzhľad → Editor → Štýly`.
-   5. **Branding** — logo, vlastný primary color (override style variation, voliteľné).
+   5. **Logo a farby** — logo, vlastný primary color (override style variation, voliteľné).
 2. Wizard vytvorí **statické stránky** s predvyplneným obsahom: Domov, Kontakt, O farnosti, Sviatosti.
 3. Wizard vytvorí **default kategórie**: `Udalosti`, `Zo života farnosti`, `Pozvánky` (každá s vlastnou farbou).
 4. Wizard nastaví **homepage** ako statickú stránku „Domov" (`reading → A static page`).
@@ -134,7 +134,7 @@ Sekcie (zodpovedajú [`02-datovy-model.md` § Per-farnosť settings](02-datovy-m
 - **Kontakt** — adresa, telefón, e‑mail, web, úradné hodiny.
 - **Financie** — IBAN, 2 %, IČO.
 - **Sociálne siete** — Facebook, YouTube, Instagram.
-- **Branding** — logo (media library), primárna farba.
+- **Logo a farby** — logo (media library), primárna farba.
 
 Editovať môže len Administrator. Po uložení sa zmeny premietnu do päty, hlavičky, OG metadata a blokov, ktoré settings konzumujú.
 

@@ -265,7 +265,7 @@ Sprievodca prvotným nastavením, ktorý sa **otvorí hneď po aktivácii plugin
 1. **Identita farnosti** — názov *(povinné)*, diecéza, patrocínium, krátky popis.
 2. **Kontakt** — adresa, telefón, e-mail, web, IBAN. Všetko voliteľné (dá sa dodať neskôr).
 3. **Prvý kostol** — názov *(povinné, aspoň jeden kostol)*, adresa, mapa, **pravidelný rozpis omší** (viď [Pravidelný rozpis omší kostola](#pravidelný-rozpis-omší-kostola)). Rozpis je voliteľný — môže sa dodať neskôr.
-4. **Branding** — výber štýlovej variácie z náhľadov ([`05-roadmap.md`](05-roadmap.md#etapa-3--téma-a-frontend) — 5–10 variácií) + upload loga. Obe voliteľné.
+4. **Logo a farby** — výber štýlovej variácie z náhľadov ([`05-roadmap.md`](05-roadmap.md#etapa-3--téma-a-frontend) — 5–10 variácií) + upload loga. Obe voliteľné.
 5. **Režim** — plný (CPT `oznam`, kalendár úmyslov) vs. lite (PDF do bežného postu). Default plný. Viď [Režimy](#režimy--zapínateľné-funkcie).
 
 ### Označenie polí
@@ -286,7 +286,7 @@ Každé pole má vizuálne odlíšené, či je **Povinné** alebo **Voliteľné*
 
 ### Vzťah k Nastaveniam
 
-`Farnosť → Nastavenia` zrkadlí kroky wizardu — **rovnaké sekcie** (Identita, Kontakt, Kostol, Branding, Režim). Vďaka tomu si farár nemusí pamätať, „v ktorom kroku som dal IBAN" — proste ide do Nastavení a doplní tam.
+`Farnosť → Nastavenia` zrkadlí kroky wizardu — **rovnaké sekcie** (Identita, Kontakt, Kostol, Logo a farby, Režim). Vďaka tomu si farár nemusí pamätať, „v ktorom kroku som dal IBAN" — proste ide do Nastavení a doplní tam.
 
 ### Pripomienka nedokončených vecí
 

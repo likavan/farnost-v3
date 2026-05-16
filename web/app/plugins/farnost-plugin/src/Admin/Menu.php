@@ -37,7 +37,7 @@ final class Menu
         }
         $page = (string) $_GET['page'];
         if ($page === 'farnost-nastavenia') {
-            // WP media JS pre logo picker v Brandingu.
+            // WP media JS pre logo picker.
             wp_enqueue_media();
         }
     }
