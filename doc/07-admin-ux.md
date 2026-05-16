@@ -208,7 +208,7 @@ Posty, Stránky, Médiá, Komentáre, Kategórie sa **neskrývajú**. Farár ich
 - **Kategórie** — farebné kategórie pre frontend feed.
 - **Médiá** — uploady (fotky do galérií, PDF, hudobné súbory).
 
-**Komentáre** sa v MVP nepoužívajú (frontend ich nezobrazuje, viď [`06-struktura-stranky.md`](06-struktura-stranky.md#detail-oznamu--udalosti)) — položku necháme tak, len ju adminstrátor nesleduje.
+**Komentáre** sa v MVP nepoužívajú (frontend ich nezobrazuje, viď [`06-struktura-stranky.md`](06-struktura-stranky.md#detail-oznamu--udalosti)) — položku v admin sidebare, admin bare aj „At a Glance" widget na dashboarde **skrývame** (`src/Admin/CommentsHide.php`). Diskusia je default `closed` na všetkých post types, post type support pre `comments` je odhlásený. Existujúce komentárové dáta v DB nemažeme — defenzívne pre prípad budúcej reaktivácie.
 
 ## Upratovacie skupiny
 

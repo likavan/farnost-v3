@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Farnost\Plugin;
 
+use Farnost\Plugin\Admin\CommentsHide;
 use Farnost\Plugin\Admin\Menu;
 use Farnost\Plugin\Admin\PostRelabel;
 use Farnost\Plugin\Meta\CategoryMeta;
@@ -39,6 +40,9 @@ final class Plugin
         add_action('init', [$this, 'registerMeta']);
         add_action('init', [Settings::class, 'register']);
         add_action('rest_api_init', [$this, 'registerRest']);
+
+        // Komentáre — odstavené naprieč admin aj frontend (hooks musia byť globálne).
+        CommentsHide::register();
 
         if (is_admin()) {
             Menu::register();
