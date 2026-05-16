@@ -152,11 +152,7 @@ final class Menu
 
     public static function renderMimoriadny(): void
     {
-        self::renderPlaceholder(
-            __('Mimoriadny oznam', 'farnost-plugin'),
-            __('Tu pribudne rýchly editor mimoriadneho oznamu (banner s voliteľnou expiry).', 'farnost-plugin'),
-            __('Detaily v doc/06-struktura-stranky.md → „Mimoriadny oznam (banner)".', 'farnost-plugin')
-        );
+        MimoriadnyOznamPage::render();
     }
 
     public static function renderSettings(): void

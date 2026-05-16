@@ -15,6 +15,7 @@ use Farnost\Plugin\PostTypes\OmsaVynimka;
 use Farnost\Plugin\PostTypes\Oznam;
 use Farnost\Plugin\PostTypes\Umysel;
 use Farnost\Plugin\PostTypes\UpratovaciaSkupina;
+use Farnost\Plugin\Rest\BannerController;
 use Farnost\Plugin\Rest\ScheduleController;
 use Farnost\Plugin\Rest\SettingsController;
 use Farnost\Plugin\Settings\Settings;
@@ -76,5 +77,6 @@ final class Plugin
     {
         (new SettingsController())->registerRoutes();
         (new ScheduleController())->registerRoutes();
+        (new BannerController())->registerRoutes();
     }
 }
