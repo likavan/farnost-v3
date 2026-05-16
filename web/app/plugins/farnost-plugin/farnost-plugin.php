@@ -6,8 +6,8 @@
  * Version:           0.1.0
  * Requires at least: 6.5
  * Requires PHP:      8.2
- * Author:            Digitalka
- * Author URI:        https://digitalka.sk
+ * Author:            farnost.online
+ * Author URI:        https://farnost.online
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       farnost-plugin

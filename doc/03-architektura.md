@@ -185,12 +185,13 @@ farnost-plugin/
 ```php
 /**
  * Plugin Name: Farnosť Online
- * Plugin URI:  https://github.com/digitalka/farnost-v3
+ * Plugin URI:  https://github.com/likavan/farnost-v3
  * Description: CPT, bloky a logika pre farské weby.
  * Version:     0.1.0
  * Requires PHP: 8.2
  * Requires at least: 6.6
- * Author:      Digitalka
+ * Author:      farnost.online
+ * Author URI:  https://farnost.online
  * License:     GPL-2.0-or-later
  * Text Domain: farnost-plugin
  */

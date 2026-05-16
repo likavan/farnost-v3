@@ -1,5 +1,5 @@
 {
-    "name": "digitalka/farnost-plugin",
+    "name": "farnost-online/farnost-plugin",
     "description": "Farská funkcionalita pre slovenské farnosti — služba Farnosť Online.",
     "type": "wordpress-plugin",
     "license": "GPL-2.0-or-later",
