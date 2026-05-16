@@ -1,0 +1,15 @@
+{
+    "name": "digitalka/farnost-plugin",
+    "description": "Farská funkcionalita pre slovenské farnosti — služba Farnosť Online.",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Farnost\\Plugin\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}

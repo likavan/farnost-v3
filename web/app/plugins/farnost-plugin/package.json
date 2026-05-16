@@ -1,0 +1,16 @@
+{
+  "name": "farnost-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Build pipeline pre Gutenberg bloky a editor JS pluginu Farnosť Online.",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start",
+    "lint:js": "wp-scripts lint-js",
+    "format": "wp-scripts format"
+  },
+  "devDependencies": {
+    "@wordpress/scripts": "^30.0.0"
+  }
+}

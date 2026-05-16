@@ -15,16 +15,54 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Dependencies (rozšíri sa po `composer create-project roots/bedrock`)
+# Dependencies
 node_modules/
-vendor/
+/vendor
 
-# Environment
+# Dotenv
 .env
 .env.*
 !.env.example
+
+# Bedrock — WordPress core (installed by Composer)
+web/wp
+web/.htaccess
+
+# Bedrock — uploads, cache, upgrades
+web/app/uploads/*
+!web/app/uploads/.gitkeep
+web/app/cache/*
+web/app/upgrade
+
+# Bedrock — Composer-installed mu-plugin directories
+web/app/mu-plugins/*/
+
+# Bedrock — plugins: ignored by default EXCEPT our own
+web/app/plugins/*
+!web/app/plugins/.gitkeep
+!web/app/plugins/farnost-plugin/
+
+# Bedrock — themes: ignored by default EXCEPT our own
+web/app/themes/*
+!web/app/themes/farnost-theme/
+
+# Composer auth
+auth.json
+
+# PHPUnit / Pest
+phpunit.xml
+.phpunit.result.cache
+.phpunit.cache
+
+# WP-CLI local override
+wp-cli.local.yml
 
 # Build artefakty
 dist/
 build/
 *.zip
+
+# DDEV — keep config but ignore generated files
+.ddev/*
+!.ddev/config.yaml
+!.ddev/config.*.yaml

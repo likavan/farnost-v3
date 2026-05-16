@@ -2,22 +2,22 @@
 
 Etapy implementácie pre v3. Časové odhady sú orientačné a počítajú s jedným vývojárom na čiastočný úväzok. Každá etapa má **definíciu hotovosti**, ktorá je kontrolovaná pred prechodom na ďalšiu.
 
-## Etapa 0 — Bootstrap
+## Etapa 0 — Bootstrap ✅
 
 **Cieľ**: prázdny ale funkčný Bedrock projekt s prázdnymi scaffoldmi pluginu a témy, ktorý sa dá lokálne spustiť.
 
-- [ ] `composer create-project roots/bedrock .` v koreňovom priečinku.
-- [ ] Lokálny dev environment (DDEV — `.ddev/config.yaml`).
-- [ ] `.env.example` zo šablóny + `.env` lokálne s DB údajmi.
-- [ ] Inštalácia WP cez `wp core install`, vytvorenie admin účtu.
-- [ ] Scaffold pluginu `farnost-plugin` (plugin header, `composer.json` s PSR-4, `package.json` s `@wordpress/scripts`, prázdne `src/Plugin.php`).
-- [ ] Scaffold block themy `farnost-theme` (`style.css`, minimálny `theme.json`, `templates/index.html`, `parts/header.html`, `parts/footer.html`).
-- [ ] `.gitignore` s exception pattern pre `farnost-plugin/` a `farnost-theme/`.
-- [ ] Plugin a téma aktivované, WP spustí „Hello world" s našou témou.
-- [ ] PHPCS + ESLint + Prettier konfigurácia.
-- [ ] GitHub repo, README, LICENSE (GPL-2.0-or-later).
+- [x] `composer create-project roots/bedrock .` v koreňovom priečinku.
+- [x] Lokálny dev environment (DDEV — `.ddev/config.yaml`). PHP 8.5, ARM64 DDEV, porty 8080 / 8443 (Docker Desktop bez vmnetd helpera neumožňuje 80/443).
+- [x] `.env.example` zo šablóny + `.env` lokálne s DB údajmi.
+- [x] Inštalácia WP cez `wp core install`, vytvorenie admin účtu (`admin` / `admin`).
+- [x] Scaffold pluginu `farnost-plugin` (plugin header, `composer.json` s PSR-4, `package.json` s `@wordpress/scripts`, prázdne `src/Plugin.php`).
+- [x] Scaffold block themy `farnost-theme` (`style.css`, minimálny `theme.json`, `templates/index.html`, `parts/header.html`, `parts/footer.html`).
+- [x] `.gitignore` s exception pattern pre `farnost-plugin/` a `farnost-theme/`.
+- [x] Plugin a téma aktivované, WP spustí „Hello world" s našou témou.
+- [x] PHPCS (`phpcs.xml.dist`) + ESLint (`eslint.config.mjs`) + Prettier (`.prettierrc.json`) konfigurácia + root `package.json` so spoločnými dev závislosťami.
+- [x] GitHub repo, README, LICENSE (GPL-2.0-or-later).
 
-**Definícia hotovosti**: vývojár klonuje repo, spustí `composer install`, `npm install`, `ddev start` a vidí lokálny WP s aktívnou témou a aktívnym (prázdnym) pluginom.
+**Definícia hotovosti**: vývojár klonuje repo, spustí `composer install`, `npm install`, `ddev start` a vidí lokálny WP s aktívnou témou a aktívnym (prázdnym) pluginom. **Splnené.**
 
 ## Etapa 1 — Dátová vrstva
 

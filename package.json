@@ -1,0 +1,18 @@
+{
+  "name": "farnost-v3",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Workspace root pre Farnosť Online — plugin a téma žijú vo web/app/plugins/ a web/app/themes/.",
+  "license": "GPL-2.0-or-later",
+  "scripts": {
+    "lint:js": "eslint .",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,html,css,scss,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,html,css,scss,yml,yaml}\""
+  },
+  "devDependencies": {
+    "@wordpress/eslint-plugin": "^21.0.0",
+    "@wordpress/prettier-config": "^4.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0"
+  }
+}

@@ -6,7 +6,7 @@ Repo obsahuje **Bedrock-based WordPress projekt**, v ktorom sa vyvíja a testuje
 
 ## Stav
 
-Pred-bootstrap. Aktuálne v repe je len projektová dokumentácia v [`doc/`](doc/). Etapa 0 (Bedrock scaffold) je rozpracovaná.
+**Etapa 0 (Bootstrap) hotová.** Bedrock + DDEV beží lokálne, plugin `farnost-plugin` a téma `farnost-theme` sú aktivované a frontend zobrazuje „Hello world".
 
 ## Dokumentácia
 
@@ -22,16 +22,57 @@ Začni v [`doc/00-prehlad.md`](doc/00-prehlad.md). Ostatné dokumenty:
 
 ## Lokálne rozbehnutie
 
-> **TODO**: doplníme po dokončení Etapy 0 (Bedrock + DDEV scaffold).
+### Prerekvizity
 
-Plánovaný flow:
+- **PHP 8.2+** lokálne (potrebuje Composer)
+- **Composer** 2.x
+- **Node.js 20+** + npm
+- **Docker Desktop** (alebo iná Docker runtime)
+- **DDEV** 1.25+ — `brew install ddev/ddev/ddev` (na Apple Silicon používať ARM64 Homebrew z `/opt/homebrew`)
+
+### Inštalácia
 
 ```bash
 git clone git@github.com:likavan/farnost-v3.git
 cd farnost-v3
+
+# PHP závislosti + WP core do web/wp/
 composer install
+
+# JS devtoolchain (lint, format)
 npm install
+
+# DDEV kontajnery (web + db)
 ddev start
+
+# WordPress samotný (jednorazovo)
+ddev wp --path=web/wp core install \
+  --url='http://farnost-v3.ddev.site:8080' \
+  --title='Farnost Online - Dev' \
+  --admin_user='admin' \
+  --admin_password='admin' \
+  --admin_email='dev@farnost.online' \
+  --skip-email
+
+# Aktivuj náš plugin a tému
+ddev wp --path=web/wp plugin activate farnost-plugin
+ddev wp --path=web/wp theme activate farnost-theme
+```
+
+Frontend: <http://farnost-v3.ddev.site:8080>  
+Admin: <http://farnost-v3.ddev.site:8080/wp/wp-admin> (login: `admin` / `admin`)
+
+### Užitočné príkazy
+
+```bash
+ddev start                   # spusti kontajnery
+ddev stop                    # zastav
+ddev describe                # všetky URL a porty
+ddev wp --path=web/wp <cmd>  # WP-CLI
+ddev ssh                     # shell vnútri web kontajnera
+composer run-script <name>   # PHP skripty
+npm run lint:js              # ESLint
+npm run format               # Prettier
 ```
 
 ## Licencia
