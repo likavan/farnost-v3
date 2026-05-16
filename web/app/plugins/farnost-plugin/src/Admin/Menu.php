@@ -39,7 +39,7 @@ final class Menu
             self::SLUG,
             [self::class, 'renderCalendar'], // default obrazovka = Kalendár omší
             self::iconSvg(),
-            25
+            1 // úplne navrch admin sidebaru — nad Dashboard (default 2).
         );
 
         // Submenu: Kalendár omší (rovnaký slug ako parent → premenuje default položku)
