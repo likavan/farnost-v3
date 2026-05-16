@@ -38,6 +38,8 @@ final class EditorAssets
                 break;
             case 'oznam':
                 self::enqueueBuilt('farnost-panel-oznam', 'panel-oznam');
+                // Bloky kategórie „Farnosť" — zatiaľ len rozpis-snapshot, ďalšie pribudnú.
+                self::enqueueBuilt('farnost-block-rozpis-snapshot', 'block-rozpis-snapshot');
                 break;
             case 'omsa_vynimka':
                 self::enqueueBuilt('farnost-panel-vynimka', 'panel-vynimka');

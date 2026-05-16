@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Farnost\Plugin;
 
+use Farnost\Plugin\Admin\BlockCategory;
 use Farnost\Plugin\Admin\CommentsHide;
 use Farnost\Plugin\Admin\EditorAssets;
 use Farnost\Plugin\Admin\Menu;
 use Farnost\Plugin\Admin\PostRelabel;
 use Farnost\Plugin\Admin\SetupNotice;
 use Farnost\Plugin\Admin\WizardPage;
+use Farnost\Plugin\Oznam\AutoTemplate;
 use Farnost\Plugin\Meta\CategoryMeta;
 use Farnost\Plugin\Meta\PostMeta;
 use Farnost\Plugin\PostTypes\Kostol;
@@ -47,6 +49,10 @@ final class Plugin
 
         // Komentáre — odstavené naprieč admin aj frontend (hooks musia byť globálne).
         CommentsHide::register();
+
+        // Gutenberg block kategória + oznam workflow.
+        BlockCategory::register();
+        AutoTemplate::register();
 
         if (is_admin()) {
             Menu::register();
