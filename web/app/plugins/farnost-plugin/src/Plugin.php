@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Farnost\Plugin;
 
 use Farnost\Plugin\Admin\Menu;
+use Farnost\Plugin\Admin\PostRelabel;
 use Farnost\Plugin\Meta\CategoryMeta;
 use Farnost\Plugin\Meta\PostMeta;
 use Farnost\Plugin\PostTypes\Kostol;
@@ -41,6 +42,7 @@ final class Plugin
 
         if (is_admin()) {
             Menu::register();
+            PostRelabel::register();
         }
     }
 
