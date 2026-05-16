@@ -8,7 +8,7 @@
 
 import { createRoot, useEffect, useMemo, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
-import { Button, Modal, TextareaControl, ToggleControl, Spinner } from '@wordpress/components';
+import { Button, Modal, TextControl, TextareaControl, ToggleControl, SelectControl, Spinner } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 
 const DAY_KEYS = [ 'mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun' ];
@@ -219,6 +219,142 @@ function UmyselModal( { mass, onClose, onSaved } ) {
 	);
 }
 
+/**
+ * Modal pre vytvorenie mimoriadnej omše (výnimka) pre konkrétny dátum.
+ * POST /wp/v2/omsa-vynimky s meta {datum, cas, kostol_id, oznacenie, umysel}.
+ */
+function PridatOmsuModal( { date, kostoly, onClose, onSaved } ) {
+	const [ cas, setCas ] = useState( '' );
+	const [ kostolId, setKostolId ] = useState(
+		kostoly.length > 0 ? String( kostoly[ 0 ].id ) : ''
+	);
+	const [ oznacenie, setOznacenie ] = useState( '' );
+	const [ umysel, setUmysel ] = useState( '' );
+	const [ saving, setSaving ] = useState( false );
+	const [ error, setError ] = useState( null );
+
+	const handleSave = async () => {
+		const k = parseInt( kostolId, 10 );
+		if ( ! /^\d{2}:\d{2}$/.test( cas ) ) {
+			setError( __( 'Zadaj čas vo formáte HH:MM.', 'farnost-plugin' ) );
+			return;
+		}
+		if ( ! k || k <= 0 ) {
+			setError( __( 'Zvoľ kostol.', 'farnost-plugin' ) );
+			return;
+		}
+		setSaving( true );
+		setError( null );
+		try {
+			await apiFetch( {
+				path: '/wp/v2/omsa-vynimky',
+				method: 'POST',
+				data: {
+					title:  `Výnimka ${ date } ${ cas }`,
+					status: 'publish',
+					meta:   {
+						farnost_datum:     date,
+						farnost_cas:       cas,
+						farnost_kostol_id: k,
+						farnost_oznacenie: oznacenie,
+						farnost_umysel:    umysel,
+					},
+				},
+			} );
+			onSaved();
+		} catch ( e ) {
+			setError( e.message || String( e ) );
+		} finally {
+			setSaving( false );
+		}
+	};
+
+	const formattedDate = new Date( date + 'T12:00:00' ).toLocaleDateString( 'sk-SK', {
+		weekday: 'long',
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric',
+	} );
+
+	const kostolOptions = kostoly.map( ( k ) => ( {
+		value: String( k.id ),
+		label: k.title?.rendered || `#${ k.id }`,
+	} ) );
+
+	return (
+		<Modal
+			title={ __( 'Pridať mimoriadnu omšu', 'farnost-plugin' ) }
+			onRequestClose={ onClose }
+			style={ { maxWidth: 520 } }
+		>
+			<div style={ { marginBottom: 12, color: '#374151', fontSize: 13 } }>
+				<strong>{ formattedDate }</strong>
+				<div style={ { color: '#6b7280', marginTop: 2, fontSize: 12 } }>
+					{ __( 'Mimoriadna omša sa pridáva nad rámec pravidelného rozpisu (napr. pohreb, sobáš, slávnosť).', 'farnost-plugin' ) }
+				</div>
+			</div>
+
+			<div style={ { display: 'flex', gap: 12 } }>
+				<div style={ { width: 120 } }>
+					<TextControl
+						label={ __( 'Čas', 'farnost-plugin' ) }
+						value={ cas }
+						onChange={ setCas }
+						placeholder="HH:MM"
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</div>
+				<div style={ { flex: 1 } }>
+					<SelectControl
+						label={ __( 'Kostol', 'farnost-plugin' ) }
+						value={ kostolId }
+						onChange={ setKostolId }
+						options={ kostolOptions }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</div>
+			</div>
+
+			<div style={ { marginTop: 12 } }>
+				<TextControl
+					label={ __( 'Označenie omše', 'farnost-plugin' ) }
+					value={ oznacenie }
+					onChange={ setOznacenie }
+					placeholder={ __( 'napr. pohrebná, sobášna, púťová', 'farnost-plugin' ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			</div>
+
+			<div style={ { marginTop: 12 } }>
+				<TextareaControl
+					label={ __( 'Úmysel', 'farnost-plugin' ) }
+					value={ umysel }
+					onChange={ setUmysel }
+					rows={ 2 }
+					placeholder={ __( 'napr. † p. Nováková', 'farnost-plugin' ) }
+					__nextHasNoMarginBottom
+				/>
+			</div>
+
+			{ error && (
+				<p style={ { color: '#b32d2e', marginTop: 12 } }>{ error }</p>
+			) }
+
+			<div style={ { display: 'flex', gap: 8, marginTop: 20, justifyContent: 'flex-end' } }>
+				<Button variant="tertiary" onClick={ onClose } disabled={ saving }>
+					{ __( 'Zatvoriť', 'farnost-plugin' ) }
+				</Button>
+				<Button variant="primary" onClick={ handleSave } disabled={ saving }>
+					{ saving ? <Spinner /> : __( 'Pridať omšu', 'farnost-plugin' ) }
+				</Button>
+			</div>
+		</Modal>
+	);
+}
+
 function App() {
 	const today = new Date();
 	const [ year, setYear ] = useState( today.getFullYear() );
@@ -231,6 +367,7 @@ function App() {
 	const [ error, setError ] = useState( null );
 
 	const [ openMass, setOpenMass ] = useState( null );
+	const [ openAddDate, setOpenAddDate ] = useState( null );
 
 	const fetchData = () => {
 		setLoading( true );
@@ -400,6 +537,13 @@ function App() {
 				.farnost-mass-time { font-weight: 600; }
 				.farnost-mass-um { color: #6b7280; }
 				.farnost-mass-um.empty { color: #d1d5db; font-style: italic; }
+				.farnost-day-add {
+					display: block; width: 100%; margin-top: 4px;
+					background: transparent; border: 1px dashed #d1d5db; color: #9ca3af;
+					border-radius: 3px; padding: 2px; font-size: 14px; line-height: 1;
+					cursor: pointer;
+				}
+				.farnost-day-add:hover { background: #f3f4f6; color: #374151; border-color: #9ca3af; }
 			` }</style>
 
 			<div className="farnost-calendar-toolbar">
@@ -455,6 +599,15 @@ function App() {
 										</div>
 									</div>
 								) ) }
+								<button
+									type="button"
+									className="farnost-day-add"
+									onClick={ () => setOpenAddDate( dateIso ) }
+									title={ __( 'Pridať mimoriadnu omšu v tento deň', 'farnost-plugin' ) }
+									aria-label={ __( 'Pridať omšu', 'farnost-plugin' ) }
+								>
+									+
+								</button>
 							</div>
 						);
 					} ) }
@@ -467,6 +620,18 @@ function App() {
 					onClose={ () => setOpenMass( null ) }
 					onSaved={ () => {
 						setOpenMass( null );
+						fetchData();
+					} }
+				/>
+			) }
+
+			{ openAddDate && (
+				<PridatOmsuModal
+					date={ openAddDate }
+					kostoly={ kostoly }
+					onClose={ () => setOpenAddDate( null ) }
+					onSaved={ () => {
+						setOpenAddDate( null );
 						fetchData();
 					} }
 				/>
