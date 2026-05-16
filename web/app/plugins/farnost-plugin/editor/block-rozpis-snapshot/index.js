@@ -6,13 +6,17 @@
  *   - dni: pole 7 položiek
  *       { date, dayKey, sviatok, omse: [{ kostol_title, time, oznacenie, umysel, source }] }
  *
- * Snapshot model: dáta sa kopírujú do post_content pri vytvorení oznamu (server-side
- * v ďalšom commit-e). Po publikovaní oznamu sa zmena v podkladových dátach
- * neprejaví — to je presne ten zmysel: oznam je „zamrznutý" záznam.
+ * Edit UI: každá bunka (čas / označenie / úmysel) je click-to-edit; klik na text
+ * prepne na <input>, blur alebo Enter ulož, Escape zruš. Tlačidlá per deň: pridať
+ * omšu, odstrániť konkrétnu omšu.
+ *
+ * Dynamic block — JS save() vracia null, frontend rendruje PHP (RozpisSnapshot.php).
  */
 
 import { registerBlockType } from '@wordpress/blocks';
 import { useBlockProps } from '@wordpress/block-editor';
+import { useEffect, useRef, useState } from '@wordpress/element';
+import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 const DAY_LABELS = {
@@ -25,22 +29,101 @@ const DAY_LABELS = {
 	sun: __( 'Nedeľa', 'farnost-plugin' ),
 };
 
-function DayCard( { day } ) {
+function formatShortDate( iso ) {
+	if ( ! iso ) return '';
+	const d = new Date( iso + 'T12:00:00' );
+	return d.toLocaleDateString( 'sk-SK', { day: 'numeric', month: 'numeric' } );
+}
+
+/**
+ * Inline click-to-edit text field. Display mode = plain span; klik / focus prepne
+ * na <input>. Blur a Enter commit, Escape revert.
+ */
+function InlineEdit( { value, onChange, placeholder, inputType = 'text', style } ) {
+	const [ editing, setEditing ] = useState( false );
+	const [ draft, setDraft ] = useState( value );
+	const inputRef = useRef( null );
+
+	useEffect( () => {
+		if ( ! editing ) {
+			setDraft( value );
+		}
+	}, [ value, editing ] );
+
+	useEffect( () => {
+		if ( editing && inputRef.current ) {
+			inputRef.current.focus();
+			inputRef.current.select?.();
+		}
+	}, [ editing ] );
+
+	const commit = () => {
+		setEditing( false );
+		if ( draft !== value ) {
+			onChange( draft );
+		}
+	};
+
+	const cancel = () => {
+		setDraft( value );
+		setEditing( false );
+	};
+
+	if ( editing ) {
+		return (
+			<input
+				ref={ inputRef }
+				type={ inputType }
+				value={ draft }
+				onChange={ ( e ) => setDraft( e.target.value ) }
+				onBlur={ commit }
+				onKeyDown={ ( e ) => {
+					if ( e.key === 'Enter' ) {
+						commit();
+					} else if ( e.key === 'Escape' ) {
+						cancel();
+					}
+				} }
+				className="farnost-rozpis-snapshot__input"
+				style={ style }
+			/>
+		);
+	}
+
+	const isEmpty = value === '' || value == null;
+	return (
+		<button
+			type="button"
+			onClick={ () => setEditing( true ) }
+			onFocus={ () => setEditing( true ) }
+			className="farnost-rozpis-snapshot__inline"
+			style={ {
+				...style,
+				fontStyle: isEmpty ? 'italic' : 'normal',
+				color: isEmpty ? '#9ca3af' : 'inherit',
+			} }
+		>
+			{ isEmpty ? placeholder : value }
+		</button>
+	);
+}
+
+function DayCardEdit( { day, dayIdx, updateMass, addMass, removeMass } ) {
 	const label = DAY_LABELS[ day.dayKey ] || day.dayKey;
 	const omse = Array.isArray( day.omse ) ? day.omse : [];
+
 	return (
 		<div className="farnost-rozpis-snapshot__card">
 			<div className="farnost-rozpis-snapshot__header">
 				<strong>{ label }</strong>
 				{ day.date && (
-					<span className="farnost-rozpis-snapshot__date">
-						{ formatShortDate( day.date ) }
-					</span>
+					<span className="farnost-rozpis-snapshot__date">{ formatShortDate( day.date ) }</span>
 				) }
 				{ day.sviatok && (
 					<div className="farnost-rozpis-snapshot__sviatok">{ day.sviatok }</div>
 				) }
 			</div>
+
 			{ omse.length === 0 ? (
 				<div className="farnost-rozpis-snapshot__empty">
 					{ __( 'Sv. omša nie je', 'farnost-plugin' ) }
@@ -48,36 +131,94 @@ function DayCard( { day } ) {
 			) : (
 				<ul className="farnost-rozpis-snapshot__list">
 					{ omse.map( ( m, i ) => (
-						<li key={ i }>
-							<span className="farnost-rozpis-snapshot__time">{ m.time }</span>
-							{ m.oznacenie && (
-								<span className="farnost-rozpis-snapshot__oznacenie"> · { m.oznacenie }</span>
-							) }
-							{ m.umysel && (
-								<div className="farnost-rozpis-snapshot__umysel">{ m.umysel }</div>
-							) }
+						<li key={ i } className="farnost-rozpis-snapshot__row">
+							<div className="farnost-rozpis-snapshot__row-line">
+								<InlineEdit
+									value={ m.time || '' }
+									onChange={ ( v ) => updateMass( dayIdx, i, 'time', v ) }
+									placeholder="HH:MM"
+									style={ { width: 56, fontWeight: 600 } }
+								/>
+								<InlineEdit
+									value={ m.oznacenie || '' }
+									onChange={ ( v ) => updateMass( dayIdx, i, 'oznacenie', v ) }
+									placeholder={ __( 'označenie', 'farnost-plugin' ) }
+									style={ { flex: 1, fontSize: 12, color: '#6b7280' } }
+								/>
+								<Button
+									isDestructive
+									variant="tertiary"
+									size="small"
+									onClick={ () => removeMass( dayIdx, i ) }
+									label={ __( 'Odstrániť omšu', 'farnost-plugin' ) }
+									showTooltip
+								>
+									✕
+								</Button>
+							</div>
+							<InlineEdit
+								value={ m.umysel || '' }
+								onChange={ ( v ) => updateMass( dayIdx, i, 'umysel', v ) }
+								placeholder={ __( 'úmysel', 'farnost-plugin' ) }
+								style={ { display: 'block', width: '100%', fontSize: 12, color: '#374151', marginTop: 2 } }
+							/>
 						</li>
 					) ) }
 				</ul>
 			) }
+
+			<Button
+				variant="secondary"
+				size="small"
+				onClick={ () => addMass( dayIdx ) }
+				style={ { marginTop: 8 } }
+			>
+				{ __( '+ Pridať omšu', 'farnost-plugin' ) }
+			</Button>
 		</div>
 	);
 }
 
-function formatShortDate( iso ) {
-	const d = new Date( iso + 'T12:00:00' );
-	return d.toLocaleDateString( 'sk-SK', { day: 'numeric', month: 'numeric' } );
-}
-
-function Edit( { attributes } ) {
+function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( { className: 'farnost-rozpis-snapshot' } );
 	const dni = Array.isArray( attributes.dni ) ? attributes.dni : [];
+
+	const persist = ( nextDni ) => setAttributes( { dni: nextDni } );
+
+	const updateMass = ( dayIdx, massIdx, field, value ) => {
+		const next = dni.map( ( d, i ) => {
+			if ( i !== dayIdx ) return d;
+			const omse = Array.isArray( d.omse ) ? d.omse : [];
+			const nextOmse = omse.map( ( m, j ) => ( j === massIdx ? { ...m, [ field ]: value } : m ) );
+			return { ...d, omse: nextOmse };
+		} );
+		persist( next );
+	};
+
+	const addMass = ( dayIdx ) => {
+		const next = dni.map( ( d, i ) => {
+			if ( i !== dayIdx ) return d;
+			const omse = Array.isArray( d.omse ) ? [ ...d.omse ] : [];
+			omse.push( { kostol_title: '', time: '', oznacenie: '', umysel: '', source: 'manual' } );
+			return { ...d, omse };
+		} );
+		persist( next );
+	};
+
+	const removeMass = ( dayIdx, massIdx ) => {
+		const next = dni.map( ( d, i ) => {
+			if ( i !== dayIdx ) return d;
+			const omse = Array.isArray( d.omse ) ? d.omse.filter( ( _, j ) => j !== massIdx ) : [];
+			return { ...d, omse };
+		} );
+		persist( next );
+	};
 
 	return (
 		<div { ...blockProps }>
 			<style>{ `
 				.farnost-rozpis-snapshot {
-					display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+					display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
 					gap: 12px; margin: 16px 0;
 				}
 				.farnost-rozpis-snapshot__card {
@@ -93,12 +234,25 @@ function Edit( { attributes } ) {
 					margin-top: 2px; color: #6b7280; font-size: 12px; font-style: italic;
 				}
 				.farnost-rozpis-snapshot__list { margin: 0; padding: 0; list-style: none; }
-				.farnost-rozpis-snapshot__list li { padding: 4px 0; font-size: 13px; }
-				.farnost-rozpis-snapshot__time { font-weight: 600; }
-				.farnost-rozpis-snapshot__oznacenie { color: #6b7280; }
-				.farnost-rozpis-snapshot__umysel { color: #374151; font-size: 12px; margin-top: 2px; }
+				.farnost-rozpis-snapshot__row { padding: 6px 0; border-bottom: 1px dashed #f3f4f6; }
+				.farnost-rozpis-snapshot__row:last-child { border-bottom: 0; }
+				.farnost-rozpis-snapshot__row-line {
+					display: flex; gap: 4px; align-items: center;
+				}
 				.farnost-rozpis-snapshot__empty {
-					color: #9ca3af; font-style: italic; font-size: 12px;
+					color: #9ca3af; font-style: italic; font-size: 12px; padding: 8px 0;
+				}
+				.farnost-rozpis-snapshot__inline {
+					background: transparent; border: 1px solid transparent; padding: 2px 6px;
+					border-radius: 3px; cursor: text; font-size: 13px; line-height: 20px;
+					text-align: left;
+				}
+				.farnost-rozpis-snapshot__inline:hover {
+					background: #f3f4f6; border-color: #e5e7eb;
+				}
+				.farnost-rozpis-snapshot__input {
+					padding: 2px 6px; border-radius: 3px; border: 1px solid #1e40af;
+					font-size: 13px; line-height: 20px; outline: none;
 				}
 			` }</style>
 
@@ -107,7 +261,16 @@ function Edit( { attributes } ) {
 					{ __( 'Rozpis omší — prázdny snapshot. Pri vytvorení oznamu sa naplní automaticky.', 'farnost-plugin' ) }
 				</div>
 			) : (
-				dni.map( ( day, idx ) => <DayCard key={ idx } day={ day } /> )
+				dni.map( ( day, idx ) => (
+					<DayCardEdit
+						key={ idx }
+						day={ day }
+						dayIdx={ idx }
+						updateMass={ updateMass }
+						addMass={ addMass }
+						removeMass={ removeMass }
+					/>
+				) )
 			) }
 		</div>
 	);
