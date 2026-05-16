@@ -24,11 +24,11 @@ final class OmsaVynimka
             ],
             'public'       => false,
             'show_ui'      => true,
+            'show_in_menu' => false, // vzniká z kalendára a editora oznamu, nemá vlastné menu
             'has_archive'  => false,
             'supports'     => ['title'],
             'show_in_rest' => true,
             'rest_base'    => 'omsa-vynimky',
-            'menu_icon'    => 'dashicons-calendar-alt',
         ]);
     }
 

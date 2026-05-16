@@ -28,7 +28,7 @@ final class Umysel
             'supports'     => ['title', 'author'],
             'show_in_rest' => true,
             'rest_base'    => 'umysly',
-            'menu_icon'    => 'dashicons-format-quote',
+            'show_in_menu' => false, // vzniká z kalendára, nemá vlastné menu
             'capability_type' => ['umysel', 'umysly'],
             'map_meta_cap'    => true,
         ]);

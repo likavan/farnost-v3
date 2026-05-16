@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Farnost\Plugin;
 
+use Farnost\Plugin\Admin\Menu;
 use Farnost\Plugin\Meta\CategoryMeta;
 use Farnost\Plugin\Meta\PostMeta;
 use Farnost\Plugin\PostTypes\Kostol;
@@ -37,6 +38,10 @@ final class Plugin
         add_action('init', [$this, 'registerMeta']);
         add_action('init', [Settings::class, 'register']);
         add_action('rest_api_init', [$this, 'registerRest']);
+
+        if (is_admin()) {
+            Menu::register();
+        }
     }
 
     public function registerPostTypes(): void

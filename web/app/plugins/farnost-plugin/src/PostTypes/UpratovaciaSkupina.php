@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Farnost\Plugin\PostTypes;
 
+use Farnost\Plugin\Admin\Menu;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -28,7 +30,7 @@ final class UpratovaciaSkupina
             'supports'     => ['title', 'page-attributes'],
             'show_in_rest' => true,
             'rest_base'    => 'upratovacie-skupiny',
-            'menu_icon'    => 'dashicons-groups',
+            'show_in_menu' => Menu::SLUG,
         ]);
     }
 

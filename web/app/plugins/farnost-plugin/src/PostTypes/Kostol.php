@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Farnost\Plugin\PostTypes;
 
+use Farnost\Plugin\Admin\Menu;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -29,7 +31,7 @@ final class Kostol
             'supports'     => ['title', 'editor', 'thumbnail', 'excerpt', 'revisions'],
             'show_in_rest' => true,
             'rest_base'    => 'kostoly',
-            'menu_icon'    => 'dashicons-bank',
+            'show_in_menu' => Menu::SLUG,
         ]);
     }
 
