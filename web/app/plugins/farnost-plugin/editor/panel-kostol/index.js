@@ -3,12 +3,16 @@
  *
  * Štruktúra: per deň zoznam slotov { day_of_week, time, oznacenie }.
  * Hodnota žije v post meta `farnost_rozpis` ako JSON string.
+ *
+ * UX: click-to-edit (Notion-style) — čas a označenie sa zobrazujú ako text,
+ * klik prepne na input, blur / Enter uloží, Escape zruší.
  */
 
 import { registerPlugin } from '@wordpress/plugins';
 import { PluginDocumentSettingPanel } from '@wordpress/editor';
 import { useSelect, useDispatch } from '@wordpress/data';
-import { TextControl, Button } from '@wordpress/components';
+import { useEffect, useRef, useState } from '@wordpress/element';
+import { Button } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 
 const DAYS = [
@@ -31,6 +35,88 @@ function parseRozpis( raw ) {
 	} catch ( e ) {
 		return [];
 	}
+}
+
+/**
+ * Inline click-to-edit field. Display mode = plain text; klik / focus
+ * prepne na <input>. Blur alebo Enter commit-ne, Escape zruší.
+ */
+function InlineEdit( { value, onChange, placeholder, inputType = 'text', minWidth } ) {
+	const [ editing, setEditing ] = useState( false );
+	const [ draft, setDraft ] = useState( value );
+	const inputRef = useRef( null );
+
+	useEffect( () => {
+		if ( ! editing ) {
+			setDraft( value );
+		}
+	}, [ value, editing ] );
+
+	useEffect( () => {
+		if ( editing && inputRef.current ) {
+			inputRef.current.focus();
+			inputRef.current.select?.();
+		}
+	}, [ editing ] );
+
+	const commit = () => {
+		setEditing( false );
+		if ( draft !== value ) {
+			onChange( draft );
+		}
+	};
+
+	const cancel = () => {
+		setDraft( value );
+		setEditing( false );
+	};
+
+	if ( editing ) {
+		return (
+			<input
+				ref={ inputRef }
+				type={ inputType }
+				className="components-text-control__input"
+				value={ draft }
+				onChange={ ( e ) => setDraft( e.target.value ) }
+				onBlur={ commit }
+				onKeyDown={ ( e ) => {
+					if ( e.key === 'Enter' ) {
+						commit();
+					} else if ( e.key === 'Escape' ) {
+						cancel();
+					}
+				} }
+				style={ { minWidth, padding: '4px 8px', height: 32 } }
+			/>
+		);
+	}
+
+	const isEmpty = value === '' || value == null;
+	return (
+		<button
+			type="button"
+			onClick={ () => setEditing( true ) }
+			onFocus={ () => setEditing( true ) }
+			className="farnost-inline-edit"
+			style={ {
+				display: 'inline-block',
+				minWidth,
+				padding: '4px 8px',
+				background: 'transparent',
+				border: '1px solid transparent',
+				borderRadius: 3,
+				textAlign: 'left',
+				cursor: 'text',
+				fontSize: 13,
+				lineHeight: '24px',
+				color: isEmpty ? '#9ca3af' : 'inherit',
+				fontStyle: isEmpty ? 'italic' : 'normal',
+			} }
+		>
+			{ isEmpty ? placeholder : value }
+		</button>
+	);
 }
 
 function RozpisOmsiPanel() {
@@ -73,6 +159,9 @@ function RozpisOmsiPanel() {
 			title={ __( 'Rozpis omší', 'farnost-plugin' ) }
 			className="farnost-rozpis-omsi-panel"
 		>
+			<style>
+				{ `.farnost-inline-edit:hover { background: #f3f4f6; border-color: #e5e7eb !important; }` }
+			</style>
 			{ DAYS.map( ( day ) => {
 				const slots = rozpis
 					.map( ( s, idx ) => ( { ...s, idx } ) )
@@ -91,29 +180,24 @@ function RozpisOmsiPanel() {
 								key={ slot.idx }
 								style={ {
 									display: 'flex',
-									gap: 6,
-									alignItems: 'flex-end',
-									marginBottom: 4,
+									gap: 4,
+									alignItems: 'center',
+									marginBottom: 2,
 								} }
 							>
-								<div style={ { width: 70 } }>
-									<TextControl
-										label={ __( 'Čas', 'farnost-plugin' ) }
-										value={ slot.time || '' }
-										onChange={ ( v ) => updateSlot( slot.idx, 'time', v ) }
-										placeholder="HH:MM"
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
-									/>
-								</div>
+								<InlineEdit
+									value={ slot.time || '' }
+									onChange={ ( v ) => updateSlot( slot.idx, 'time', v ) }
+									placeholder="HH:MM"
+									inputType="text"
+									minWidth={ 60 }
+								/>
 								<div style={ { flex: 1 } }>
-									<TextControl
-										label={ __( 'Označenie', 'farnost-plugin' ) }
+									<InlineEdit
 										value={ slot.oznacenie || '' }
 										onChange={ ( v ) => updateSlot( slot.idx, 'oznacenie', v ) }
-										placeholder={ __( 'voliteľné', 'farnost-plugin' ) }
-										__nextHasNoMarginBottom
-										__next40pxDefaultSize
+										placeholder={ __( 'bez označenia', 'farnost-plugin' ) }
+										inputType="text"
 									/>
 								</div>
 								<Button
@@ -122,7 +206,6 @@ function RozpisOmsiPanel() {
 									onClick={ () => removeSlot( slot.idx ) }
 									label={ __( 'Odstrániť omšu', 'farnost-plugin' ) }
 									showTooltip
-									__next40pxDefaultSize
 								>
 									✕
 								</Button>
@@ -132,7 +215,7 @@ function RozpisOmsiPanel() {
 							variant="secondary"
 							size="small"
 							onClick={ () => addSlot( day.key ) }
-							__next40pxDefaultSize
+							style={ { marginTop: 4 } }
 						>
 							{ __( '+ Pridať omšu', 'farnost-plugin' ) }
 						</Button>
