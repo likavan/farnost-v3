@@ -36,23 +36,27 @@ Etapy implementácie pre v3. Časové odhady sú orientačné a počítajú s je
 
 **Definícia hotovosti splnená**: dáta sa dajú vytvoriť cez REST (`curl`/Postman) a `Resolver` vracia správny rozpis pre dátum vrátane aplikovaných výnimiek. Overené end-to-end cez `GET /wp-json/farnost/v1/schedule?date=2026-05-18&kostol_id=5` (vracia kombináciu pravidelnej 18:00 + výnimky 14:00 pohrebná).
 
-## Etapa 2 — Admin UX
+## Etapa 2 — Admin UX (väčšina hotová)
 
 **Cieľ**: farár si vie cez wp-admin spraviť všetko, čo bude potrebovať, **bez** nutnosti zdvihnúť ruku k vývojárovi.
 
-- [ ] **React sidebar panely** (`editor/panels/`) pre každý CPT:
-  - [ ] `RozpisOmsiPanel` na `kostol` — repeater UI s `@wordpress/components`.
-  - [ ] `OznamPanel` na `oznam` — DateTimePicker × 2 + ToggleControl.
-  - [ ] `VynimkaPanel` na `omsa_vynimka` — všetky polia, kostol ako ComboboxControl s REST lookup.
-  - [ ] `UmyselPanel` na `umysel`.
-  - [ ] `UdalostPanel` na bežné `post` — DateTimePicker + TextControl.
-  - [ ] `UpratovacieSkupinyAdmin` — vlastná admin stránka so zoznamom skupín (drag-and-drop poradie, indikátor „aktuálne na rade", manuálny posun pointra).
-- [ ] **Admin polia kategórie**: `category_add_form_fields` / `category_edit_form_fields` s color pickerom a checkboxom.
-- [ ] **Settings stránka** `Farnosť → Nastavenia` postavená na `@wordpress/components`. Všetky sekcie z [`02-datovy-model.md`](02-datovy-model.md#per-farnosť-settings).
-- [ ] **Setup wizard** — admin notice po aktivácii, 4-krokový wizard (identita, kontakt, prvý kostol, branding) + vytvorenie statických stránok s šablónami.
-- [ ] **Vlastné top-level admin menu** „Farnosť" zoskupujúce: Sv. omše (→ Kostoly, Výnimky, Úmysly), Oznamy, Nastavenia, Návod.
-- [ ] **Onboarding stránka** `Pomoc → Návod` s checklistom z [`04-obsah-a-roly.md`](04-obsah-a-roly.md#onboarding-nového-editora--checklist).
-- [ ] i18n: všetky stringy cez `__()` / `_x()`, `farnost-plugin.pot` vygenerovaný.
+- [x] **React sidebar panely** pre každý CPT (`editor/panel-*/index.js`):
+  - [x] `RozpisOmsiPanel` na `kostol` — per-deň repeater s click-to-edit pre čas a označenie.
+  - [x] `OznamPanel` na `oznam` — Od pondelka / Do nedele dátumy.
+  - [x] `VynimkaPanel` na `omsa_vynimka` — dátum, čas, kostol cez ComboboxControl, označenie, úmysel.
+  - [x] `UmyselPanel` na `umysel` — dátum, čas, kostol, text, anonymný toggle.
+  - [x] `UdalostPanel` na bežné `post` — Kedy / Kde free-form.
+  - [ ] `UpratovacieSkupinyAdmin` — vlastná admin stránka s drag-and-drop poradím a manuálnym posunom pointra. **Zostáva** — aktuálne je len bežný CPT archive.
+- [ ] **Admin polia kategórie**: `category_add_form_fields` / `category_edit_form_fields` s color pickerom a checkboxom. **Zostáva** — term meta sú zaregistrované, len chýba admin UI.
+- [x] **Settings stránka** `Farnosť → Nastavenia` (PHP form-based, nie React) — všetky sekcie zo `02-datovy-model.md` + multi-kontakty repeater + media picker pre logo + citáty.
+- [x] **Setup wizard** — 4-krokový plnoobrazovkový sprievodca s pre-fillom existujúcich hodnôt + dismiss link „Preskočiť".
+- [x] **Vlastné top-level admin menu** „Farnosť" so submenu: Kalendár omší, Kostoly, Oznamy, Mimoriadny oznam, Výnimky, Úmysly, Upratovacie skupiny, Nastavenia, Návod.
+- [x] **Kalendár omší a úmyslov** — custom admin obrazovka s mesačným gridom, klik na omšu otvorí editor úmyslu, „+" tlačidlo per deň vytvorí výnimku.
+- [x] **Mimoriadny oznam (banner)** — rich text editor + voliteľná expirácia + REST endpoint pre frontend.
+- [ ] **Onboarding stránka** `Pomoc → Návod` s checklistom. **Zostáva** — placeholder.
+- [ ] **i18n**: všetky stringy cez `__()` / `_x()`, `farnost-plugin.pot` vygenerovaný. **Zostáva** — stringy sú v `__()` formáte, len `.pot` súbor nie je vygenerovaný.
+
+**Stav**: hlavná funkčnosť hotová a otestovaná (clickthrough). Zaostávajúce: drag-and-drop UI pre upratovacie skupiny, color picker UI pre kategórie, Návod stránka, `.pot` súbor.
 
 **Definícia hotovosti**: druhá osoba (nie autor) vytvorí cez wp-admin: kostol s rozpisom, oznam s pripnutím, výnimku s režimom „náhrada", úmysel, udalosť s kategóriou a dátumom — bez dokumentácie, len intuitívne.
 
