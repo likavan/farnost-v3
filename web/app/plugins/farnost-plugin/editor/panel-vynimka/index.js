@@ -1,0 +1,134 @@
+/**
+ * Gutenberg sidebar panel pre CPT `omsa_vynimka` — jednorazová výnimka rozpisu.
+ *
+ * Polia: dátum, čas, kostol (referencia), označenie, úmysel.
+ * Kostoly sa načítavajú cez REST `/wp/v2/kostoly` a renderujú do ComboboxControl.
+ */
+
+import { registerPlugin } from '@wordpress/plugins';
+import { PluginDocumentSettingPanel } from '@wordpress/editor';
+import { useSelect, useDispatch } from '@wordpress/data';
+import { useState, useEffect } from '@wordpress/element';
+import { TextControl, ComboboxControl } from '@wordpress/components';
+import apiFetch from '@wordpress/api-fetch';
+import { __ } from '@wordpress/i18n';
+
+function VynimkaPanel() {
+	const { postType, datum, cas, kostolId, oznacenie, umysel } = useSelect( ( select ) => {
+		const editor = select( 'core/editor' );
+		const meta = editor.getEditedPostAttribute( 'meta' ) || {};
+		return {
+			postType: editor.getCurrentPostType(),
+			datum: meta.farnost_datum ?? '',
+			cas: meta.farnost_cas ?? '',
+			kostolId: meta.farnost_kostol_id ?? 0,
+			oznacenie: meta.farnost_oznacenie ?? '',
+			umysel: meta.farnost_umysel ?? '',
+		};
+	}, [] );
+
+	const { editPost } = useDispatch( 'core/editor' );
+
+	const [ kostolyOptions, setKostolyOptions ] = useState( [] );
+
+	useEffect( () => {
+		let cancelled = false;
+		apiFetch( { path: '/wp/v2/kostoly?per_page=100&_fields=id,title' } )
+			.then( ( posts ) => {
+				if ( cancelled || ! Array.isArray( posts ) ) {
+					return;
+				}
+				setKostolyOptions(
+					posts.map( ( p ) => ( {
+						value: String( p.id ),
+						label: p.title?.rendered || `#${ p.id }`,
+					} ) )
+				);
+			} )
+			.catch( () => {
+				// pri chybe necháme prázdny zoznam — Combobox sa zobrazí prázdny
+			} );
+		return () => {
+			cancelled = true;
+		};
+	}, [] );
+
+	if ( postType !== 'omsa_vynimka' ) {
+		return null;
+	}
+
+	const setMeta = ( field, value ) => {
+		editPost( { meta: { [ field ]: value } } );
+	};
+
+	const setKostol = ( value ) => {
+		const id = parseInt( value, 10 ) || 0;
+		editPost( { meta: { farnost_kostol_id: id } } );
+	};
+
+	return (
+		<PluginDocumentSettingPanel
+			name="farnost-vynimka-detail"
+			title={ __( 'Detaily výnimky', 'farnost-plugin' ) }
+			className="farnost-vynimka-panel"
+		>
+			<div style={ { display: 'flex', gap: 8 } }>
+				<div style={ { flex: 1 } }>
+					<TextControl
+						label={ __( 'Dátum', 'farnost-plugin' ) }
+						type="date"
+						value={ datum || '' }
+						onChange={ ( v ) => setMeta( 'farnost_datum', v ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</div>
+				<div style={ { width: 110 } }>
+					<TextControl
+						label={ __( 'Čas', 'farnost-plugin' ) }
+						type="time"
+						value={ cas || '' }
+						onChange={ ( v ) => setMeta( 'farnost_cas', v ) }
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+					/>
+				</div>
+			</div>
+			<div style={ { marginTop: 12 } }>
+				<ComboboxControl
+					label={ __( 'Kostol', 'farnost-plugin' ) }
+					value={ kostolId ? String( kostolId ) : '' }
+					options={ kostolyOptions }
+					onChange={ setKostol }
+					allowReset
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			</div>
+			<div style={ { marginTop: 12 } }>
+				<TextControl
+					label={ __( 'Označenie', 'farnost-plugin' ) }
+					value={ oznacenie || '' }
+					onChange={ ( v ) => setMeta( 'farnost_oznacenie', v ) }
+					placeholder={ __( 'voliteľné', 'farnost-plugin' ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			</div>
+			<div style={ { marginTop: 12 } }>
+				<TextControl
+					label={ __( 'Úmysel', 'farnost-plugin' ) }
+					value={ umysel || '' }
+					onChange={ ( v ) => setMeta( 'farnost_umysel', v ) }
+					placeholder={ __( 'voliteľné', 'farnost-plugin' ) }
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+				/>
+			</div>
+		</PluginDocumentSettingPanel>
+	);
+}
+
+registerPlugin( 'farnost-vynimka-panel', {
+	render: VynimkaPanel,
+} );

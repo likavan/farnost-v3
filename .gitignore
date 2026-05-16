@@ -72,3 +72,6 @@ build/
 .ddev/*
 !.ddev/config.yaml
 !.ddev/config.*.yaml
+
+# Claude Code agent worktrees (interná vec, nikdy nepatria do repa)
+.claude/

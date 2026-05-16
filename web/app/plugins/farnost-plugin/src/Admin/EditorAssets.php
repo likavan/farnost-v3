@@ -31,9 +31,23 @@ final class EditorAssets
             return;
         }
 
-        // RozpisOmsiPanel — len v editore `kostol`
-        if ($screen->post_type === 'kostol') {
-            self::enqueueBuilt('farnost-panel-kostol', 'panel-kostol');
+        // Panely sa nahrávajú per CPT — každý panel má vlastný entry v build/.
+        switch ($screen->post_type) {
+            case 'kostol':
+                self::enqueueBuilt('farnost-panel-kostol', 'panel-kostol');
+                break;
+            case 'oznam':
+                self::enqueueBuilt('farnost-panel-oznam', 'panel-oznam');
+                break;
+            case 'omsa_vynimka':
+                self::enqueueBuilt('farnost-panel-vynimka', 'panel-vynimka');
+                break;
+            case 'umysel':
+                self::enqueueBuilt('farnost-panel-umysel', 'panel-umysel');
+                break;
+            case 'post':
+                self::enqueueBuilt('farnost-panel-udalost', 'panel-udalost');
+                break;
         }
     }
 
