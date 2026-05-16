@@ -133,6 +133,25 @@ function App({ homeUrl }) {
 			// 1) Načítaj aktuálne settings (defaults + ev. existujúce hodnoty)
 			const current = await apiFetch( { path: '/wp/v2/settings' } );
 			const fs = current.farnost_settings || {};
+
+			// Pri telefónoch a e-mailoch synchronizujeme len **prvý** záznam — wizard
+			// pracuje s jediným kontaktom. Ostatné záznamy v poli nedotýkame, aby sme
+			// nezmazali multi-kontakty pridané cez Nastavenia.
+			const existingTelefony = fs.kontakt?.telefony || [];
+			const existingEmaily   = fs.kontakt?.emaily || [];
+			let nextTelefony = existingTelefony;
+			if ( kontakt.telefon !== '' ) {
+				nextTelefony = existingTelefony.length > 0
+					? [ { popis: existingTelefony[ 0 ].popis || '', cislo: kontakt.telefon }, ...existingTelefony.slice( 1 ) ]
+					: [ { popis: '', cislo: kontakt.telefon } ];
+			}
+			let nextEmaily = existingEmaily;
+			if ( kontakt.email !== '' ) {
+				nextEmaily = existingEmaily.length > 0
+					? [ { popis: existingEmaily[ 0 ].popis || '', adresa: kontakt.email }, ...existingEmaily.slice( 1 ) ]
+					: [ { popis: '', adresa: kontakt.email } ];
+			}
+
 			const next = {
 				...fs,
 				identita: {
@@ -144,8 +163,8 @@ function App({ homeUrl }) {
 				kontakt: {
 					...( fs.kontakt || {} ),
 					adresa:   kontakt.adresa,
-					telefony: kontakt.telefon ? [ { popis: '', cislo: kontakt.telefon } ] : ( fs.kontakt?.telefony || [] ),
-					emaily:   kontakt.email   ? [ { popis: '', adresa: kontakt.email } ] : ( fs.kontakt?.emaily || [] ),
+					telefony: nextTelefony,
+					emaily:   nextEmaily,
 				},
 				financie: {
 					...( fs.financie || {} ),

@@ -34,7 +34,8 @@ final class SetupNotice
             return;
         }
 
-        $url = esc_url(WizardPage::url());
+        $url        = esc_url(WizardPage::url());
+        $dismissUrl = esc_url(WizardPage::dismissUrl());
         ?>
         <div class="notice notice-info" style="border-left-color:#1e40af;padding:14px 16px;">
             <p style="margin:0 0 6px;font-size:14px;">
@@ -44,6 +45,9 @@ final class SetupNotice
             <p style="margin:0;">
                 <a href="<?php echo $url; ?>" class="button button-primary">
                     <?php esc_html_e('Začať nastavenie', 'farnost-plugin'); ?>
+                </a>
+                <a href="<?php echo $dismissUrl; ?>" style="margin-left:12px;color:#6b7280;text-decoration:underline;font-size:13px;">
+                    <?php esc_html_e('Preskočiť — už mám nastavené', 'farnost-plugin'); ?>
                 </a>
             </p>
         </div>

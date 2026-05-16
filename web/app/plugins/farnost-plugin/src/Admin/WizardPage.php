@@ -26,6 +26,39 @@ final class WizardPage
     {
         add_action('admin_menu', [self::class, 'addHiddenPage'], 200);
         add_action('admin_init', [self::class, 'maybeRenderStandalone'], 0);
+        add_action('admin_init', [self::class, 'maybeDismiss']);
+    }
+
+    public static function dismissUrl(): string
+    {
+        return wp_nonce_url(
+            admin_url('admin.php?farnost_setup_dismiss=1'),
+            'farnost_setup_dismiss'
+        );
+    }
+
+    public static function maybeDismiss(): void
+    {
+        if (!isset($_GET['farnost_setup_dismiss'])) {
+            return;
+        }
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+        check_admin_referer('farnost_setup_dismiss');
+
+        $settings = get_option(\Farnost\Plugin\Settings\Settings::OPTION_KEY, []);
+        if (!is_array($settings)) {
+            $settings = [];
+        }
+        $settings['setup'] = [
+            'completed'    => true,
+            'completed_at' => current_datetime()->format(DATE_ATOM),
+        ];
+        update_option(\Farnost\Plugin\Settings\Settings::OPTION_KEY, $settings);
+
+        wp_safe_redirect(admin_url('admin.php?page=farnost'));
+        exit;
     }
 
     public static function addHiddenPage(): void
