@@ -19,22 +19,22 @@ Etapy implementácie pre v3. Časové odhady sú orientačné a počítajú s je
 
 **Definícia hotovosti**: vývojár klonuje repo, spustí `composer install`, `npm install`, `ddev start` a vidí lokálny WP s aktívnou témou a aktívnym (prázdnym) pluginom. **Splnené.**
 
-## Etapa 1 — Dátová vrstva
+## Etapa 1 — Dátová vrstva ✅
 
 **Cieľ**: všetky CPT, post meta, term meta a settings existujú a sú spravovateľné cez WP REST. **Bez** custom admin UX, **bez** frontend prezentácie.
 
-- [ ] Registrácia CPT `kostol`, `oznam`, `omsa_vynimka`, `umysel`, `upratovacia_skupina` (`src/PostTypes/`).
-- [ ] Registrácia post meta pre každý CPT (`src/Meta/`), všetky `show_in_rest: true`.
-- [ ] Registrácia post meta na natívne `post`: `farnost_event_when`, `farnost_event_where`.
-- [ ] Registrácia term meta na `category`: `farnost_color`, `farnost_show_in_menu`.
-- [ ] Registrácia settings `farnost_settings` ako WP option + REST endpoint `/wp-json/farnost/v1/settings`.
-- [ ] Aktivačný hook: vytvorenie 3 default kategórií (`Udalosti`, `Zo života farnosti`, `Pozvánky`) s farbami a `show_in_menu = true`.
-- [ ] Vlastná rola `farnost_asistent` s definovanými capabilities (vrátane custom `umysly` caps).
-- [ ] Custom REST endpoint `/wp-json/farnost/v1/schedule?date=Y-m-d&kostol_id=N` (`src/Schedule/Resolver.php` + `src/Rest/ScheduleController.php`).
-- [ ] Jednotkové testy pre `Resolver` (kombinácie rozpisu + výnimiek).
-- [ ] WP-CLI seed skript v `scripts/seed.php` — 1 kostol s rozpisom, 3 oznamy, 2 výnimky, 5 úmyslov, 4 udalosti v rôznych kategóriách.
+- [x] Registrácia CPT `kostol`, `oznam`, `omsa_vynimka`, `umysel`, `upratovacia_skupina` (`src/PostTypes/`).
+- [x] Registrácia post meta pre každý CPT (`src/PostTypes/<Name>::registerMeta`), všetky `show_in_rest: true`.
+- [x] Registrácia post meta na natívne `post`: `farnost_event_when`, `farnost_event_where` (`src/Meta/PostMeta.php`).
+- [x] Registrácia term meta na `category`: `farnost_color`, `farnost_show_in_menu` (`src/Meta/CategoryMeta.php`).
+- [x] Registrácia settings `farnost_settings` ako WP option + REST endpoint `/wp-json/farnost/v1/settings` (`src/Settings/Settings.php`, `src/Rest/SettingsController.php`).
+- [x] Aktivačný hook: vytvorenie 3 default kategórií (`Udalosti`, `Zo života farnosti`, `Pozvánky`) s farbami a `show_in_menu = true` (`src/Activator.php`).
+- [x] Vlastná rola `farnost_asistent` s definovanými capabilities (vrátane custom `umysly` caps).
+- [x] Custom REST endpoint `/wp-json/farnost/v1/schedule?date=Y-m-d&kostol_id=N` (`src/Schedule/Resolver.php` + `src/Schedule/RozpisReader.php` + `src/Rest/ScheduleController.php`).
+- [x] Jednotkové testy pre `Resolver` (`tests/Unit/ScheduleResolverTest.php`) — 9 testov, kombinácie rozpisu + výnimiek, edge cases.
+- [x] WP-CLI seed skript v `scripts/seed.php` — 1 kostol s rozpisom, 3 oznamy, 2 výnimky, 5 úmyslov, 4 udalosti v rôznych kategóriách + 3 upratovacie skupiny.
 
-**Definícia hotovosti**: dáta sa dajú vytvoriť cez REST (`curl`/Postman) a `Resolver` vracia správny rozpis pre dátum vrátane aplikovaných výnimiek.
+**Definícia hotovosti splnená**: dáta sa dajú vytvoriť cez REST (`curl`/Postman) a `Resolver` vracia správny rozpis pre dátum vrátane aplikovaných výnimiek. Overené end-to-end cez `GET /wp-json/farnost/v1/schedule?date=2026-05-18&kostol_id=5` (vracia kombináciu pravidelnej 18:00 + výnimky 14:00 pohrebná).
 
 ## Etapa 2 — Admin UX
 
