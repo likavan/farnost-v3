@@ -8,6 +8,8 @@ use Farnost\Plugin\Admin\CommentsHide;
 use Farnost\Plugin\Admin\EditorAssets;
 use Farnost\Plugin\Admin\Menu;
 use Farnost\Plugin\Admin\PostRelabel;
+use Farnost\Plugin\Admin\SetupNotice;
+use Farnost\Plugin\Admin\WizardPage;
 use Farnost\Plugin\Meta\CategoryMeta;
 use Farnost\Plugin\Meta\PostMeta;
 use Farnost\Plugin\PostTypes\Kostol;
@@ -50,6 +52,8 @@ final class Plugin
             Menu::register();
             PostRelabel::register();
             EditorAssets::register();
+            WizardPage::register();
+            SetupNotice::register();
         }
     }
 

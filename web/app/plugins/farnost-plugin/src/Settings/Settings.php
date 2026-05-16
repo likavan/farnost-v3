@@ -72,6 +72,10 @@ final class Settings
                 'dalsia_skupina' => 0,
             ],
             'citaty'     => [],
+            'setup'      => [
+                'completed' => false,
+                'completed_at' => '',
+            ],
         ];
     }
 
@@ -180,6 +184,13 @@ final class Settings
                             'text'  => ['type' => 'string'],
                             'autor' => ['type' => 'string'],
                         ],
+                    ],
+                ],
+                'setup'       => [
+                    'type'       => 'object',
+                    'properties' => [
+                        'completed'    => ['type' => 'boolean'],
+                        'completed_at' => ['type' => 'string'],
                     ],
                 ],
             ],
