@@ -27,6 +27,19 @@ final class Menu
     {
         add_action('admin_menu', [self::class, 'addMenuPages']);
         add_action('admin_menu', [self::class, 'reorderSubmenu'], 99);
+        add_action('admin_enqueue_scripts', [self::class, 'enqueueAssets']);
+    }
+
+    public static function enqueueAssets(): void
+    {
+        if (!isset($_GET['page'])) {
+            return;
+        }
+        $page = (string) $_GET['page'];
+        if ($page === 'farnost-nastavenia') {
+            // WP media JS pre logo picker v Brandingu.
+            wp_enqueue_media();
+        }
     }
 
     public static function addMenuPages(): void

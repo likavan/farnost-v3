@@ -134,7 +134,10 @@ final class SettingsPage
                     </tr>
                     <tr>
                         <th scope="row"><label for="fp-uh"><?php esc_html_e('Úradné hodiny', 'farnost-plugin'); ?></label></th>
-                        <td><textarea id="fp-uh" name="farnost_settings[kontakt][uradne_hodiny]" rows="3" class="large-text"><?php echo esc_textarea($s['kontakt']['uradne_hodiny']); ?></textarea></td>
+                        <td>
+                            <textarea id="fp-uh" name="farnost_settings[kontakt][uradne_hodiny]" rows="5" class="large-text" placeholder="Pondelok–Piatok: 09:00–11:00&#10;Utorok, Štvrtok: 15:00–17:00&#10;Sobota, Nedeľa: zatvorené"><?php echo esc_textarea($s['kontakt']['uradne_hodiny']); ?></textarea>
+                            <p class="description"><?php esc_html_e('Voľný text — jeden riadok = jeden časový blok alebo deň. Frontend zachová zalomenia riadkov. Stačí napríklad „Po telefonickej dohode."', 'farnost-plugin'); ?></p>
+                        </td>
                     </tr>
                 </table>
 
@@ -173,10 +176,23 @@ final class SettingsPage
                 <h2><?php esc_html_e('Branding', 'farnost-plugin'); ?></h2>
                 <table class="form-table" role="presentation">
                     <tr>
-                        <th scope="row"><label for="fp-logo"><?php esc_html_e('Logo (ID média)', 'farnost-plugin'); ?></label></th>
+                        <th scope="row"><?php esc_html_e('Logo farnosti', 'farnost-plugin'); ?></th>
                         <td>
-                            <input type="number" id="fp-logo" name="farnost_settings[branding][logo_id]" value="<?php echo esc_attr((string) $s['branding']['logo_id']); ?>" class="small-text" min="0">
-                            <p class="description"><?php esc_html_e('ID nahraného obrázku z knižnice médií. Drag-and-drop uploader pridáme v ďalšom kroku.', 'farnost-plugin'); ?></p>
+                            <?php
+                            $logoId = (int) $s['branding']['logo_id'];
+                            $logoUrl = $logoId > 0 ? (string) wp_get_attachment_image_url($logoId, 'medium') : '';
+                            ?>
+                            <div class="fp-media-picker">
+                                <div class="fp-media-preview" style="margin-bottom:8px;">
+                                    <?php if ($logoUrl !== '') : ?>
+                                        <img src="<?php echo esc_url($logoUrl); ?>" alt="" style="max-width:240px;max-height:160px;height:auto;border:1px solid #e5e7eb;border-radius:4px;padding:4px;background:#fff;">
+                                    <?php endif; ?>
+                                </div>
+                                <input type="hidden" class="fp-media-id" name="farnost_settings[branding][logo_id]" value="<?php echo esc_attr((string) $logoId); ?>">
+                                <button type="button" class="button fp-media-pick"><?php esc_html_e('Vybrať z knižnice médií', 'farnost-plugin'); ?></button>
+                                <button type="button" class="button fp-media-remove" style="<?php echo $logoId > 0 ? '' : 'display:none;'; ?>"><?php esc_html_e('Odstrániť', 'farnost-plugin'); ?></button>
+                                <p class="description"><?php esc_html_e('Odporúčaný formát: PNG alebo SVG s priehľadným pozadím, šírka aspoň 480 px.', 'farnost-plugin'); ?></p>
+                            </div>
                         </td>
                     </tr>
                     <tr>
@@ -312,6 +328,42 @@ final class SettingsPage
             }
 
             document.querySelectorAll('.fp-repeater-remove').forEach(bindRemove);
+
+            // Media picker pre logo
+            document.querySelectorAll('.fp-media-pick').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (typeof wp === 'undefined' || !wp.media) {
+                        alert('WP Media JS sa nenačítalo.');
+                        return;
+                    }
+                    var container = btn.closest('.fp-media-picker');
+                    var frame = wp.media({
+                        title: '<?php echo esc_js(__('Vyberte logo farnosti', 'farnost-plugin')); ?>',
+                        multiple: false,
+                        library: { type: 'image' },
+                        button: { text: '<?php echo esc_js(__('Použiť ako logo', 'farnost-plugin')); ?>' },
+                    });
+                    frame.on('select', function () {
+                        var att = frame.state().get('selection').first().toJSON();
+                        var url = att.sizes && att.sizes.medium ? att.sizes.medium.url : att.url;
+                        container.querySelector('.fp-media-id').value = att.id;
+                        var preview = container.querySelector('.fp-media-preview');
+                        preview.innerHTML = '<img src="' + url + '" alt="" style="max-width:240px;max-height:160px;height:auto;border:1px solid #e5e7eb;border-radius:4px;padding:4px;background:#fff;">';
+                        var removeBtn = container.querySelector('.fp-media-remove');
+                        if (removeBtn) removeBtn.style.display = '';
+                    });
+                    frame.open();
+                });
+            });
+
+            document.querySelectorAll('.fp-media-remove').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var container = btn.closest('.fp-media-picker');
+                    container.querySelector('.fp-media-id').value = '0';
+                    container.querySelector('.fp-media-preview').innerHTML = '';
+                    btn.style.display = 'none';
+                });
+            });
         })();
         </script>
         <?php
