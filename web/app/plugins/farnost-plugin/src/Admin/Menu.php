@@ -40,6 +40,30 @@ final class Menu
             // WP media JS pre logo picker.
             wp_enqueue_media();
         }
+        if ($page === self::SLUG) {
+            self::enqueueCalendar();
+        }
+    }
+
+    private static function enqueueCalendar(): void
+    {
+        $assetPath = FARNOST_PLUGIN_DIR . '/build/calendar.asset.php';
+        $jsPath    = FARNOST_PLUGIN_DIR . '/build/calendar.js';
+        if (!is_readable($assetPath) || !is_readable($jsPath)) {
+            return;
+        }
+        $asset = include $assetPath;
+        if (!is_array($asset) || empty($asset['dependencies'])) {
+            return;
+        }
+        wp_enqueue_script(
+            'farnost-calendar',
+            plugins_url('build/calendar.js', FARNOST_PLUGIN_FILE),
+            (array) $asset['dependencies'],
+            (string) ($asset['version'] ?? FARNOST_PLUGIN_VERSION),
+            true
+        );
+        wp_set_script_translations('farnost-calendar', 'farnost-plugin');
     }
 
     public static function addMenuPages(): void
@@ -143,11 +167,12 @@ final class Menu
 
     public static function renderCalendar(): void
     {
-        self::renderPlaceholder(
-            __('Kalendár omší', 'farnost-plugin'),
-            __('Tu pribudne kalendárny pohľad omší a úmyslov (mesačný / týždenný).', 'farnost-plugin'),
-            __('Detaily v doc/07-admin-ux.md → „Kalendárny pohľad — omše a úmysly".', 'farnost-plugin')
-        );
+        ?>
+        <div class="wrap">
+            <h1><?php esc_html_e('Kalendár omší', 'farnost-plugin'); ?></h1>
+            <div id="farnost-calendar-root"></div>
+        </div>
+        <?php
     }
 
     public static function renderMimoriadny(): void

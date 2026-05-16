@@ -16,5 +16,6 @@ module.exports = {
 		'panel-vynimka': './editor/panel-vynimka/index.js',
 		'panel-umysel':  './editor/panel-umysel/index.js',
 		'panel-udalost': './editor/panel-udalost/index.js',
+		'calendar':      './editor/calendar/index.js',
 	},
 };
