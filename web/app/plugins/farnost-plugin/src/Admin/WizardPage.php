@@ -65,6 +65,14 @@ final class WizardPage
         $title = esc_html__('Nastavenie farnosti', 'farnost-plugin');
         $homeUrl = esc_url(admin_url('admin.php?page=farnost'));
 
+        // Vyhoď default emoji styles hook — WP ho registruje pod deprecated názvom
+        // `print_emoji_styles`, čo s WP_DEBUG generuje notice. V našom wizardi
+        // emoji styles nepotrebujeme.
+        remove_action('wp_print_styles', 'print_emoji_styles');
+        remove_action('admin_print_styles', 'print_emoji_styles');
+        remove_action('wp_head', 'print_emoji_detection_script', 7);
+        remove_action('admin_print_scripts', 'print_emoji_detection_script');
+
         // Načítaj WP scripts manuálne — potrebujeme api-fetch s nonce.
         wp_enqueue_script('wp-api-fetch');
         wp_enqueue_script('wp-components');
