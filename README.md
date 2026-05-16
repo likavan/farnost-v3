@@ -54,6 +54,9 @@ ddev wp --path=web/wp core install \
   --admin_email='dev@farnost.online' \
   --skip-email
 
+# Slovenčina ako jazyk WP
+ddev wp --path=web/wp language core install sk_SK --activate
+
 # Aktivuj náš plugin a tému
 ddev wp --path=web/wp plugin activate farnost-plugin
 ddev wp --path=web/wp theme activate farnost-theme
