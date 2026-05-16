@@ -39,8 +39,8 @@ final class Settings
             ],
             'kontakt'    => [
                 'adresa'        => '',
-                'telefon'       => '',
-                'email'         => '',
+                'telefony'      => [], // pole {popis, cislo}
+                'emaily'        => [], // pole {popis, adresa}
                 'web'           => '',
                 'uradne_hodiny' => '',
             ],
@@ -103,8 +103,26 @@ final class Settings
                     'type'       => 'object',
                     'properties' => [
                         'adresa'        => ['type' => 'string'],
-                        'telefon'       => ['type' => 'string'],
-                        'email'         => ['type' => 'string'],
+                        'telefony'      => [
+                            'type'  => 'array',
+                            'items' => [
+                                'type'       => 'object',
+                                'properties' => [
+                                    'popis' => ['type' => 'string'],
+                                    'cislo' => ['type' => 'string'],
+                                ],
+                            ],
+                        ],
+                        'emaily'        => [
+                            'type'  => 'array',
+                            'items' => [
+                                'type'       => 'object',
+                                'properties' => [
+                                    'popis'  => ['type' => 'string'],
+                                    'adresa' => ['type' => 'string'],
+                                ],
+                            ],
+                        ],
                         'web'           => ['type' => 'string'],
                         'uradne_hodiny' => ['type' => 'string'],
                     ],

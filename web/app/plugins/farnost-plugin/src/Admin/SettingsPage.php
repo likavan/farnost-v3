@@ -59,7 +59,7 @@ final class SettingsPage
                         <td><input type="text" id="fp-nazov" name="farnost_settings[identita][nazov]" value="<?php echo esc_attr($s['identita']['nazov']); ?>" class="regular-text" required></td>
                     </tr>
                     <tr>
-                        <th scope="row"><label for="fp-patrocinium"><?php esc_html_e('Patrocínium', 'farnost-plugin'); ?></label></th>
+                        <th scope="row"><label for="fp-patrocinium"><?php esc_html_e('Patrón farnosti', 'farnost-plugin'); ?></label></th>
                         <td><input type="text" id="fp-patrocinium" name="farnost_settings[identita][patrocinium]" value="<?php echo esc_attr($s['identita']['patrocinium']); ?>" class="regular-text"></td>
                     </tr>
                     <tr>
@@ -83,12 +83,50 @@ final class SettingsPage
                         <td><input type="text" id="fp-adresa" name="farnost_settings[kontakt][adresa]" value="<?php echo esc_attr($s['kontakt']['adresa']); ?>" class="regular-text"></td>
                     </tr>
                     <tr>
-                        <th scope="row"><label for="fp-telefon"><?php esc_html_e('Telefón', 'farnost-plugin'); ?></label></th>
-                        <td><input type="text" id="fp-telefon" name="farnost_settings[kontakt][telefon]" value="<?php echo esc_attr($s['kontakt']['telefon']); ?>" class="regular-text"></td>
+                        <th scope="row"><?php esc_html_e('Telefóny', 'farnost-plugin'); ?></th>
+                        <td>
+                            <div class="fp-repeater" data-field="telefony" data-popis-placeholder="<?php esc_attr_e('napr. farár', 'farnost-plugin'); ?>" data-value-placeholder="+421 905 ..." data-value-name="cislo">
+                                <?php
+                                $telefony = is_array($s['kontakt']['telefony'] ?? null) ? $s['kontakt']['telefony'] : [];
+                                if (empty($telefony)) {
+                                    $telefony = [['popis' => '', 'cislo' => '']];
+                                }
+                                foreach ($telefony as $i => $row) :
+                                    $popis = isset($row['popis']) ? (string) $row['popis'] : '';
+                                    $cislo = isset($row['cislo']) ? (string) $row['cislo'] : '';
+                                ?>
+                                    <div class="fp-repeater-row">
+                                        <input type="text" class="regular-text" name="farnost_settings[kontakt][telefony][<?php echo (int) $i; ?>][popis]" value="<?php echo esc_attr($popis); ?>" placeholder="<?php esc_attr_e('napr. farár', 'farnost-plugin'); ?>">
+                                        <input type="text" class="regular-text" name="farnost_settings[kontakt][telefony][<?php echo (int) $i; ?>][cislo]" value="<?php echo esc_attr($cislo); ?>" placeholder="+421 905 ...">
+                                        <button type="button" class="button-link-delete fp-repeater-remove" aria-label="<?php esc_attr_e('Odstrániť', 'farnost-plugin'); ?>">✕</button>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <button type="button" class="button button-secondary fp-repeater-add" data-target="telefony"><?php esc_html_e('+ Pridať telefón', 'farnost-plugin'); ?></button>
+                        </td>
                     </tr>
                     <tr>
-                        <th scope="row"><label for="fp-email"><?php esc_html_e('E-mail', 'farnost-plugin'); ?></label></th>
-                        <td><input type="email" id="fp-email" name="farnost_settings[kontakt][email]" value="<?php echo esc_attr($s['kontakt']['email']); ?>" class="regular-text"></td>
+                        <th scope="row"><?php esc_html_e('E-maily', 'farnost-plugin'); ?></th>
+                        <td>
+                            <div class="fp-repeater" data-field="emaily" data-popis-placeholder="<?php esc_attr_e('napr. farár', 'farnost-plugin'); ?>" data-value-placeholder="meno@farnost.sk" data-value-name="adresa">
+                                <?php
+                                $emaily = is_array($s['kontakt']['emaily'] ?? null) ? $s['kontakt']['emaily'] : [];
+                                if (empty($emaily)) {
+                                    $emaily = [['popis' => '', 'adresa' => '']];
+                                }
+                                foreach ($emaily as $i => $row) :
+                                    $popis = isset($row['popis']) ? (string) $row['popis'] : '';
+                                    $adr   = isset($row['adresa']) ? (string) $row['adresa'] : '';
+                                ?>
+                                    <div class="fp-repeater-row">
+                                        <input type="text" class="regular-text" name="farnost_settings[kontakt][emaily][<?php echo (int) $i; ?>][popis]" value="<?php echo esc_attr($popis); ?>" placeholder="<?php esc_attr_e('napr. farár', 'farnost-plugin'); ?>">
+                                        <input type="email" class="regular-text" name="farnost_settings[kontakt][emaily][<?php echo (int) $i; ?>][adresa]" value="<?php echo esc_attr($adr); ?>" placeholder="meno@farnost.sk">
+                                        <button type="button" class="button-link-delete fp-repeater-remove" aria-label="<?php esc_attr_e('Odstrániť', 'farnost-plugin'); ?>">✕</button>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <button type="button" class="button button-secondary fp-repeater-add" data-target="emaily"><?php esc_html_e('+ Pridať e-mail', 'farnost-plugin'); ?></button>
+                        </td>
                     </tr>
                     <tr>
                         <th scope="row"><label for="fp-web"><?php esc_html_e('Web', 'farnost-plugin'); ?></label></th>
@@ -222,6 +260,60 @@ final class SettingsPage
                 </p>
             </form>
         </div>
+
+        <style>
+            .fp-repeater { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+            .fp-repeater-row { display: flex; gap: 8px; align-items: center; }
+            .fp-repeater-row input[type="text"],
+            .fp-repeater-row input[type="email"] { flex: 1 1 auto; }
+            .fp-repeater-row .fp-repeater-remove { color: #b32d2e; background: none; border: 0; cursor: pointer; font-size: 16px; padding: 4px 6px; }
+            .fp-repeater-row .fp-repeater-remove:hover { color: #fff; background: #b32d2e; border-radius: 4px; }
+        </style>
+
+        <script>
+        (function () {
+            document.querySelectorAll('.fp-repeater-add').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var targetField = btn.getAttribute('data-target');
+                    var container = document.querySelector('.fp-repeater[data-field="' + targetField + '"]');
+                    if (!container) return;
+
+                    var existing = container.querySelectorAll('.fp-repeater-row').length;
+                    var valueName = container.getAttribute('data-value-name') || 'cislo';
+                    var valuePh = container.getAttribute('data-value-placeholder') || '';
+                    var popisPh = container.getAttribute('data-popis-placeholder') || '';
+                    var valueType = (valueName === 'adresa') ? 'email' : 'text';
+
+                    var row = document.createElement('div');
+                    row.className = 'fp-repeater-row';
+                    row.innerHTML =
+                        '<input type="text" class="regular-text" name="farnost_settings[kontakt][' + targetField + '][' + existing + '][popis]" placeholder="' + popisPh + '">' +
+                        '<input type="' + valueType + '" class="regular-text" name="farnost_settings[kontakt][' + targetField + '][' + existing + '][' + valueName + ']" placeholder="' + valuePh + '">' +
+                        '<button type="button" class="button-link-delete fp-repeater-remove" aria-label="Odstrániť">✕</button>';
+
+                    container.appendChild(row);
+                    bindRemove(row.querySelector('.fp-repeater-remove'));
+                });
+            });
+
+            function bindRemove(btn) {
+                btn.addEventListener('click', function () {
+                    var row = btn.closest('.fp-repeater-row');
+                    if (!row) return;
+                    var container = row.parentElement;
+                    row.remove();
+                    // Re-index zostávajúce riadky, aby PHP dostal súvislý array.
+                    container.querySelectorAll('.fp-repeater-row').forEach(function (r, idx) {
+                        r.querySelectorAll('input[name]').forEach(function (input) {
+                            input.name = input.name.replace(/\[\d+\]/, '[' + idx + ']');
+                        });
+                    });
+                });
+            }
+
+            document.querySelectorAll('.fp-repeater-remove').forEach(bindRemove);
+        })();
+        </script>
         <?php
     }
 
@@ -241,8 +333,8 @@ final class SettingsPage
         $out['identita']['rok_zalozenia'] = isset($input['identita']['rok_zalozenia']) ? max(0, (int) $input['identita']['rok_zalozenia']) : 0;
 
         $out['kontakt']['adresa']        = isset($input['kontakt']['adresa']) ? sanitize_text_field((string) $input['kontakt']['adresa']) : '';
-        $out['kontakt']['telefon']       = isset($input['kontakt']['telefon']) ? sanitize_text_field((string) $input['kontakt']['telefon']) : '';
-        $out['kontakt']['email']         = isset($input['kontakt']['email']) ? sanitize_email((string) $input['kontakt']['email']) : '';
+        $out['kontakt']['telefony']      = self::sanitizeContactList($input['kontakt']['telefony'] ?? [], 'cislo', false);
+        $out['kontakt']['emaily']        = self::sanitizeContactList($input['kontakt']['emaily'] ?? [], 'adresa', true);
         $out['kontakt']['web']           = isset($input['kontakt']['web']) ? esc_url_raw((string) $input['kontakt']['web']) : '';
         $out['kontakt']['uradne_hodiny'] = isset($input['kontakt']['uradne_hodiny']) ? sanitize_textarea_field((string) $input['kontakt']['uradne_hodiny']) : '';
 
@@ -289,6 +381,36 @@ final class SettingsPage
             'saturday'  => __('Sobota', 'farnost-plugin'),
             'sunday'    => __('Nedeľa', 'farnost-plugin'),
         ];
+    }
+
+    /**
+     * @param mixed  $input         Surová hodnota z $_POST.
+     * @param string $valueKey      Názov poľa s hodnotou (cislo / adresa).
+     * @param bool   $isEmail       Či sanitizovať hodnotu ako e-mail.
+     * @return array<int, array{popis: string, cislo?: string, adresa?: string}>
+     */
+    private static function sanitizeContactList(mixed $input, string $valueKey, bool $isEmail): array
+    {
+        if (!is_array($input)) {
+            return [];
+        }
+        $out = [];
+        foreach ($input as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $popis = isset($row['popis']) ? sanitize_text_field((string) $row['popis']) : '';
+            $val   = isset($row[$valueKey]) ? (string) $row[$valueKey] : '';
+            $val   = $isEmail ? sanitize_email($val) : sanitize_text_field($val);
+            if ($val === '') {
+                continue; // prázdne riadky preskočiť
+            }
+            $out[] = [
+                'popis'    => $popis,
+                $valueKey  => $val,
+            ];
+        }
+        return $out;
     }
 
     private static function sanitizeColor(string $value): string

@@ -247,8 +247,14 @@ Plugin registruje **jednu WP option** `farnost_settings` (JSON) cez `register_se
   },
   "kontakt": {
     "adresa": "Hlavná 1, 917 01 Trnava",
-    "telefon": "+421 33 ...",
-    "email": "farnost@example.sk",
+    "telefony": [
+      { "popis": "farár", "cislo": "+421 905 123 456" },
+      { "popis": "kancelária", "cislo": "+421 33 1234 5678" }
+    ],
+    "emaily": [
+      { "popis": "info", "adresa": "farnost@example.sk" },
+      { "popis": "farár", "adresa": "farar@example.sk" }
+    ],
     "web": "https://www.example.sk",
     "uradne_hodiny": "Po–Pi 09:00–11:00, 15:00–17:00"
   },
