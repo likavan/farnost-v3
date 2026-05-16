@@ -37,15 +37,44 @@ final class AutoTemplate
         if ($post->post_type !== Oznam::POST_TYPE) {
             return;
         }
-        // Iba na čerstvé drafty / auto-drafty bez existujúcich meta hodnôt.
         $existingOd = get_post_meta($postId, 'farnost_tyzden_od', true);
-        if (!empty($existingOd)) {
+
+        // 1) Týždeň meta — vypočítaj, ak ešte nie sú.
+        if (empty($existingOd)) {
+            [$od, $do] = self::computeNextWeek();
+            update_post_meta($postId, 'farnost_tyzden_od', $od);
+            update_post_meta($postId, 'farnost_tyzden_do', $do);
+        } else {
+            $od = (string) $existingOd;
+            $do = (string) get_post_meta($postId, 'farnost_tyzden_do', true);
+        }
+
+        // 2) Pred-vyplnený obsah — len ak je content prázdny.
+        $current = get_post_field('post_content', $postId);
+        if (is_string($current) && trim($current) !== '') {
             return;
         }
 
-        [$od, $do] = self::computeNextWeek();
-        update_post_meta($postId, 'farnost_tyzden_od', $od);
-        update_post_meta($postId, 'farnost_tyzden_do', $do);
+        $dni = SnapshotBuilder::buildForWeek($od, $do);
+        $attrs = [
+            'tyzdenOd' => $od,
+            'tyzdenDo' => $do,
+            'dni'      => $dni,
+        ];
+        $json = wp_json_encode($attrs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        if ($json === false) {
+            return;
+        }
+
+        $content = sprintf('<!-- wp:farnost/rozpis-snapshot %s /-->', $json);
+        $content .= "\n\n";
+        $content .= "<!-- wp:paragraph -->\n<p></p>\n<!-- /wp:paragraph -->";
+
+        // wp_update_post znova spustí wp_insert_post hook s $update=true → naša guard hore preskočí.
+        wp_update_post([
+            'ID'           => $postId,
+            'post_content' => $content,
+        ]);
     }
 
     /**

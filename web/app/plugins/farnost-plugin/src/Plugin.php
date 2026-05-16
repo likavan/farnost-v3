@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Farnost\Plugin;
 
 use Farnost\Plugin\Admin\BlockCategory;
+use Farnost\Plugin\Blocks\RozpisSnapshot;
 use Farnost\Plugin\Admin\CommentsHide;
 use Farnost\Plugin\Admin\EditorAssets;
 use Farnost\Plugin\Admin\Menu;
@@ -50,8 +51,9 @@ final class Plugin
         // Komentáre — odstavené naprieč admin aj frontend (hooks musia byť globálne).
         CommentsHide::register();
 
-        // Gutenberg block kategória + oznam workflow.
+        // Gutenberg block kategória + bloky + oznam workflow.
         BlockCategory::register();
+        RozpisSnapshot::register();
         AutoTemplate::register();
 
         if (is_admin()) {

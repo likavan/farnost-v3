@@ -113,50 +113,9 @@ function Edit( { attributes } ) {
 	);
 }
 
-function Save( { attributes } ) {
-	const blockProps = useBlockProps.save( { className: 'farnost-rozpis-snapshot' } );
-	const dni = Array.isArray( attributes.dni ) ? attributes.dni : [];
-
-	return (
-		<div { ...blockProps }>
-			{ dni.map( ( day, idx ) => {
-				const label = DAY_LABELS[ day.dayKey ] || day.dayKey;
-				const omse = Array.isArray( day.omse ) ? day.omse : [];
-				return (
-					<div key={ idx } className="farnost-rozpis-snapshot__card">
-						<div className="farnost-rozpis-snapshot__header">
-							<strong>{ label }</strong>
-							{ day.date && (
-								<span className="farnost-rozpis-snapshot__date">{ day.date }</span>
-							) }
-							{ day.sviatok && (
-								<div className="farnost-rozpis-snapshot__sviatok">{ day.sviatok }</div>
-							) }
-						</div>
-						{ omse.length === 0 ? (
-							<div className="farnost-rozpis-snapshot__empty">
-								{ __( 'Sv. omša nie je', 'farnost-plugin' ) }
-							</div>
-						) : (
-							<ul className="farnost-rozpis-snapshot__list">
-								{ omse.map( ( m, i ) => (
-									<li key={ i }>
-										<span className="farnost-rozpis-snapshot__time">{ m.time }</span>
-										{ m.oznacenie && (
-											<span className="farnost-rozpis-snapshot__oznacenie"> · { m.oznacenie }</span>
-										) }
-										{ m.umysel && (
-											<div className="farnost-rozpis-snapshot__umysel">{ m.umysel }</div>
-										) }
-									</li>
-								) ) }
-							</ul>
-						) }
-					</div>
-				);
-			} ) }
-		</div>
-	);
+// Dynamic block — frontend render robí PHP (src/Blocks/RozpisSnapshot.php).
+function Save() {
+	return null;
 }
 
 registerBlockType( 'farnost/rozpis-snapshot', {
