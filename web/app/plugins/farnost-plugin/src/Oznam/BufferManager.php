@@ -37,6 +37,25 @@ final class BufferManager
         add_action(self::CRON_HOOK, [self::class, 'refill']);
         add_action('transition_post_status', [self::class, 'onTransition'], 10, 3);
         add_action('update_option_' . Settings::OPTION_KEY, [self::class, 'refill']);
+        // Keď farár / asistent zmaže alebo zahodí oznam z buffera, doplníme medzeru hneď —
+        // bez tohto by sa diera prejavila až pri ďalšom dennom cron tiku.
+        // `deleted_post` (po reálnom mazaní), `trashed_post` (po presune do koša).
+        // `before_delete_post` by bol predčasný — post je ešte v DB, refill by ho videl a preskočil.
+        add_action('deleted_post', [self::class, 'onPostGone'], 10, 2);
+        add_action('trashed_post', [self::class, 'onPostGone']);
+    }
+
+    public static function onPostGone(int $postId, ?\WP_Post $post = null): void
+    {
+        // `deleted_post` poskytne aj $post (post object kým bol mazaný), `trashed_post` len $postId.
+        // Pre trashed musíme `get_post`, aby sme zistili post_type.
+        if ($post === null) {
+            $post = get_post($postId);
+        }
+        if (!$post || $post->post_type !== Oznam::POST_TYPE) {
+            return;
+        }
+        self::refill();
     }
 
     public static function scheduleCron(): void
@@ -130,6 +149,11 @@ final class BufferManager
         ];
         $json = wp_json_encode($attrs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         if ($json === false) {
+            error_log(sprintf(
+                '[farnost-plugin] BufferManager: JSON encode rozpis-snapshot zlyhal pre týždeň %s–%s.',
+                $monIso,
+                $sunIso
+            ));
             return 0;
         }
 
@@ -144,7 +168,7 @@ final class BufferManager
         // publikujeme rovno (post_status = publish), inak naplánujeme (future).
         $status = $publishLocal <= $nowLocal ? 'publish' : 'future';
 
-        $postId = wp_insert_post([
+        $result = wp_insert_post([
             'post_type'     => Oznam::POST_TYPE,
             'post_status'   => $status,
             'post_title'    => sprintf('Oznam %s — %s', $monIso, $sunIso),
@@ -157,7 +181,17 @@ final class BufferManager
             ],
         ], true);
 
-        return is_int($postId) ? $postId : 0;
+        if (is_wp_error($result)) {
+            error_log(sprintf(
+                '[farnost-plugin] BufferManager: wp_insert_post zlyhal pre týždeň %s–%s — %s',
+                $monIso,
+                $sunIso,
+                $result->get_error_message()
+            ));
+            return 0;
+        }
+
+        return (int) $result;
     }
 
     /**

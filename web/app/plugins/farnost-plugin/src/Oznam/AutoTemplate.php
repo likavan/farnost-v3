@@ -6,6 +6,7 @@ namespace Farnost\Plugin\Oznam;
 
 use DateTimeImmutable;
 use Farnost\Plugin\PostTypes\Oznam;
+use WP_Post;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -30,7 +31,7 @@ final class AutoTemplate
         add_action('wp_insert_post', [self::class, 'onInsert'], 10, 3);
     }
 
-    public static function onInsert(int $postId, \WP_Post $post, bool $update): void
+    public static function onInsert(int $postId, WP_Post $post, bool $update): void
     {
         if ($update) {
             return;
@@ -65,6 +66,12 @@ final class AutoTemplate
         ];
         $json = wp_json_encode($attrs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         if ($json === false) {
+            error_log(sprintf(
+                '[farnost-plugin] AutoTemplate: JSON encode rozpis-snapshot zlyhal pre oznam #%d (týždeň %s–%s).',
+                $postId,
+                $od,
+                $do
+            ));
             return;
         }
 
@@ -82,14 +89,10 @@ final class AutoTemplate
     /**
      * Vráti dvojicu [Monday, Sunday] **nasledujúceho** týždňa po dnešnom dni.
      *
-     * **Žiadne auto-skipovanie obsadených týždňov** — vždy vraciame ten istý,
-     * najbližší týždeň. Ak je už obsadený existujúcim oznamom, riešime to
-     * presmerovaním v `maybeRedirectToExisting` (farár ide editovať existujúci,
-     * neprídava nový).
-     *
-     * Dôvod: snapshot model. Ak by sme vytvárali oznamy do budúcnosti,
-     * neskoršie pridané úmysly / výnimky by sa do snapshotu nepremietli.
-     * Farár tvorí jeden oznam pre jeden konkrétny nadchádzajúci týždeň.
+     * Pri normálnom toku oznamy vznikajú cez `BufferManager`, ktorý si týždne
+     * určuje sám (cez `nthWeekMonday`). Táto funkcia je fallback pre prípady,
+     * keď oznam vznikne mimo buffer-a (REST / WP-CLI / iný plugin). „Pridať nový"
+     * v adminovi je úplne zablokované cez `Admin\HideOznamAddNew`.
      *
      * @return array{0: string, 1: string}  Mon a Sun ako 'Y-m-d'
      */
