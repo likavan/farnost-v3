@@ -8,12 +8,121 @@
  * Drag-and-drop je natívne HTML5 (draggable + dragover/drop) — bez extra dep.
  */
 
-import { createRoot, useEffect, useMemo, useState } from '@wordpress/element';
+import { createRoot, useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 import { Button, TextControl, Spinner } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 
-const REST_LIST = '/wp/v2/upratovacie-skupiny?per_page=100&orderby=menu_order&order=asc&status=publish&_fields=id,title,menu_order,meta';
+/**
+ * Inline click-to-edit pole. Plain text v display móde, klik / focus → input
+ * (alebo textarea pri multiline). Enter / blur commit, Escape revert.
+ * Stop drag-and-drop kým je v edit móde, aby sa pri kliknutí nezačal drag riadku.
+ */
+function InlineEdit( { value, onCommit, placeholder, multiline = false, style } ) {
+	const [ editing, setEditing ] = useState( false );
+	const [ draft, setDraft ] = useState( value );
+	const inputRef = useRef( null );
+
+	useEffect( () => {
+		if ( ! editing ) {
+			setDraft( value );
+		}
+	}, [ value, editing ] );
+
+	useEffect( () => {
+		if ( editing && inputRef.current ) {
+			inputRef.current.focus();
+			inputRef.current.select?.();
+		}
+	}, [ editing ] );
+
+	const commit = () => {
+		setEditing( false );
+		if ( draft !== value ) {
+			onCommit( draft );
+		}
+	};
+
+	const cancel = () => {
+		setDraft( value );
+		setEditing( false );
+	};
+
+	if ( editing ) {
+		const inputStyle = {
+			width: '100%',
+			padding: '4px 8px',
+			border: '1px solid #1e40af',
+			borderRadius: 3,
+			background: '#fff',
+			font: 'inherit',
+			outline: 'none',
+			boxSizing: 'border-box',
+			...style,
+		};
+		if ( multiline ) {
+			return (
+				<textarea
+					ref={ inputRef }
+					value={ draft }
+					rows={ 2 }
+					onChange={ ( e ) => setDraft( e.target.value ) }
+					onBlur={ commit }
+					onKeyDown={ ( e ) => {
+						if ( e.key === 'Escape' ) {
+							cancel();
+						}
+					} }
+					onClick={ ( e ) => e.stopPropagation() }
+					style={ inputStyle }
+				/>
+			);
+		}
+		return (
+			<input
+				ref={ inputRef }
+				type="text"
+				value={ draft }
+				onChange={ ( e ) => setDraft( e.target.value ) }
+				onBlur={ commit }
+				onKeyDown={ ( e ) => {
+					if ( e.key === 'Enter' ) {
+						commit();
+					} else if ( e.key === 'Escape' ) {
+						cancel();
+					}
+				} }
+				onClick={ ( e ) => e.stopPropagation() }
+				style={ inputStyle }
+			/>
+		);
+	}
+
+	const isEmpty = value === '' || value == null;
+	return (
+		<button
+			type="button"
+			onClick={ ( e ) => {
+				e.stopPropagation();
+				setEditing( true );
+			} }
+			onFocus={ () => setEditing( true ) }
+			onDragStart={ ( e ) => e.preventDefault() }
+			className="farnost-uprat-inline"
+			style={ {
+				...style,
+				fontStyle: isEmpty ? 'italic' : 'normal',
+				color: isEmpty ? '#9ca3af' : 'inherit',
+			} }
+		>
+			{ isEmpty ? placeholder : value }
+		</button>
+	);
+}
+
+// context=edit vráti aj title.raw (bez HTML entít), ktoré chceme na inline edit.
+// Funguje, lebo admin obrazovka má capability edit_posts.
+const REST_LIST = '/wp/v2/upratovacie-skupiny?context=edit&per_page=100&orderby=menu_order&order=asc&status=publish&_fields=id,title,menu_order,meta';
 const REST_BASE = '/wp/v2/upratovacie-skupiny';
 const REST_SETTINGS = '/farnost/v1/settings';
 const REST_POINTER = '/farnost/v1/rotation-pointer';
@@ -167,14 +276,51 @@ function App() {
 		}
 	};
 
-	const editUrl = ( id ) => `${ window.location.origin }/wp/wp-admin/post.php?post=${ id }&action=edit`;
+	// Optimistický update + REST. Pri zlyhaní refetchneme, aby sa lokálny stav
+	// zarovnal s realitou. Validácia (sanitize_text_field) ide cez WP REST sám.
+	const handleUpdateTitle = async ( id, newTitle ) => {
+		setItems( ( prev ) =>
+			prev.map( ( it ) =>
+				it.id === id ? { ...it, title: { ...it.title, raw: newTitle, rendered: newTitle } } : it
+			)
+		);
+		try {
+			await apiFetch( {
+				path: `${ REST_BASE }/${ id }`,
+				method: 'POST',
+				data: { title: newTitle },
+			} );
+		} catch ( e ) {
+			setError( e.message || String( e ) );
+			void fetchAll();
+		}
+	};
+
+	const handleUpdateMeta = async ( id, key, value ) => {
+		setItems( ( prev ) =>
+			prev.map( ( it ) =>
+				it.id === id ? { ...it, meta: { ...( it.meta || {} ), [ key ]: value } } : it
+			)
+		);
+		try {
+			await apiFetch( {
+				path: `${ REST_BASE }/${ id }`,
+				method: 'POST',
+				data: { meta: { [ key ]: value } },
+			} );
+		} catch ( e ) {
+			setError( e.message || String( e ) );
+			void fetchAll();
+		}
+	};
 
 	const itemsRendered = useMemo( () => {
 		return items.map( ( item, idx ) => {
 			const isCurrent = Number( item.id ) === Number( pointer );
 			const dragging = idx === dragIdx;
 			const dragOver = idx === dragOverIdx && idx !== dragIdx;
-			const kontakt = item.meta?.farnost_skupina_kontakt || '';
+			const title    = item.title?.raw ?? item.title?.rendered ?? '';
+			const kontakt  = item.meta?.farnost_skupina_kontakt || '';
 			const clenovia = item.meta?.farnost_skupina_clenovia || '';
 
 			return (
@@ -212,26 +358,39 @@ function App() {
 					<div className="farnost-uprat-handle" aria-hidden="true">☰</div>
 					<div className="farnost-uprat-body">
 						<div className="farnost-uprat-title-row">
-							<strong>{ item.title?.rendered || item.title?.raw || `#${ item.id }` }</strong>
+							<InlineEdit
+								value={ title }
+								onCommit={ ( v ) => handleUpdateTitle( item.id, v.trim() === '' ? title : v ) }
+								placeholder={ __( 'Názov skupiny', 'farnost-plugin' ) }
+								style={ { fontWeight: 600, fontSize: 14, flex: 1 } }
+							/>
 							{ isCurrent && (
 								<span className="farnost-uprat-badge">
 									• { __( 'Aktuálne na rade', 'farnost-plugin' ) }
 								</span>
 							) }
 						</div>
-						{ clenovia && (
-							<div className="farnost-uprat-meta">{ clenovia }</div>
-						) }
-						{ kontakt && (
-							<div className="farnost-uprat-meta">
-								{ sprintf( __( 'Vedie: %s', 'farnost-plugin' ), kontakt ) }
-							</div>
-						) }
+						<div className="farnost-uprat-meta-row">
+							<span className="farnost-uprat-meta-label">{ __( 'Členovia:', 'farnost-plugin' ) }</span>
+							<InlineEdit
+								value={ clenovia }
+								onCommit={ ( v ) => handleUpdateMeta( item.id, 'farnost_skupina_clenovia', v ) }
+								placeholder={ __( 'napr. Mária N., Anna K., Helena P.', 'farnost-plugin' ) }
+								multiline
+								style={ { flex: 1, fontSize: 12 } }
+							/>
+						</div>
+						<div className="farnost-uprat-meta-row">
+							<span className="farnost-uprat-meta-label">{ __( 'Vedie:', 'farnost-plugin' ) }</span>
+							<InlineEdit
+								value={ kontakt }
+								onCommit={ ( v ) => handleUpdateMeta( item.id, 'farnost_skupina_kontakt', v ) }
+								placeholder={ __( 'napr. Anna K., 0905 123 456', 'farnost-plugin' ) }
+								style={ { flex: 1, fontSize: 12 } }
+							/>
+						</div>
 					</div>
 					<div className="farnost-uprat-actions">
-						<a className="button" href={ editUrl( item.id ) }>
-							{ __( 'Upraviť', 'farnost-plugin' ) }
-						</a>
 						<Button
 							variant="tertiary"
 							isDestructive
@@ -294,8 +453,21 @@ function App() {
 				.farnost-uprat-badge {
 					font-size: 12px; color: #1d4ed8; font-weight: 600;
 				}
-				.farnost-uprat-meta {
-					margin-top: 3px; font-size: 12px; color: #6b7280;
+				.farnost-uprat-meta-row {
+					display: flex; gap: 6px; align-items: flex-start; margin-top: 3px;
+				}
+				.farnost-uprat-meta-label {
+					font-size: 12px; color: #6b7280; flex-shrink: 0;
+					padding: 4px 0; min-width: 64px;
+				}
+				.farnost-uprat-inline {
+					display: block; text-align: left; width: 100%;
+					background: transparent; border: 1px solid transparent;
+					padding: 4px 8px; border-radius: 3px; cursor: text;
+					font: inherit; line-height: 1.4; min-height: 28px;
+				}
+				.farnost-uprat-inline:hover {
+					background: #f3f4f6; border-color: #e5e7eb;
 				}
 				.farnost-uprat-actions {
 					display: flex; flex-direction: column; gap: 4px; align-items: flex-end;

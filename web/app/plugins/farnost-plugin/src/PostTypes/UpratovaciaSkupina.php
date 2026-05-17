@@ -25,7 +25,11 @@ final class UpratovaciaSkupina
             'public'       => false,
             'show_ui'      => true,
             'has_archive'  => false,
-            'supports'     => ['title', 'page-attributes', 'custom-fields'],
+            // Bez `custom-fields` — Gutenberg „Custom Fields" panel je vypnutý, aby
+            // farár nemohol ručne pridať ľubovoľnú meta. Editácia ide cez React UI
+            // v Farnosť → Upratovacie skupiny, kde sú dve vopred pripravené polia
+            // (farnost_skupina_kontakt, farnost_skupina_clenovia).
+            'supports'     => ['title', 'page-attributes'],
             'show_in_rest' => true,
             'rest_base'    => 'upratovacie-skupiny',
             // Vlastná admin obrazovka (`Menu::SLUG . '-upratovacie'`) supluje CPT listing.
