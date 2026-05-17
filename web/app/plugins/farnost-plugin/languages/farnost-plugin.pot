@@ -1,0 +1,1460 @@
+# Copyright (C) 2026 farnost.online
+# This file is distributed under the GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Farnosť Online 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/farnost-plugin\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-05-17T14:44:31+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: farnost-plugin\n"
+
+#. Plugin Name of the plugin
+#: farnost-plugin.php
+msgid "Farnosť Online"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: farnost-plugin.php
+msgid "https://farnost.online"
+msgstr ""
+
+#. Description of the plugin
+#: farnost-plugin.php
+msgid "Farská funkcionalita pre slovenské farnosti — CPT, logika rozpisu omší, settings, Gutenberg bloky."
+msgstr ""
+
+#. Author of the plugin
+#: farnost-plugin.php
+msgid "farnost.online"
+msgstr ""
+
+#: src/Activator.php:46
+msgid "Farský asistent"
+msgstr ""
+
+#: src/Admin/BlockCategory.php:34
+#: src/Admin/Menu.php:76
+#: src/Admin/Menu.php:77
+msgid "Farnosť"
+msgstr ""
+
+#: src/Admin/CategoryAdmin.php:69
+#: src/Admin/CategoryAdmin.php:97
+msgid "Farba kategórie"
+msgstr ""
+
+#: src/Admin/CategoryAdmin.php:76
+#: src/Admin/CategoryAdmin.php:105
+msgid "Použije sa na badge kategórie vo feed-e na frontende."
+msgstr ""
+
+#: src/Admin/CategoryAdmin.php:81
+#: src/Admin/CategoryAdmin.php:116
+msgid "Zobraziť v menu webu"
+msgstr ""
+
+#: src/Admin/CategoryAdmin.php:83
+#: src/Admin/CategoryAdmin.php:118
+msgid "Ak je odškrtnuté, kategória sa nezobrazí v hlavnom menu (ale obsah ostáva prístupný cez archív)."
+msgstr ""
+
+#: src/Admin/CategoryAdmin.php:109
+msgid "Menu webu"
+msgstr ""
+
+#: src/Admin/CategoryAdmin.php:150
+msgid "Farba"
+msgstr ""
+
+#: src/Admin/CategoryAdmin.php:151
+msgid "V menu"
+msgstr ""
+
+#: src/Admin/CategoryAdmin.php:185
+msgid "Áno"
+msgstr ""
+
+#: src/Admin/CategoryAdmin.php:186
+msgid "Nie"
+msgstr ""
+
+#: src/Admin/Menu.php:88
+#: src/Admin/Menu.php:89
+#: src/Admin/Menu.php:185
+msgid "Kalendár omší"
+msgstr ""
+
+#: src/Admin/Menu.php:98
+#: src/Admin/Menu.php:99
+#: src/Admin/MimoriadnyOznamPage.php:50
+msgid "Mimoriadny oznam"
+msgstr ""
+
+#: src/Admin/Menu.php:108
+#: src/Admin/Menu.php:109
+#: src/Admin/SettingsPage.php:249
+#: src/Admin/UpratovacieSkupinyPage.php:36
+#: src/PostTypes/UpratovaciaSkupina.php:19
+#: src/PostTypes/UpratovaciaSkupina.php:23
+msgid "Upratovacie skupiny"
+msgstr ""
+
+#: src/Admin/Menu.php:118
+#: src/Admin/Menu.php:119
+#: src/Admin/NavodPage.php:291
+#: src/Admin/NavodPage.php:297
+msgid "Nastavenia"
+msgstr ""
+
+#: src/Admin/Menu.php:128
+#: src/Admin/Menu.php:129
+#: src/Admin/Menu.php:209
+#: src/Admin/NavodPage.php:40
+msgid "Návod"
+msgstr ""
+
+#: src/Admin/Menu.php:210
+msgid "Tu pribudne onboarding návod — knowledge base s článkami a kontextovou pomocou."
+msgstr ""
+
+#: src/Admin/Menu.php:211
+msgid "Detaily v doc/07-admin-ux.md → „Pomoc a dokumentácia\"."
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:26
+#: src/Admin/NavodPage.php:26
+#: src/Admin/SettingsPage.php:27
+#: src/Admin/UpratovacieSkupinyPage.php:32
+msgid "Nedostatočné oprávnenia."
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:54
+msgid "Mimoriadny oznam bol publikovaný."
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:59
+msgid "Mimoriadny oznam bol zrušený."
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:65
+msgid "Práve publikované:"
+msgstr ""
+
+#. translators: %s = local date/time when banner expires
+#: src/Admin/MimoriadnyOznamPage.php:74
+#, php-format
+msgid "Vyprší: %s"
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:81
+msgid "Bez expirácie — banner žije, kým ho ručne nezrušíte."
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:90
+msgid "Obsah"
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:92
+msgid "Krátky text s formátovaním (tučné, kurzíva, odkaz, zoznam). Žiadne obrázky."
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:112
+msgid "Voliteľná expirácia"
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:115
+msgid "Skryť po dátume"
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:119
+msgid "Ak je nastavená, banner sa po tomto čase automaticky skryje. Ak nie je, žije, kým ho ručne nezrušíte."
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:129
+msgid "Aktualizovať banner"
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:130
+msgid "Publikovať banner"
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:135
+msgid "Naozaj zrušiť aktuálny banner?"
+msgstr ""
+
+#: src/Admin/MimoriadnyOznamPage.php:136
+msgid "Zrušiť banner"
+msgstr ""
+
+#: src/Admin/NavodPage.php:42
+msgid "Stručná príručka k farskému webu. Nájdete tu prvé kroky po inštalácii, návody na bežné situácie (pohreb, mimoriadny oznam, upratovanie) a odpovede na časté otázky."
+msgstr ""
+
+#: src/Admin/NavodPage.php:94
+msgid "Prvé kroky"
+msgstr ""
+
+#. translators: %1$d = done count, %2$d = total count
+#: src/Admin/NavodPage.php:102
+#, php-format
+msgid "Hotových: %1$d z %2$d"
+msgstr ""
+
+#: src/Admin/NavodPage.php:117
+msgid "Otvoriť"
+msgstr ""
+
+#: src/Admin/NavodPage.php:127
+msgid "Týždenný rytmus farára"
+msgstr ""
+
+#: src/Admin/NavodPage.php:129
+msgid "V Kalendári omší pridáte úmysly a prípadné pohreby / sobáše pre nasledujúci týždeň."
+msgstr ""
+
+#: src/Admin/NavodPage.php:130
+msgid "Otvoríte rozpracovaný oznam — rozpis omší + úmysly sú už predvyplnené, dopíšete bežné oznamy."
+msgstr ""
+
+#: src/Admin/NavodPage.php:131
+msgid "Oznam sa publikuje sám podľa nastaveného času (defaultne nedeľa 08:00)."
+msgstr ""
+
+#: src/Admin/NavodPage.php:132
+msgid "Pointer upratovania sa posunie sám na ďalšiu skupinu."
+msgstr ""
+
+#: src/Admin/NavodPage.php:137
+msgid "Krízový moment"
+msgstr ""
+
+#: src/Admin/NavodPage.php:138
+msgid "Potrebujete oznámiť mimoriadnu situáciu (úmrtie, zmena času omše, výpadok)?"
+msgstr ""
+
+#: src/Admin/NavodPage.php:141
+msgid "Mimoriadny oznam →"
+msgstr ""
+
+#: src/Admin/NavodPage.php:145
+msgid "Banner sa zobrazí navrchu na celom webe. Voliteľne sa skryje po nastavenom dátume."
+msgstr ""
+
+#: src/Admin/NavodPage.php:151
+msgid "Bežné situácie — krok za krokom"
+msgstr ""
+
+#: src/Admin/NavodPage.php:154
+msgid "Ako napísať týždenný oznam"
+msgstr ""
+
+#: src/Admin/NavodPage.php:156
+msgid "V menu Farnosť → Oznamy. Otvorte rozpracovaný oznam pre nasledujúci týždeň (systém ho pripravuje dopredu sám)."
+msgstr ""
+
+#: src/Admin/NavodPage.php:157
+msgid "Karty s omšami sú už predvyplnené z rozpisu a úmyslov. Ak treba korekciu, kliknite priamo do bunky."
+msgstr ""
+
+#: src/Admin/NavodPage.php:158
+msgid "Pod kartami je voľný blok „Bežné oznamy\" — sem píšete pohreby, zbierky, akcie, ďakovania."
+msgstr ""
+
+#: src/Admin/NavodPage.php:159
+msgid "Riadok „Tento týždeň upratuje\" sa vkladá automaticky podľa aktuálnej skupiny."
+msgstr ""
+
+#: src/Admin/NavodPage.php:160
+msgid "Stačí uložiť ako Draft — publikuje sa sám v nastavený deň a čas. Nemusíte byť pri počítači."
+msgstr ""
+
+#: src/Admin/NavodPage.php:165
+msgid "Ako pridať pohreb (alebo sobáš, púť…)"
+msgstr ""
+
+#: src/Admin/NavodPage.php:167
+msgid "Otvorte Kalendár omší (Farnosť → Kalendár omší)."
+msgstr ""
+
+#: src/Admin/NavodPage.php:168
+msgid "V príslušnom dni kliknite na „+\" tlačidlo pod existujúcimi omšami."
+msgstr ""
+
+#: src/Admin/NavodPage.php:169
+msgid "Zadajte čas, kostol, označenie (napr. „pohrebná\") a voliteľne úmysel. Uložte."
+msgstr ""
+
+#: src/Admin/NavodPage.php:170
+msgid "Pohreb sa automaticky objaví v najbližšom rozpracovanom ozname pre daný týždeň."
+msgstr ""
+
+#: src/Admin/NavodPage.php:173
+msgid "Toto je „výnimka\" v rozpise — pridaná omša nad rámec pravidelnej. Ak naopak chcete pravidelnú omšu na daný deň zrušiť, použite režim „bez omše\" v kalendári."
+msgstr ""
+
+#: src/Admin/NavodPage.php:178
+msgid "Ako spravovať úmysly omší"
+msgstr ""
+
+#: src/Admin/NavodPage.php:180
+msgid "Kalendár omší — kliknite priamo na čas omše v danom dni."
+msgstr ""
+
+#: src/Admin/NavodPage.php:181
+msgid "V dialógu napíšte úmysel (napr. „† Mária Nováková\" alebo „Za zdravie rodiny\"). Uložte."
+msgstr ""
+
+#: src/Admin/NavodPage.php:182
+msgid "Ak chcete úmysel skryť na verejnom webe (zostáva len v internej evidencii), zapnite prepínač „Anonymný\"."
+msgstr ""
+
+#: src/Admin/NavodPage.php:183
+msgid "Úmysly sa potom automaticky vložia do rozpracovaného oznamu pre daný týždeň."
+msgstr ""
+
+#: src/Admin/NavodPage.php:188
+msgid "Ako spravovať upratovacie skupiny"
+msgstr ""
+
+#: src/Admin/NavodPage.php:190
+msgid "Farnosť → Upratovacie skupiny. Pridajte skupinu zadaním názvu a kliknutím Pridať."
+msgstr ""
+
+#: src/Admin/NavodPage.php:191
+msgid "Pretiahnutím (☰) zmeníte poradie rotácie. Indikátor „• Aktuálne na rade\" označuje skupinu, ktorú systém vloží do ďalšieho oznamu."
+msgstr ""
+
+#: src/Admin/NavodPage.php:192
+msgid "Po publikácii oznamu pointer skočí sám na ďalšiu skupinu (modulo počet skupín)."
+msgstr ""
+
+#: src/Admin/NavodPage.php:193
+msgid "Po výnimočných obdobiach (Vianoce, kombinované upratovania) kliknite „Nastaviť ako ďalšiu na rade\" na tej skupine, ktorá má reálne nasledovať."
+msgstr ""
+
+#: src/Admin/NavodPage.php:198
+msgid "Ako publikovať mimoriadny oznam (banner)"
+msgstr ""
+
+#: src/Admin/NavodPage.php:200
+msgid "Farnosť → Mimoriadny oznam."
+msgstr ""
+
+#: src/Admin/NavodPage.php:201
+msgid "Vyplňte text (môže obsahovať tučné, kurzívu, odkaz, zoznam). Voliteľne nastavte dátum a čas, po ktorom banner sám zmizne."
+msgstr ""
+
+#: src/Admin/NavodPage.php:202
+msgid "Kliknite Publikovať. Banner sa zobrazí navrchu všetkých stránok webu, kým ho nezrušíte alebo nevyprší."
+msgstr ""
+
+#: src/Admin/NavodPage.php:207
+msgid "Ako zmeniť kontakt, IBAN, logo, sociálne siete"
+msgstr ""
+
+#: src/Admin/NavodPage.php:208
+msgid "Všetky tieto údaje sú v Nastaveniach a aktualizujú sa naraz po celom webe."
+msgstr ""
+
+#: src/Admin/NavodPage.php:211
+msgid "Otvoriť Nastavenia"
+msgstr ""
+
+#: src/Admin/NavodPage.php:217
+msgid "Ako pridať nový kostol s rozpisom"
+msgstr ""
+
+#: src/Admin/NavodPage.php:219
+msgid "Farnosť → Kostoly → Pridať nový."
+msgstr ""
+
+#: src/Admin/NavodPage.php:220
+msgid "Zadajte názov (napr. „Kostol sv. Martina\")."
+msgstr ""
+
+#: src/Admin/NavodPage.php:221
+msgid "V pravom sidebare nájdete panel „Rozpis omší\" — pridávajte časy per deň v týždni, voliteľne s označením („detská\", „sviatočná\")."
+msgstr ""
+
+#: src/Admin/NavodPage.php:222
+msgid "Doplňte adresu a kontakt. Uložte. Kostol sa automaticky zobrazí na webe."
+msgstr ""
+
+#: src/Admin/NavodPage.php:227
+msgid "Ako pridať udalosť (akciu, púť, koncert)"
+msgstr ""
+
+#: src/Admin/NavodPage.php:229
+msgid "Wp-admin → Príspevky → Pridať nový."
+msgstr ""
+
+#: src/Admin/NavodPage.php:230
+msgid "Napíšte názov a popis. V pravom sidebare zvoľte kategóriu (Udalosti / Pozvánky / Zo života farnosti)."
+msgstr ""
+
+#: src/Admin/NavodPage.php:231
+msgid "V paneli „Detaily udalosti\" doplňte Kedy (dátum / čas / textovo) a Kde. Tieto polia sú voliteľné."
+msgstr ""
+
+#: src/Admin/NavodPage.php:232
+msgid "Publikujte. Udalosť sa objaví v kombinovanom feed-e na úvodnej stránke."
+msgstr ""
+
+#: src/Admin/NavodPage.php:237
+msgid "Ako zmeniť farbu kategórie (badge vo feed-e)"
+msgstr ""
+
+#: src/Admin/NavodPage.php:239
+msgid "Wp-admin → Príspevky → Kategórie → kliknite názov kategórie."
+msgstr ""
+
+#: src/Admin/NavodPage.php:240
+msgid "Pole „Farba kategórie\" — kliknite a vyberte farbu z palety."
+msgstr ""
+
+#: src/Admin/NavodPage.php:241
+msgid "Voliteľne zapnite / vypnite „Zobraziť v menu webu\"."
+msgstr ""
+
+#: src/Admin/NavodPage.php:247
+msgid "Niečo nefunguje?"
+msgstr ""
+
+#: src/Admin/NavodPage.php:248
+msgid "Ak narazíte na chybu alebo niečo robí inak, ako by malo, napíšte nám. Snažíme sa reagovať rýchlo."
+msgstr ""
+
+#: src/Admin/NavodPage.php:250
+msgid "Pred nahlásením skúste obnoviť stránku (Ctrl+R) — pomôže pri väčšine zamrznutí."
+msgstr ""
+
+#: src/Admin/NavodPage.php:282
+msgid "Prejsť úvodným sprievodcom"
+msgstr ""
+
+#: src/Admin/NavodPage.php:285
+msgid "Otvoriť wizard"
+msgstr ""
+
+#: src/Admin/NavodPage.php:288
+msgid "Vyplniť názov farnosti"
+msgstr ""
+
+#: src/Admin/NavodPage.php:294
+msgid "Vyplniť kontakt (adresa, telefón alebo e-mail)"
+msgstr ""
+
+#: src/Admin/NavodPage.php:300
+msgid "Pridať aspoň jeden kostol s rozpisom omší"
+msgstr ""
+
+#: src/Admin/NavodPage.php:303
+#: src/PostTypes/Kostol.php:23
+msgid "Pridať kostol"
+msgstr ""
+
+#: src/Admin/NavodPage.php:306
+msgid "Pridať upratovacie skupiny (voliteľné, ale odporúčané)"
+msgstr ""
+
+#: src/Admin/NavodPage.php:309
+#: src/PostTypes/UpratovaciaSkupina.php:21
+#: editor/upratovacie/index.js:312
+msgid "Pridať skupinu"
+msgstr ""
+
+#: src/Admin/NavodPage.php:312
+msgid "Publikovať prvý oznam"
+msgstr ""
+
+#: src/Admin/NavodPage.php:315
+msgid "Otvoriť oznamy"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:41
+#: src/Admin/PostRelabel.php:57
+msgid "Udalosti"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:42
+#: src/Admin/PostRelabel.php:58
+msgid "Udalosť"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:43
+msgid "Pridať novú"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:44
+msgid "Pridať udalosť"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:45
+msgid "Upraviť udalosť"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:46
+msgid "Nová udalosť"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:47
+msgid "Zobraziť udalosť"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:48
+msgid "Zobraziť udalosti"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:49
+msgid "Hľadať udalosti"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:50
+msgid "Žiadne udalosti."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:51
+msgid "Žiadne udalosti v koši."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:52
+msgid "Všetky udalosti"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:53
+msgid "Archív udalostí"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:54
+msgid "Atribúty udalosti"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:55
+msgid "Vložiť do udalosti"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:56
+msgid "Nahrané k tejto udalosti"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:59
+msgid "Filtrovať udalosti"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:60
+msgid "Navigácia v udalostiach"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:61
+msgid "Zoznam udalostí"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:62
+msgid "Udalosť bola zverejnená."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:63
+msgid "Udalosť bola zverejnená súkromne."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:64
+msgid "Udalosť bola vrátená do konceptu."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:65
+msgid "Udalosť bola naplánovaná."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:66
+msgid "Udalosť bola aktualizovaná."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:88
+#: src/Admin/PostRelabel.php:91
+msgid "Udalosť aktualizovaná."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:89
+msgid "Vlastné pole aktualizované."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:90
+msgid "Vlastné pole zmazané."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:93
+#, php-format
+msgid "Udalosť obnovená z revízie z %s."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:95
+msgid "Udalosť publikovaná."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:96
+msgid "Udalosť uložená."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:97
+msgid "Udalosť odoslaná na schválenie."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:99
+#, php-format
+msgid "Udalosť naplánovaná na: %s."
+msgstr ""
+
+#: src/Admin/PostRelabel.php:100
+msgid "j. F Y, H:i"
+msgstr ""
+
+#: src/Admin/PostRelabel.php:102
+msgid "Koncept udalosti aktualizovaný."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:44
+msgid "Nastavenia farnosti"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:48
+msgid "Nastavenia boli uložené."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:55
+#: editor/wizard/index.js:321
+msgid "Identita farnosti"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:58
+msgid "Názov"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:58
+msgid "povinné"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:62
+#: editor/wizard/index.js:334
+msgid "Patrón farnosti"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:66
+msgid "Dekanát"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:70
+#: editor/wizard/index.js:345
+msgid "Diecéza"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:74
+msgid "Rok založenia"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:79
+#: editor/wizard/index.js:360
+msgid "Kontakt"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:82
+#: editor/wizard/index.js:366
+#: editor/wizard/index.js:430
+msgid "Adresa"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:86
+msgid "Telefóny"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:88
+#: src/Admin/SettingsPage.php:99
+#: src/Admin/SettingsPage.php:111
+#: src/Admin/SettingsPage.php:122
+msgid "napr. farár"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:101
+#: src/Admin/SettingsPage.php:124
+#: src/Admin/SettingsPage.php:193
+msgid "Odstrániť"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:105
+msgid "+ Pridať telefón"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:109
+msgid "E-maily"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:128
+msgid "+ Pridať e-mail"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:132
+msgid "Web"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:136
+msgid "Úradné hodiny"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:139
+msgid "Voľný text — jeden riadok = jeden časový blok alebo deň. Frontend zachová zalomenia riadkov. Stačí napríklad „Po telefonickej dohode.\""
+msgstr ""
+
+#: src/Admin/SettingsPage.php:144
+msgid "Financie"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:160
+msgid "Sociálne siete"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:176
+msgid "Logo a farby"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:179
+msgid "Logo farnosti"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:192
+msgid "Vybrať z knižnice médií"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:194
+msgid "Odporúčaný formát: PNG alebo SVG s priehľadným pozadím, šírka aspoň 480 px."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:199
+msgid "Primárna farba"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:204
+msgid "Moduly"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:207
+#: src/PostTypes/Oznam.php:21
+#: src/PostTypes/Oznam.php:26
+msgid "Oznamy"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:208
+msgid "CPT oznam, predvyplnená šablóna, životný cyklus s archívom"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:211
+#: src/PostTypes/Umysel.php:21
+#: src/PostTypes/Umysel.php:25
+msgid "Úmysly"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:212
+msgid "Kalendár úmyslov, auto-dotiahnutie do oznamu"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:215
+#: editor/panel-kostol/index.js:159
+msgid "Rozpis omší"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:216
+msgid "CPT kostol + výnimky, sidebar widget „Najbližšia omša\""
+msgstr ""
+
+#: src/Admin/SettingsPage.php:219
+msgid "Zdieľanie"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:220
+msgid "Tlačidlá Facebook / WhatsApp / Kopírovať odkaz pod detailom oznamu"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:224
+msgid "Oznamy — publikačný rytmus"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:227
+msgid "Deň"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:237
+#: editor/calendar/index.js:300
+#: editor/panel-umysel/index.js:88
+#: editor/panel-vynimka/index.js:88
+msgid "Čas"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:241
+msgid "Dopredné drafty"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:244
+msgid "Koľko budúcich oznamov má systém držať pripravených (status „naplánované\"). Default 2 — tento týždeň a nasledujúci."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:252
+msgid "Ďalšia skupina na rade"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:255
+msgid "Najskôr pridajte upratovacie skupiny v menu „Farnosť → Upratovacie skupiny\"."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:259
+msgid "nezvolené"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:264
+msgid "Skupina, ktorá je nasledujúca v rotácii pri tvorbe oznamu."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:270
+msgid "Citáty pre sidebar"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:273
+msgid "Zoznam citátov"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:276
+msgid "Jeden citát = jeden riadok. Voliteľný autor / zdroj sa oddeľuje znakom „|\" (napr. „Boh je láska. | 1 Jn 4,8\"). Plugin obsahuje prednastavený zoznam, sem si môžete dopísať vlastné."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:282
+msgid "Uložiť zmeny"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:348
+msgid "Vyberte logo farnosti"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:351
+msgid "Použiť ako logo"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:437
+#: editor/block-rozpis-snapshot/index.js:24
+#: editor/panel-kostol/index.js:19
+msgid "Pondelok"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:438
+#: editor/block-rozpis-snapshot/index.js:25
+#: editor/panel-kostol/index.js:20
+msgid "Utorok"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:439
+#: editor/block-rozpis-snapshot/index.js:26
+#: editor/panel-kostol/index.js:21
+msgid "Streda"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:440
+#: editor/block-rozpis-snapshot/index.js:27
+#: editor/panel-kostol/index.js:22
+msgid "Štvrtok"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:441
+#: editor/block-rozpis-snapshot/index.js:28
+#: editor/panel-kostol/index.js:23
+msgid "Piatok"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:442
+#: editor/block-rozpis-snapshot/index.js:29
+#: editor/panel-kostol/index.js:24
+msgid "Sobota"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:443
+#: editor/block-rozpis-snapshot/index.js:30
+#: editor/panel-kostol/index.js:25
+msgid "Nedeľa"
+msgstr ""
+
+#: src/Admin/SetupNotice.php:42
+msgid "Vitajte vo Farnosť Online!"
+msgstr ""
+
+#: src/Admin/SetupNotice.php:43
+msgid "Pre rozbeh farského webu prejdite krátkym sprievodcom (cca 2 min)."
+msgstr ""
+
+#: src/Admin/SetupNotice.php:47
+msgid "Začať nastavenie"
+msgstr ""
+
+#: src/Admin/SetupNotice.php:50
+msgid "Preskočiť — už mám nastavené"
+msgstr ""
+
+#: src/Admin/UpratovacieSkupinyPage.php:38
+msgid "Skupiny rotujú v poradí, v akom sú zoradené. Aktuálnu skupinu na rade systém vkladá automaticky do týždenného oznamu. Po publikácii oznamu sa pointer posunie na ďalšiu skupinu."
+msgstr ""
+
+#: src/Admin/WizardPage.php:68
+#: src/Admin/WizardPage.php:69
+#: src/Admin/WizardPage.php:98
+#: src/Admin/WizardPage.php:164
+msgid "Nastavenie farnosti"
+msgstr ""
+
+#: src/Admin/WizardPage.php:165
+msgid "Wizard sa nepodarilo načítať. Skúste stránku obnoviť."
+msgstr ""
+
+#: src/Blocks/RozpisSnapshot.php:84
+#: editor/block-rozpis-snapshot/index.js:130
+msgid "Sv. omša nie je"
+msgstr ""
+
+#: src/PostTypes/Kostol.php:21
+#: src/PostTypes/Kostol.php:26
+msgid "Kostoly"
+msgstr ""
+
+#: src/PostTypes/Kostol.php:22
+#: editor/calendar/index.js:310
+#: editor/panel-umysel/index.js:99
+#: editor/panel-vynimka/index.js:99
+msgid "Kostol"
+msgstr ""
+
+#: src/PostTypes/Kostol.php:24
+msgid "Upraviť kostol"
+msgstr ""
+
+#: src/PostTypes/Kostol.php:25
+msgid "Zobraziť kostol"
+msgstr ""
+
+#: src/PostTypes/OmsaVynimka.php:21
+msgid "Výnimky omší"
+msgstr ""
+
+#: src/PostTypes/OmsaVynimka.php:22
+msgid "Výnimka omše"
+msgstr ""
+
+#: src/PostTypes/OmsaVynimka.php:23
+msgid "Pridať výnimku"
+msgstr ""
+
+#: src/PostTypes/OmsaVynimka.php:24
+msgid "Upraviť výnimku"
+msgstr ""
+
+#: src/PostTypes/OmsaVynimka.php:25
+msgid "Výnimky"
+msgstr ""
+
+#: src/PostTypes/Oznam.php:22
+msgid "Oznam"
+msgstr ""
+
+#: src/PostTypes/Oznam.php:23
+msgid "Pridať oznam"
+msgstr ""
+
+#: src/PostTypes/Oznam.php:24
+msgid "Upraviť oznam"
+msgstr ""
+
+#: src/PostTypes/Oznam.php:25
+msgid "Zobraziť oznam"
+msgstr ""
+
+#: src/PostTypes/Umysel.php:22
+#: editor/calendar/index.js:333
+#: editor/panel-vynimka/index.js:120
+msgid "Úmysel"
+msgstr ""
+
+#: src/PostTypes/Umysel.php:23
+msgid "Pridať úmysel"
+msgstr ""
+
+#: src/PostTypes/Umysel.php:24
+msgid "Upraviť úmysel"
+msgstr ""
+
+#: src/PostTypes/UpratovaciaSkupina.php:20
+msgid "Upratovacia skupina"
+msgstr ""
+
+#: src/PostTypes/UpratovaciaSkupina.php:22
+msgid "Upraviť skupinu"
+msgstr ""
+
+#: src/Rest/RotationPointerController.php:53
+msgid "Neplatné ID skupiny."
+msgstr ""
+
+#: src/Rest/RotationPointerController.php:60
+msgid "Skupina nenájdená."
+msgstr ""
+
+#: editor/block-rozpis-snapshot/index.js:146
+msgid "označenie"
+msgstr ""
+
+#: editor/block-rozpis-snapshot/index.js:154
+#: editor/panel-kostol/index.js:207
+msgid "Odstrániť omšu"
+msgstr ""
+
+#: editor/block-rozpis-snapshot/index.js:163
+msgid "úmysel"
+msgstr ""
+
+#: editor/block-rozpis-snapshot/index.js:177
+#: editor/panel-kostol/index.js:220
+msgid "+ Pridať omšu"
+msgstr ""
+
+#: editor/block-rozpis-snapshot/index.js:207
+msgid ""
+"Tým prepíšete všetky úpravy v rozpise (časy, označenia, úmysly), ktoré ste tu spravili. Snapshot sa nahradí aktuálnymi dátami zo rozpisu omší, výnimiek a úmyslov.\n"
+"\n"
+"Pokračovať?"
+msgstr ""
+
+#: editor/block-rozpis-snapshot/index.js:216
+msgid "Týždeň nie je nastavený — nemôžem obnoviť."
+msgstr ""
+
+#: editor/block-rozpis-snapshot/index.js:236
+#, js-format
+msgid "Obnovenie zlyhalo: %s"
+msgstr ""
+
+#: editor/block-rozpis-snapshot/index.js:327
+#, js-format
+msgid "Snapshot odobraný %s"
+msgstr ""
+
+#: editor/block-rozpis-snapshot/index.js:330
+msgid "Snapshot ešte nebol odobraný."
+msgstr ""
+
+#: editor/block-rozpis-snapshot/index.js:338
+msgid "↻ Obnoviť snapshot"
+msgstr ""
+
+#: editor/block-rozpis-snapshot/index.js:344
+msgid "Rozpis omší — prázdny snapshot. Pri vytvorení oznamu sa naplní automaticky."
+msgstr ""
+
+#: editor/block-rozpis-snapshot/index.js:371
+msgid "Rozpis omší (snapshot)"
+msgstr ""
+
+#: editor/block-rozpis-snapshot/index.js:372
+msgid "Týždenný rozpis omší zamrznutý pri vytvorení oznamu. Edituje sa inline."
+msgstr ""
+
+#: editor/calendar/index.js:16
+msgid "Pon"
+msgstr ""
+
+#: editor/calendar/index.js:17
+msgid "Uto"
+msgstr ""
+
+#: editor/calendar/index.js:18
+msgid "Str"
+msgstr ""
+
+#: editor/calendar/index.js:19
+msgid "Štv"
+msgstr ""
+
+#: editor/calendar/index.js:20
+msgid "Pia"
+msgstr ""
+
+#: editor/calendar/index.js:21
+msgid "Sob"
+msgstr ""
+
+#: editor/calendar/index.js:22
+msgid "Ned"
+msgstr ""
+
+#: editor/calendar/index.js:26
+msgid "Január"
+msgstr ""
+
+#: editor/calendar/index.js:26
+msgid "Február"
+msgstr ""
+
+#: editor/calendar/index.js:27
+msgid "Marec"
+msgstr ""
+
+#: editor/calendar/index.js:27
+msgid "Apríl"
+msgstr ""
+
+#: editor/calendar/index.js:28
+msgid "Máj"
+msgstr ""
+
+#: editor/calendar/index.js:28
+msgid "Jún"
+msgstr ""
+
+#: editor/calendar/index.js:29
+msgid "Júl"
+msgstr ""
+
+#: editor/calendar/index.js:29
+msgid "August"
+msgstr ""
+
+#: editor/calendar/index.js:30
+msgid "September"
+msgstr ""
+
+#: editor/calendar/index.js:30
+msgid "Október"
+msgstr ""
+
+#: editor/calendar/index.js:31
+msgid "November"
+msgstr ""
+
+#: editor/calendar/index.js:31
+msgid "December"
+msgstr ""
+
+#: editor/calendar/index.js:167
+#: editor/panel-umysel/index.js:72
+msgid "Úmysel sv. omše"
+msgstr ""
+
+#: editor/calendar/index.js:176
+msgid "mimoriadna omša"
+msgstr ""
+
+#: editor/calendar/index.js:181
+#: editor/panel-umysel/index.js:110
+msgid "Text úmyslu"
+msgstr ""
+
+#: editor/calendar/index.js:185
+msgid "Napr. Za zdravie rodiny / † Mária Nováková"
+msgstr ""
+
+#: editor/calendar/index.js:187
+msgid "Prázdny text = úmysel sa odstráni."
+msgstr ""
+
+#: editor/calendar/index.js:195
+#: editor/panel-umysel/index.js:120
+msgid "Anonymný úmysel"
+msgstr ""
+
+#: editor/calendar/index.js:198
+msgid "Skryť mená na verejnom webe."
+msgstr ""
+
+#: editor/calendar/index.js:206
+#: editor/calendar/index.js:568
+#: editor/upratovacie/index.js:337
+#, js-format
+msgid "Chyba: %s"
+msgstr ""
+
+#: editor/calendar/index.js:212
+#: editor/calendar/index.js:348
+msgid "Zatvoriť"
+msgstr ""
+
+#: editor/calendar/index.js:215
+msgid "Uložiť"
+msgstr ""
+
+#: editor/calendar/index.js:239
+msgid "Zadaj čas vo formáte HH:MM."
+msgstr ""
+
+#: editor/calendar/index.js:243
+msgid "Zvoľ kostol."
+msgstr ""
+
+#: editor/calendar/index.js:286
+msgid "Pridať mimoriadnu omšu"
+msgstr ""
+
+#: editor/calendar/index.js:293
+msgid "Mimoriadna omša sa pridáva nad rámec pravidelného rozpisu (napr. pohreb, sobáš, slávnosť)."
+msgstr ""
+
+#: editor/calendar/index.js:322
+msgid "Označenie omše"
+msgstr ""
+
+#: editor/calendar/index.js:325
+msgid "napr. pohrebná, sobášna, púťová"
+msgstr ""
+
+#: editor/calendar/index.js:337
+msgid "napr. † p. Nováková"
+msgstr ""
+
+#: editor/calendar/index.js:351
+#: editor/calendar/index.js:607
+msgid "Pridať omšu"
+msgstr ""
+
+#: editor/calendar/index.js:550
+msgid "Predošlý"
+msgstr ""
+
+#: editor/calendar/index.js:551
+msgid "Dnes"
+msgstr ""
+
+#: editor/calendar/index.js:552
+msgid "Nasledujúci"
+msgstr ""
+
+#: editor/calendar/index.js:567
+#: editor/upratovacie/index.js:334
+msgid "Načítavam…"
+msgstr ""
+
+#: editor/calendar/index.js:598
+msgid "voľný úmysel"
+msgstr ""
+
+#: editor/calendar/index.js:606
+msgid "Pridať mimoriadnu omšu v tento deň"
+msgstr ""
+
+#: editor/panel-kostol/index.js:175
+msgid "V tento deň nie je pravidelná omša."
+msgstr ""
+
+#: editor/panel-kostol/index.js:199
+msgid "bez označenia"
+msgstr ""
+
+#: editor/panel-oznam/index.js:45
+msgid "Týždeň oznamu"
+msgstr ""
+
+#: editor/panel-oznam/index.js:50
+msgid "Od"
+msgstr ""
+
+#: editor/panel-oznam/index.js:56
+msgid "Do"
+msgstr ""
+
+#: editor/panel-oznam/index.js:63
+msgid "Týždeň oznamu je pevne určený pri vytvorení. Pre iný týždeň vytvorte nový oznam."
+msgstr ""
+
+#: editor/panel-udalost/index.js:38
+msgid "Detail udalosti"
+msgstr ""
+
+#: editor/panel-udalost/index.js:42
+msgid "Kedy"
+msgstr ""
+
+#: editor/panel-udalost/index.js:51
+msgid "Kde"
+msgstr ""
+
+#: editor/panel-udalost/index.js:54
+msgid "voliteľný popis miesta"
+msgstr ""
+
+#: editor/panel-udalost/index.js:60
+msgid "Udalosť sa zobrazí vo feed-e farnosti. Polia Kedy/Kde sú voliteľné."
+msgstr ""
+
+#: editor/panel-umysel/index.js:78
+#: editor/panel-vynimka/index.js:78
+msgid "Dátum"
+msgstr ""
+
+#: editor/panel-umysel/index.js:114
+msgid "Za zdravie rodiny / † Mária Nováková …"
+msgstr ""
+
+#: editor/panel-umysel/index.js:121
+msgid "Skryť mená na verejnom webe"
+msgstr ""
+
+#: editor/panel-vynimka/index.js:72
+msgid "Detaily výnimky"
+msgstr ""
+
+#: editor/panel-vynimka/index.js:110
+msgid "Označenie"
+msgstr ""
+
+#: editor/panel-vynimka/index.js:113
+#: editor/panel-vynimka/index.js:123
+msgid "voliteľné"
+msgstr ""
+
+#: editor/upratovacie/index.js:124
+msgid "Naozaj zmazať skupinu?"
+msgstr ""
+
+#: editor/upratovacie/index.js:218
+msgid "Aktuálne na rade"
+msgstr ""
+
+#: editor/upratovacie/index.js:227
+#, js-format
+msgid "Vedie: %s"
+msgstr ""
+
+#: editor/upratovacie/index.js:233
+msgid "Upraviť"
+msgstr ""
+
+#: editor/upratovacie/index.js:241
+msgid "Zmazať"
+msgstr ""
+
+#: editor/upratovacie/index.js:249
+msgid "Nastaviť ako ďalšiu na rade"
+msgstr ""
+
+#: editor/upratovacie/index.js:315
+msgid "napr. Skupina sv. Jozefa"
+msgstr ""
+
+#: editor/upratovacie/index.js:330
+msgid "Pridať"
+msgstr ""
+
+#: editor/upratovacie/index.js:343
+msgid "Zatiaľ žiadne skupiny. Pridajte prvú vyššie."
+msgstr ""
+
+#: editor/upratovacie/index.js:355
+msgid "Ukladám…"
+msgstr ""
+
+#: editor/wizard/index.js:113
+#: editor/wizard/index.js:127
+msgid "Vyplň povinné pole."
+msgstr ""
+
+#: editor/wizard/index.js:273
+#, js-format
+msgid "Krok %1$d z %2$d"
+msgstr ""
+
+#: editor/wizard/index.js:284
+msgid "Načítavam vaše uložené nastavenia…"
+msgstr ""
+
+#: editor/wizard/index.js:302
+msgid "‹ Späť"
+msgstr ""
+
+#: editor/wizard/index.js:306
+msgid "Pokračovať ›"
+msgstr ""
+
+#: editor/wizard/index.js:310
+msgid "Dokončiť nastavenie"
+msgstr ""
+
+#: editor/wizard/index.js:324
+msgid "Názov farnosti"
+msgstr ""
+
+#: editor/wizard/index.js:327
+msgid "Napr. Rímskokatolícka farnosť sv. Martina"
+msgstr ""
+
+#: editor/wizard/index.js:337
+msgid "Napr. sv. Martin z Tours"
+msgstr ""
+
+#: editor/wizard/index.js:338
+msgid "Voliteľné — meno svätca/titulu farnosti, použije sa v hlavičke a SEO."
+msgstr ""
+
+#: editor/wizard/index.js:348
+msgid "Napr. Trnavská arcidiecéza"
+msgstr ""
+
+#: editor/wizard/index.js:362
+msgid "Všetko voliteľné — môžete doplniť neskôr v Nastaveniach."
+msgstr ""
+
+#: editor/wizard/index.js:376
+msgid "Telefón"
+msgstr ""
+
+#: editor/wizard/index.js:380
+msgid "Ďalšie čísla pridáte v Nastaveniach."
+msgstr ""
+
+#: editor/wizard/index.js:387
+msgid "E-mail"
+msgstr ""
+
+#: editor/wizard/index.js:402
+msgid "Použije sa v sidebare a v päte webu pre milodary."
+msgstr ""
+
+#: editor/wizard/index.js:414
+msgid "Prvý kostol"
+msgstr ""
+
+#: editor/wizard/index.js:416
+msgid "Hlavný kostol farnosti. Rozpis omší a ďalšie filiálky pridáte neskôr cez Farnosť → Kostoly."
+msgstr ""
+
+#: editor/wizard/index.js:420
+msgid "Názov kostola"
+msgstr ""
+
+#: editor/wizard/index.js:423
+msgid "Napr. Farský kostol sv. Martina"
+msgstr ""
+
+#: editor/wizard/index.js:445
+msgid "Režim oznamov"
+msgstr ""
+
+#: editor/wizard/index.js:447
+msgid "Ako budete spravovať týždenné oznamy?"
+msgstr ""
+
+#: editor/wizard/index.js:453
+msgid "Plný — štruktúrovaný editor s automatickým rozpisom a úmyslami (odporúčané)"
+msgstr ""
+
+#: editor/wizard/index.js:457
+msgid "Lite — nahrávam oznamy ako PDF z Wordu, žiadny štruktúrovaný editor"
+msgstr ""
+
+#: editor/wizard/index.js:464
+msgid "Voľbu môžete kedykoľvek zmeniť v Nastaveniach → Moduly."
+msgstr ""

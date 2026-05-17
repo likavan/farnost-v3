@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Farnost\Plugin;
 
 use Farnost\Plugin\Admin\BlockCategory;
+use Farnost\Plugin\Admin\CategoryAdmin;
 use Farnost\Plugin\Admin\HideOznamAddNew;
 use Farnost\Plugin\Blocks\RozpisSnapshot;
 use Farnost\Plugin\Oznam\BufferManager;
@@ -47,6 +48,7 @@ final class Plugin
 
     public function boot(): void
     {
+        add_action('init', [$this, 'loadTextDomain']);
         add_action('init', [$this, 'registerPostTypes']);
         add_action('init', [$this, 'registerMeta']);
         add_action('init', [Settings::class, 'register']);
@@ -71,7 +73,17 @@ final class Plugin
             EditorAssets::register();
             WizardPage::register();
             SetupNotice::register();
+            CategoryAdmin::register();
         }
+    }
+
+    public function loadTextDomain(): void
+    {
+        load_plugin_textdomain(
+            'farnost-plugin',
+            false,
+            dirname(plugin_basename(FARNOST_PLUGIN_FILE)) . '/languages'
+        );
     }
 
     public function registerPostTypes(): void

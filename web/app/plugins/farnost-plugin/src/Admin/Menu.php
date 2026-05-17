@@ -205,24 +205,7 @@ final class Menu
 
     public static function renderNavod(): void
     {
-        self::renderPlaceholder(
-            __('Návod', 'farnost-plugin'),
-            __('Tu pribudne onboarding návod — knowledge base s článkami a kontextovou pomocou.', 'farnost-plugin'),
-            __('Detaily v doc/07-admin-ux.md → „Pomoc a dokumentácia".', 'farnost-plugin')
-        );
-    }
-
-    private static function renderPlaceholder(string $title, string $description, string $reference): void
-    {
-        ?>
-        <div class="wrap">
-            <h1><?php echo esc_html($title); ?></h1>
-            <div style="max-width:720px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:24px;margin-top:16px;">
-                <p style="font-size:16px;line-height:1.6;margin:0 0 12px;"><?php echo esc_html($description); ?></p>
-                <p style="font-size:13px;color:#6b7280;margin:0;"><?php echo esc_html($reference); ?></p>
-            </div>
-        </div>
-        <?php
+        NavodPage::render();
     }
 
     /**

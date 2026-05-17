@@ -36,7 +36,7 @@ Etapy implementácie pre v3. Časové odhady sú orientačné a počítajú s je
 
 **Definícia hotovosti splnená**: dáta sa dajú vytvoriť cez REST (`curl`/Postman) a `Resolver` vracia správny rozpis pre dátum vrátane aplikovaných výnimiek. Overené end-to-end cez `GET /wp-json/farnost/v1/schedule?date=2026-05-18&kostol_id=5` (vracia kombináciu pravidelnej 18:00 + výnimky 14:00 pohrebná).
 
-## Etapa 2 — Admin UX (väčšina hotová)
+## Etapa 2 — Admin UX ✅
 
 **Cieľ**: farár si vie cez wp-admin spraviť všetko, čo bude potrebovať, **bez** nutnosti zdvihnúť ruku k vývojárovi.
 
@@ -46,17 +46,15 @@ Etapy implementácie pre v3. Časové odhady sú orientačné a počítajú s je
   - [x] `VynimkaPanel` na `omsa_vynimka` — dátum, čas, kostol cez ComboboxControl, označenie, úmysel.
   - [x] `UmyselPanel` na `umysel` — dátum, čas, kostol, text, anonymný toggle.
   - [x] `UdalostPanel` na bežné `post` — Kedy / Kde free-form.
-  - [ ] `UpratovacieSkupinyAdmin` — vlastná admin stránka s drag-and-drop poradím a manuálnym posunom pointra. **Zostáva** — aktuálne je len bežný CPT archive.
-- [ ] **Admin polia kategórie**: `category_add_form_fields` / `category_edit_form_fields` s color pickerom a checkboxom. **Zostáva** — term meta sú zaregistrované, len chýba admin UI.
+  - [x] `UpratovacieSkupinyAdmin` — vlastná admin stránka s drag-and-drop poradím (`menu_order`) a tlačidlom „Nastaviť ako ďalšiu na rade" (REST `farnost/v1/rotation-pointer`).
+- [x] **Admin polia kategórie**: `category_add_form_fields` / `category_edit_form_fields` s color pickerom (wp-color-picker / iris) a checkboxom „Zobraziť v menu webu" + farebné stĺpce v listing-u.
 - [x] **Settings stránka** `Farnosť → Nastavenia` (PHP form-based, nie React) — všetky sekcie zo `02-datovy-model.md` + multi-kontakty repeater + media picker pre logo + citáty.
 - [x] **Setup wizard** — 4-krokový plnoobrazovkový sprievodca s pre-fillom existujúcich hodnôt + dismiss link „Preskočiť".
 - [x] **Vlastné top-level admin menu** „Farnosť" so submenu: Kalendár omší, Kostoly, Oznamy, Mimoriadny oznam, Výnimky, Úmysly, Upratovacie skupiny, Nastavenia, Návod.
 - [x] **Kalendár omší a úmyslov** — custom admin obrazovka s mesačným gridom, klik na omšu otvorí editor úmyslu, „+" tlačidlo per deň vytvorí výnimku.
 - [x] **Mimoriadny oznam (banner)** — rich text editor + voliteľná expirácia + REST endpoint pre frontend.
-- [ ] **Onboarding stránka** `Pomoc → Návod` s checklistom. **Zostáva** — placeholder.
-- [ ] **i18n**: všetky stringy cez `__()` / `_x()`, `farnost-plugin.pot` vygenerovaný. **Zostáva** — stringy sú v `__()` formáte, len `.pot` súbor nie je vygenerovaný.
-
-**Stav**: hlavná funkčnosť hotová a otestovaná (clickthrough). Zaostávajúce: drag-and-drop UI pre upratovacie skupiny, color picker UI pre kategórie, Návod stránka, `.pot` súbor.
+- [x] **Onboarding stránka** `Pomoc → Návod` — knowledge base s „prvými krokmi" (checklist computed z DB stavu), týždenným rytmom, krízovým CTA a 8 collapsible how-to článkami.
+- [x] **i18n**: všetky stringy cez `__()` / `_x()`, `farnost-plugin.pot` vygenerovaný (`languages/farnost-plugin.pot`, 334 záznamov) + `npm run i18n:pot` script pre regen + `load_plugin_textdomain` na `init`.
 
 **Definícia hotovosti**: druhá osoba (nie autor) vytvorí cez wp-admin: kostol s rozpisom, oznam s pripnutím, výnimku s režimom „náhrada", úmysel, udalosť s kategóriou a dátumom — bez dokumentácie, len intuitívne.
 

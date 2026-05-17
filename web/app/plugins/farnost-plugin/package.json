@@ -8,7 +8,8 @@
     "build": "wp-scripts build",
     "start": "wp-scripts start",
     "lint:js": "wp-scripts lint-js",
-    "format": "wp-scripts format"
+    "format": "wp-scripts format",
+    "i18n:pot": "wp i18n make-pot . languages/farnost-plugin.pot --domain=farnost-plugin --slug=farnost-plugin --exclude=node_modules,build,vendor --skip-audit"
   },
   "devDependencies": {
     "@wordpress/scripts": "^30.0.0"
