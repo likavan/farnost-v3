@@ -41,14 +41,17 @@ final class Menu
             wp_enqueue_media();
         }
         if ($page === self::SLUG) {
-            self::enqueueCalendar();
+            self::enqueueBuilt('farnost-calendar', 'calendar');
+        }
+        if ($page === UpratovacieSkupinyPage::SLUG) {
+            self::enqueueBuilt('farnost-upratovacie', 'upratovacie');
         }
     }
 
-    private static function enqueueCalendar(): void
+    private static function enqueueBuilt(string $handle, string $name): void
     {
-        $assetPath = FARNOST_PLUGIN_DIR . '/build/calendar.asset.php';
-        $jsPath    = FARNOST_PLUGIN_DIR . '/build/calendar.js';
+        $assetPath = FARNOST_PLUGIN_DIR . "/build/{$name}.asset.php";
+        $jsPath    = FARNOST_PLUGIN_DIR . "/build/{$name}.js";
         if (!is_readable($assetPath) || !is_readable($jsPath)) {
             return;
         }
@@ -57,13 +60,13 @@ final class Menu
             return;
         }
         wp_enqueue_script(
-            'farnost-calendar',
-            plugins_url('build/calendar.js', FARNOST_PLUGIN_FILE),
+            $handle,
+            plugins_url("build/{$name}.js", FARNOST_PLUGIN_FILE),
             (array) $asset['dependencies'],
             (string) ($asset['version'] ?? FARNOST_PLUGIN_VERSION),
             true
         );
-        wp_set_script_translations('farnost-calendar', 'farnost-plugin');
+        wp_set_script_translations($handle, 'farnost-plugin');
     }
 
     public static function addMenuPages(): void
@@ -97,6 +100,16 @@ final class Menu
             self::CAPABILITY,
             'farnost-mimoriadny-oznam',
             [self::class, 'renderMimoriadny']
+        );
+
+        // Submenu: Upratovacie skupiny (custom obrazovka — nahrádza default CPT listing)
+        add_submenu_page(
+            self::SLUG,
+            __('Upratovacie skupiny', 'farnost-plugin'),
+            __('Upratovacie skupiny', 'farnost-plugin'),
+            self::CAPABILITY,
+            UpratovacieSkupinyPage::SLUG,
+            [self::class, 'renderUpratovacie']
         );
 
         // Submenu: Nastavenia (vyžaduje vyššie oprávnenie)
@@ -138,7 +151,7 @@ final class Menu
             'farnost-mimoriadny-oznam',                       // Mimoriadny oznam
             'edit.php?post_type=omsa_vynimka',                // Výnimky (dočasne, kým nemáme kalendár)
             'edit.php?post_type=umysel',                      // Úmysly (dočasne, kým nemáme kalendár)
-            'edit.php?post_type=upratovacia_skupina',         // Upratovacie skupiny
+            UpratovacieSkupinyPage::SLUG,                     // Upratovacie skupiny (custom obrazovka)
             'farnost-nastavenia',                             // Nastavenia
             'farnost-navod',                                  // Návod
         ];
@@ -178,6 +191,11 @@ final class Menu
     public static function renderMimoriadny(): void
     {
         MimoriadnyOznamPage::render();
+    }
+
+    public static function renderUpratovacie(): void
+    {
+        UpratovacieSkupinyPage::render();
     }
 
     public static function renderSettings(): void

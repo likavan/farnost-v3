@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Farnost\Plugin\PostTypes;
 
-use Farnost\Plugin\Admin\Menu;
-
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -30,7 +28,9 @@ final class UpratovaciaSkupina
             'supports'     => ['title', 'page-attributes', 'custom-fields'],
             'show_in_rest' => true,
             'rest_base'    => 'upratovacie-skupiny',
-            'show_in_menu' => Menu::SLUG,
+            // Vlastná admin obrazovka (`Menu::SLUG . '-upratovacie'`) supluje CPT listing.
+            // CPT editor (post.php?action=edit) ostáva funkčný cez `show_ui`.
+            'show_in_menu' => false,
         ]);
     }
 

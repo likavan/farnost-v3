@@ -23,6 +23,7 @@ use Farnost\Plugin\PostTypes\Oznam;
 use Farnost\Plugin\PostTypes\Umysel;
 use Farnost\Plugin\PostTypes\UpratovaciaSkupina;
 use Farnost\Plugin\Rest\BannerController;
+use Farnost\Plugin\Rest\RotationPointerController;
 use Farnost\Plugin\Rest\ScheduleController;
 use Farnost\Plugin\Rest\SettingsController;
 use Farnost\Plugin\Rest\SnapshotController;
@@ -99,5 +100,6 @@ final class Plugin
         (new ScheduleController())->registerRoutes();
         (new BannerController())->registerRoutes();
         (new SnapshotController())->registerRoutes();
+        (new RotationPointerController())->registerRoutes();
     }
 }
