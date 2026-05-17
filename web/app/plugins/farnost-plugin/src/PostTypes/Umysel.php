@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Farnost\Plugin\PostTypes;
 
-use Farnost\Plugin\Admin\Menu;
-
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -30,9 +28,10 @@ final class Umysel
             'supports'     => ['title', 'author', 'custom-fields'],
             'show_in_rest' => true,
             'rest_base'    => 'umysly',
-            // Pôvodný plán: vzniká z kalendára (doc/07-admin-ux.md). Dočasne pripnuté
-            // pod „Farnosť" submenu, kým nemáme kalendár — vtedy sa vráti na false.
-            'show_in_menu' => Menu::SLUG,
+            // Úmysly vznikajú z kalendára (doc/07-admin-ux.md:190). Vlastná položka
+            // v menu by farára mýlila — editor postu ostáva funkčný cez show_ui (true
+            // by default pri public=true) pre prípadné cesty z kódu.
+            'show_in_menu'    => false,
             'capability_type' => ['umysel', 'umysly'],
             'map_meta_cap'    => true,
         ]);

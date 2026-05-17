@@ -163,9 +163,8 @@ final class Menu
             'edit.php?post_type=oznam',                       // Oznamy
             'farnost-mimoriadny-oznam',                       // Mimoriadny oznam
             // Výnimky a Úmysly nemajú vlastnú položku — vznikajú z kalendára
-            // a editora oznamu (doc/07-admin-ux.md:190). Tu len pre úplnosť
-            // ako referencia, čo sa NEzobrazuje.
-            'edit.php?post_type=umysel',                      // Úmysly (zatiaľ ešte viditeľné)
+            // a editora oznamu (doc/07-admin-ux.md:190). show_in_menu=false v
+            // OmsaVynimka aj Umysel CPT.
             UpratovacieSkupinyPage::SLUG,                     // Upratovacie skupiny (custom obrazovka)
             'farnost-nastavenia',                             // Nastavenia
             'farnost-navod',                                  // Návod
