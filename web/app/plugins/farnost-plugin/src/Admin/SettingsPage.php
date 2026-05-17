@@ -425,6 +425,12 @@ final class SettingsPage
         $citatyText = isset($input['citaty']) && is_string($input['citaty']) ? $input['citaty'] : '';
         $out['citaty'] = self::citatyFromText($citatyText);
 
+        // Polia, ktoré sa nespravujú cez tento form — zachovať z aktuálnych settings,
+        // aby ich save neprepísal na defaults. Konkrétne `setup.completed` (riadi sa
+        // wizard-om); bez tohto by každé uloženie Nastavení znova spustilo wizard.
+        $current = Settings::get();
+        $out['setup'] = $current['setup'] ?? $defaults['setup'];
+
         return $out;
     }
 
