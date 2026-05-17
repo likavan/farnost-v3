@@ -628,10 +628,20 @@ function App() {
 				}
 				.farnost-kostoly-list {
 					background: #fff; border: 1px solid #e5e7eb; border-radius: 6px;
-					overflow: hidden;
+					/* žiadny overflow: hidden — color picker popover sa potrebuje
+					   zobraziť cez okraj zoznamu. Rohy riešia border-radius
+					   na prvom / poslednom item-wrap. */
 				}
 				.farnost-kostoly-item-wrap { border-bottom: 1px solid #f3f4f6; }
+				.farnost-kostoly-item-wrap:first-child .farnost-kostoly-row,
+				.farnost-kostoly-item-wrap:first-child .farnost-kostoly-row:hover {
+					border-top-left-radius: 6px; border-top-right-radius: 6px;
+				}
 				.farnost-kostoly-item-wrap:last-child { border-bottom: none; }
+				.farnost-kostoly-item-wrap:last-child .farnost-kostoly-row,
+				.farnost-kostoly-item-wrap:last-child .farnost-kostoly-row:hover {
+					border-bottom-left-radius: 6px; border-bottom-right-radius: 6px;
+				}
 				.farnost-kostoly-row {
 					display: flex; align-items: center; gap: 12px;
 					padding: 12px 16px; cursor: grab; background: #fff;
