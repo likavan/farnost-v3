@@ -50,5 +50,13 @@ final class Oznam
             'show_in_rest' => true,
             'default'      => '',
         ]);
+        // Pridelená upratovacia skupina pre tento týždeň (post ID). Pri publikácii
+        // sa cez Upratovanie::onTransition posunie pointer v farnost_settings.
+        register_post_meta(self::POST_TYPE, 'farnost_upratuje_id', [
+            'type'         => 'integer',
+            'single'       => true,
+            'show_in_rest' => true,
+            'default'      => 0,
+        ]);
     }
 }

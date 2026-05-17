@@ -75,9 +75,26 @@ final class AutoTemplate
             return;
         }
 
+        // Pridelenie upratovacej skupiny — len ak ešte nie je v meta (rešpektujeme buffer-set hodnotu).
+        $upratujeId = (int) get_post_meta($postId, Upratovanie::META_KEY, true);
+        $upratuje   = null;
+        if ($upratujeId > 0) {
+            $g = get_post($upratujeId);
+            if ($g) {
+                $upratuje = ['id' => $upratujeId, 'title' => (string) $g->post_title];
+            }
+        } else {
+            $upratuje = Upratovanie::pickForNextWeek();
+            if ($upratuje !== null) {
+                update_post_meta($postId, Upratovanie::META_KEY, $upratuje['id']);
+            }
+        }
+
         $content = sprintf('<!-- wp:farnost/rozpis-snapshot %s /-->', $json);
-        $content .= "\n\n";
-        $content .= "<!-- wp:paragraph -->\n<p></p>\n<!-- /wp:paragraph -->";
+        if ($upratuje !== null) {
+            $content .= "\n\n" . Upratovanie::renderParagraphBlock($upratuje['title']);
+        }
+        $content .= "\n\n<!-- wp:paragraph -->\n<p></p>\n<!-- /wp:paragraph -->";
 
         // wp_update_post znova spustí wp_insert_post hook s $update=true → naša guard hore preskočí.
         wp_update_post([

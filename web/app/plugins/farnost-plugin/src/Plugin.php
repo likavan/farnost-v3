@@ -16,6 +16,7 @@ use Farnost\Plugin\Admin\PostRelabel;
 use Farnost\Plugin\Admin\SetupNotice;
 use Farnost\Plugin\Admin\WizardPage;
 use Farnost\Plugin\Oznam\AutoTemplate;
+use Farnost\Plugin\Oznam\Upratovanie;
 use Farnost\Plugin\Meta\CategoryMeta;
 use Farnost\Plugin\Meta\PostMeta;
 use Farnost\Plugin\PostTypes\Kostol;
@@ -62,6 +63,7 @@ final class Plugin
         RozpisSnapshot::register();
         AutoTemplate::register();
         BufferManager::register();
+        Upratovanie::register();
 
         if (is_admin()) {
             HideOznamAddNew::register();

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-05-17T14:44:31+00:00\n"
+"POT-Creation-Date: 2026-05-17T14:48:29+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: farnost-plugin\n"
@@ -115,17 +115,8 @@ msgstr ""
 
 #: src/Admin/Menu.php:128
 #: src/Admin/Menu.php:129
-#: src/Admin/Menu.php:209
 #: src/Admin/NavodPage.php:40
 msgid "Návod"
-msgstr ""
-
-#: src/Admin/Menu.php:210
-msgid "Tu pribudne onboarding návod — knowledge base s článkami a kontextovou pomocou."
-msgstr ""
-
-#: src/Admin/Menu.php:211
-msgid "Detaily v doc/07-admin-ux.md → „Pomoc a dokumentácia\"."
 msgstr ""
 
 #: src/Admin/MimoriadnyOznamPage.php:26
@@ -918,6 +909,12 @@ msgstr ""
 #: src/Blocks/RozpisSnapshot.php:84
 #: editor/block-rozpis-snapshot/index.js:130
 msgid "Sv. omša nie je"
+msgstr ""
+
+#. translators: %s = názov upratovacej skupiny (renderuje sa tučne)
+#: src/Oznam/Upratovanie.php:103
+#, php-format
+msgid "Tento týždeň upratuje: <strong>%s</strong>"
 msgstr ""
 
 #: src/PostTypes/Kostol.php:21

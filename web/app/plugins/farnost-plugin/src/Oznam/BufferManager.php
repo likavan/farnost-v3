@@ -157,7 +157,13 @@ final class BufferManager
             return 0;
         }
 
+        // Pridelíme upratovaciu skupinu pre tento týždeň (rotácia + paragraph blok do obsahu).
+        $upratuje = Upratovanie::pickForNextWeek();
+
         $content  = sprintf('<!-- wp:farnost/rozpis-snapshot %s /-->', $json);
+        if ($upratuje !== null) {
+            $content .= "\n\n" . Upratovanie::renderParagraphBlock($upratuje['title']);
+        }
         $content .= "\n\n<!-- wp:paragraph -->\n<p></p>\n<!-- /wp:paragraph -->";
 
         $publishLocal = self::computePublishDate($mon, $settings);
@@ -168,6 +174,14 @@ final class BufferManager
         // publikujeme rovno (post_status = publish), inak naplánujeme (future).
         $status = $publishLocal <= $nowLocal ? 'publish' : 'future';
 
+        $metaInput = [
+            'farnost_tyzden_od' => $monIso,
+            'farnost_tyzden_do' => $sunIso,
+        ];
+        if ($upratuje !== null) {
+            $metaInput['farnost_upratuje_id'] = $upratuje['id'];
+        }
+
         $result = wp_insert_post([
             'post_type'     => Oznam::POST_TYPE,
             'post_status'   => $status,
@@ -175,10 +189,7 @@ final class BufferManager
             'post_content'  => $content,
             'post_date'     => $publishLocal->format('Y-m-d H:i:s'),
             'post_date_gmt' => $publishGmt->format('Y-m-d H:i:s'),
-            'meta_input'    => [
-                'farnost_tyzden_od' => $monIso,
-                'farnost_tyzden_do' => $sunIso,
-            ],
+            'meta_input'    => $metaInput,
         ], true);
 
         if (is_wp_error($result)) {
