@@ -237,6 +237,13 @@ final class SettingsPage
                         <th scope="row"><label for="fp-pcas"><?php esc_html_e('Čas', 'farnost-plugin'); ?></label></th>
                         <td><input type="time" id="fp-pcas" name="farnost_settings[oznamy][publikacny_cas]" value="<?php echo esc_attr($s['oznamy']['publikacny_cas']); ?>"></td>
                     </tr>
+                    <tr>
+                        <th scope="row"><label for="fp-dopredne"><?php esc_html_e('Dopredné drafty', 'farnost-plugin'); ?></label></th>
+                        <td>
+                            <input type="number" id="fp-dopredne" name="farnost_settings[oznamy][dopredne_drafty]" value="<?php echo esc_attr((string) ($s['oznamy']['dopredne_drafty'] ?? 2)); ?>" min="1" max="4" class="small-text">
+                            <p class="description"><?php esc_html_e('Koľko budúcich oznamov má systém držať pripravených (status „naplánované"). Default 2 — tento týždeň a nasledujúci.', 'farnost-plugin'); ?></p>
+                        </td>
+                    </tr>
                 </table>
 
                 <h2><?php esc_html_e('Upratovacie skupiny', 'farnost-plugin'); ?></h2>
@@ -410,6 +417,8 @@ final class SettingsPage
         $out['oznamy']['publikacny_den'] = array_key_exists($den, self::days()) ? $den : 'sunday';
         $cas = isset($input['oznamy']['publikacny_cas']) ? (string) $input['oznamy']['publikacny_cas'] : '08:00';
         $out['oznamy']['publikacny_cas'] = preg_match('/^\d{2}:\d{2}$/', $cas) === 1 ? $cas : '08:00';
+        $dopredne = isset($input['oznamy']['dopredne_drafty']) ? (int) $input['oznamy']['dopredne_drafty'] : 2;
+        $out['oznamy']['dopredne_drafty'] = max(1, min(4, $dopredne));
 
         $out['upratovanie']['dalsia_skupina'] = isset($input['upratovanie']['dalsia_skupina']) ? max(0, (int) $input['upratovanie']['dalsia_skupina']) : 0;
 

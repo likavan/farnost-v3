@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Farnost\Plugin;
 
 use Farnost\Plugin\Admin\BlockCategory;
+use Farnost\Plugin\Admin\HideOznamAddNew;
 use Farnost\Plugin\Blocks\RozpisSnapshot;
+use Farnost\Plugin\Oznam\BufferManager;
 use Farnost\Plugin\Admin\CommentsHide;
 use Farnost\Plugin\Admin\EditorAssets;
 use Farnost\Plugin\Admin\Menu;
@@ -55,6 +57,11 @@ final class Plugin
         BlockCategory::register();
         RozpisSnapshot::register();
         AutoTemplate::register();
+        BufferManager::register();
+
+        if (is_admin()) {
+            HideOznamAddNew::register();
+        }
 
         if (is_admin()) {
             Menu::register();

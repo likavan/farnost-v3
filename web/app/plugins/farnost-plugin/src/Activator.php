@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Farnost\Plugin;
 
+use Farnost\Plugin\Oznam\BufferManager;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -20,6 +22,10 @@ final class Activator
         self::ensureRole();
         self::ensureAdministratorCaps();
         self::ensureDefaultCategories();
+        BufferManager::scheduleCron();
+        // Naplníme buffer rovno teraz. CPT-čka už sú registrované (Plugin::boot beží
+        // skôr na init), wp_insert_post bude fungovať.
+        BufferManager::refill();
         flush_rewrite_rules();
     }
 
@@ -27,6 +33,7 @@ final class Activator
     {
         // Rolu necháme — keby ju admin omylom deaktivoval, neprídeme o nakonfigurovaných asistentov.
         // Kategórie tiež nemažeme — sú to bežné WP termy s obsahom.
+        BufferManager::unscheduleCron();
         flush_rewrite_rules();
     }
 

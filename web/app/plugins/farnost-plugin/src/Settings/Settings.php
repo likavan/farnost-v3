@@ -65,8 +65,9 @@ final class Settings
                 'zdielanie_zapnute'   => true,
             ],
             'oznamy'     => [
-                'publikacny_den' => 'sunday',
-                'publikacny_cas' => '08:00',
+                'publikacny_den'   => 'sunday',
+                'publikacny_cas'   => '08:00',
+                'dopredne_drafty'  => 2,
             ],
             'upratovanie' => [
                 'dalsia_skupina' => 0,
@@ -166,8 +167,9 @@ final class Settings
                 'oznamy'      => [
                     'type'       => 'object',
                     'properties' => [
-                        'publikacny_den' => ['type' => 'string'],
-                        'publikacny_cas' => ['type' => 'string'],
+                        'publikacny_den'  => ['type' => 'string'],
+                        'publikacny_cas'  => ['type' => 'string'],
+                        'dopredne_drafty' => ['type' => 'integer'],
                     ],
                 ],
                 'upratovanie' => [

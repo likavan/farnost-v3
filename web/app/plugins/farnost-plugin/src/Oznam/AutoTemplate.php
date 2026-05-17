@@ -6,7 +6,6 @@ namespace Farnost\Plugin\Oznam;
 
 use DateTimeImmutable;
 use Farnost\Plugin\PostTypes\Oznam;
-use WP_Query;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -26,62 +25,9 @@ final class AutoTemplate
 {
     public static function register(): void
     {
-        // Spustí sa pri vytvorení auto-draftu — tam si pripravíme všetky default meta.
+        // Bezpečnostná sieť pre prípad, že oznam vznikne mimo BufferManagera
+        // (priamy REST / WP-CLI / iný plugin) — doplníme aspoň meta a obsah.
         add_action('wp_insert_post', [self::class, 'onInsert'], 10, 3);
-        // Pri otvorení „Pridať oznam" stránky: ak týždeň má existujúci oznam, presmeruj naň.
-        add_action('load-post-new.php', [self::class, 'maybeRedirectToExisting']);
-        // Admin notice na cieľovej stránke presmerovania.
-        add_action('admin_notices', [self::class, 'maybeRenderRedirectNotice']);
-    }
-
-    public static function maybeRenderRedirectNotice(): void
-    {
-        if (empty($_GET['farnost_redirected_to_existing'])) {
-            return;
-        }
-        $message = __('Oznam pre tento týždeň už existuje — namiesto vytvorenia nového ste presmerovaní na jeho editáciu. Pre úplne nový oznam treba najprv existujúci publikovať alebo zmazať.', 'farnost-plugin');
-
-        // 1) Klasické admin notice (zobrazí sa na ne-Gutenberg stránkach).
-        ?>
-        <div class="notice notice-info is-dismissible">
-            <p><?php echo esc_html($message); ?></p>
-        </div>
-        <?php
-
-        // 2) Gutenberg notice (zobrazí sa v block editore, kde sa klasické admin_notices skryjú).
-        $js = sprintf(
-            "( function() { if ( typeof wp !== 'undefined' && wp.data && wp.domReady ) {
-                wp.domReady( function() {
-                    wp.data.dispatch( 'core/notices' ).createInfoNotice( %s, { isDismissible: true, type: 'snackbar' } );
-                } );
-            } } )();",
-            wp_json_encode($message)
-        );
-        wp_add_inline_script('wp-notices', $js);
-    }
-
-    /**
-     * Ak farár klikne „Pridať oznam" a najbližší týždeň už má publikovaný / draft oznam
-     * (nie auto-draft, ktorý je len scratch verzia), presmerujeme ho rovno na editáciu
-     * existujúceho — predchádza tvorbe duplicít aj zbytočným auto-draftom v DB.
-     */
-    public static function maybeRedirectToExisting(): void
-    {
-        if (!isset($_GET['post_type']) || $_GET['post_type'] !== Oznam::POST_TYPE) {
-            return;
-        }
-        [$od, $do] = self::computeNextWeek();
-        $existing = self::findWeekPost($od);
-        if ($existing === null) {
-            return;
-        }
-        $editUrl = get_edit_post_link($existing, 'redirect');
-        if (!is_string($editUrl) || $editUrl === '') {
-            return;
-        }
-        $editUrl = add_query_arg('farnost_redirected_to_existing', '1', $editUrl);
-        wp_safe_redirect($editUrl);
-        exit;
     }
 
     public static function onInsert(int $postId, \WP_Post $post, bool $update): void
@@ -159,26 +105,4 @@ final class AutoTemplate
         ];
     }
 
-    /**
-     * Nájde existujúci `oznam` post pre daný pondelok-tyzden.
-     * Auto-drafty explicitne ignorujeme — sú to len scratch verzie z neukončeného
-     * klikania „Pridať" a WP ich sám čistí po 7 dňoch.
-     */
-    private static function findWeekPost(string $tyzdenOdIso): ?int
-    {
-        $q = new WP_Query([
-            'post_type'      => Oznam::POST_TYPE,
-            'posts_per_page' => 1,
-            'post_status'    => ['publish', 'draft', 'pending', 'future', 'private'],
-            'no_found_rows'  => true,
-            'fields'         => 'ids',
-            'meta_query'     => [
-                ['key' => 'farnost_tyzden_od', 'value' => $tyzdenOdIso, 'compare' => '='],
-            ],
-        ]);
-        if (empty($q->posts)) {
-            return null;
-        }
-        return (int) $q->posts[0];
-    }
 }
