@@ -27,13 +27,19 @@ final class Kostol
             // ju ako klasickú WP Page. Tým pádom:
             //  - public => false (žiadny frontend, žiadny single-kostol template),
             //  - bez has_archive a rewrite,
-            //  - supports redukované na title + page-attributes (menu_order pre
-            //    konzistentné poradie, custom-fields zámerne nie),
             //  - show_in_menu => false — vlastná React obrazovka KostolyPage
             //    supluje default CPT listing.
+            //
+            // `custom-fields` v supports je nevyhnutné pre REST meta endpoint:
+            // WP_REST_Posts_Controller registruje `meta` schema field iba ak je
+            // tento support prítomný (wp-includes/rest-api/endpoints/
+            // class-wp-rest-posts-controller.php:2679). Bez neho POST so `meta`
+            // body server ticho prijme s 200 OK, ale dáta zahodí. Custom Fields
+            // panel Gutenbergu nás netrápi — táto CPT vôbec nemá `editor` support,
+            // takže do Gutenbergu sa farár nedostane (admin obrazovka je React UI).
             'public'       => false,
             'show_ui'      => true,
-            'supports'     => ['title', 'page-attributes'],
+            'supports'     => ['title', 'page-attributes', 'custom-fields'],
             'show_in_rest' => true,
             'rest_base'    => 'kostoly',
             'show_in_menu' => false,

@@ -25,11 +25,14 @@ final class UpratovaciaSkupina
             'public'       => false,
             'show_ui'      => true,
             'has_archive'  => false,
-            // Bez `custom-fields` — Gutenberg „Custom Fields" panel je vypnutý, aby
-            // farár nemohol ručne pridať ľubovoľnú meta. Editácia ide cez React UI
-            // v Farnosť → Upratovacie skupiny, kde sú dve vopred pripravené polia
-            // (farnost_skupina_kontakt, farnost_skupina_clenovia).
-            'supports'     => ['title', 'page-attributes'],
+            // `custom-fields` v supports je nevyhnutné pre REST meta endpoint:
+            // WP_REST_Posts_Controller registruje `meta` schema field iba ak je
+            // tento support prítomný (wp-includes/rest-api/endpoints/
+            // class-wp-rest-posts-controller.php:2679). Bez neho REST POST
+            // so `meta` body server ticho zahodí. Gutenberg „Custom Fields"
+            // panel nás netrápi — táto CPT nemá `editor` support, do Gutenberg
+            // editora sa farár nedostane (vlastná React admin obrazovka).
+            'supports'     => ['title', 'page-attributes', 'custom-fields'],
             'show_in_rest' => true,
             'rest_base'    => 'upratovacie-skupiny',
             // Vlastná admin obrazovka (`Menu::SLUG . '-upratovacie'`) supluje CPT listing.
