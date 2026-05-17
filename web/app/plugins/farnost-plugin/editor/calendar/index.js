@@ -567,11 +567,12 @@ function App() {
 					border-radius: 2px; border: 1px solid rgba(0,0,0,0.1);
 				}
 				.farnost-calendar-legend-mimoriadna {
-					color: #92400e; padding: 2px 8px; background: #fffbeb;
-					border-radius: 3px; font-style: italic;
+					color: #6b7280; font-style: italic;
 				}
 				.farnost-calendar-legend-mimoriadna span:first-child {
-					font-weight: 700; font-style: normal;
+					font-style: normal; color: #374151;
+					font-family: monospace; font-size: 14px;
+					letter-spacing: -2px;
 				}
 				.farnost-calendar-grid {
 					display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
@@ -600,16 +601,12 @@ function App() {
 				}
 				.farnost-mass:hover { background: #eef2ff; }
 				.farnost-mass.is-mimoriadna {
+					/* Pravidelný rozpis = solid border, mimoriadna = dashed. Subtílne, ale
+					   pri rýchlom skenovaní kalendára okamžite rozlíšiteľné. Pozadie
+					   ostáva neutrálne — nepreťažujeme farbami. */
 					border-left-style: dashed;
-					background: #fffbeb;
 				}
-				.farnost-mass.is-mimoriadna:hover { background: #fef3c7; }
 				.farnost-mass-time { font-weight: 600; }
-				.farnost-mass-tag {
-					display: inline-block; margin-left: 4px; padding: 0 4px;
-					font-size: 10px; font-style: italic; color: #92400e;
-					background: rgba(217, 119, 6, 0.12); border-radius: 2px;
-				}
 				.farnost-mass-um { color: #6b7280; }
 				.farnost-mass-um.empty { color: #d1d5db; font-style: italic; }
 				.farnost-day-add {
@@ -676,11 +673,6 @@ function App() {
 									>
 										<span className="farnost-mass-time">{ m.time }</span>
 										{ m.oznacenie && <span> · { m.oznacenie }</span> }
-										{ m.source === 'vynimka' && (
-											<span className="farnost-mass-tag">
-												{ __( 'mimoriadna', 'farnost-plugin' ) }
-											</span>
-										) }
 										<div className={ `farnost-mass-um${ m.umysel ? '' : ' empty' }` }>
 											{ m.umysel || ( m.source === 'rozpis' ? __( 'voľný úmysel', 'farnost-plugin' ) : '' ) }
 										</div>
