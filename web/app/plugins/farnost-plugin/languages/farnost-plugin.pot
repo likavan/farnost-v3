@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-05-17T19:57:46+00:00\n"
+"POT-Creation-Date: 2026-05-17T20:36:16+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: farnost-plugin\n"
@@ -107,7 +107,7 @@ msgstr ""
 
 #: src/Admin/Menu.php:91
 #: src/Admin/Menu.php:92
-#: src/Admin/Menu.php:198
+#: src/Admin/Menu.php:200
 msgid "Kalendár omší"
 msgstr ""
 
@@ -794,7 +794,7 @@ msgid "Deň"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:237
-#: editor/calendar/index.js:310
+#: editor/calendar/index.js:351
 #: editor/panel-umysel/index.js:88
 #: editor/panel-vynimka/index.js:88
 msgid "Čas"
@@ -933,7 +933,7 @@ msgid "Tento týždeň upratuje: <strong>%s</strong>"
 msgstr ""
 
 #: src/PostTypes/Kostol.php:20
-#: editor/calendar/index.js:320
+#: editor/calendar/index.js:361
 #: editor/panel-umysel/index.js:99
 #: editor/panel-vynimka/index.js:99
 msgid "Kostol"
@@ -943,23 +943,23 @@ msgstr ""
 msgid "Upraviť kostol"
 msgstr ""
 
-#: src/PostTypes/OmsaVynimka.php:21
+#: src/PostTypes/OmsaVynimka.php:19
 msgid "Výnimky omší"
 msgstr ""
 
-#: src/PostTypes/OmsaVynimka.php:22
+#: src/PostTypes/OmsaVynimka.php:20
 msgid "Výnimka omše"
 msgstr ""
 
-#: src/PostTypes/OmsaVynimka.php:23
+#: src/PostTypes/OmsaVynimka.php:21
 msgid "Pridať výnimku"
 msgstr ""
 
-#: src/PostTypes/OmsaVynimka.php:24
+#: src/PostTypes/OmsaVynimka.php:22
 msgid "Upraviť výnimku"
 msgstr ""
 
-#: src/PostTypes/OmsaVynimka.php:25
+#: src/PostTypes/OmsaVynimka.php:23
 msgid "Výnimky"
 msgstr ""
 
@@ -980,7 +980,7 @@ msgid "Zobraziť oznam"
 msgstr ""
 
 #: src/PostTypes/Umysel.php:22
-#: editor/calendar/index.js:343
+#: editor/calendar/index.js:384
 #: editor/panel-vynimka/index.js:120
 msgid "Úmysel"
 msgstr ""
@@ -1145,110 +1145,130 @@ msgstr ""
 msgid "December"
 msgstr ""
 
-#: editor/calendar/index.js:177
+#: editor/calendar/index.js:112
+msgid "Naozaj zmazať túto mimoriadnu omšu? Zmizne z kalendára aj z budúcich oznamov."
+msgstr ""
+
+#: editor/calendar/index.js:198
 #: editor/panel-umysel/index.js:72
 msgid "Úmysel sv. omše"
 msgstr ""
 
-#: editor/calendar/index.js:186
+#: editor/calendar/index.js:207
 msgid "mimoriadna omša"
 msgstr ""
 
-#: editor/calendar/index.js:191
+#: editor/calendar/index.js:212
 #: editor/panel-umysel/index.js:110
 msgid "Text úmyslu"
 msgstr ""
 
-#: editor/calendar/index.js:195
+#: editor/calendar/index.js:216
 msgid "Napr. Za zdravie rodiny / † Mária Nováková"
 msgstr ""
 
-#: editor/calendar/index.js:197
+#: editor/calendar/index.js:218
 msgid "Prázdny text = úmysel sa odstráni."
 msgstr ""
 
-#: editor/calendar/index.js:205
+#: editor/calendar/index.js:226
 #: editor/panel-umysel/index.js:120
 msgid "Anonymný úmysel"
 msgstr ""
 
-#: editor/calendar/index.js:208
+#: editor/calendar/index.js:229
 msgid "Skryť mená na verejnom webe."
 msgstr ""
 
-#: editor/calendar/index.js:216
-#: editor/calendar/index.js:578
-#: editor/kostoly/index.js:723
+#: editor/calendar/index.js:237
+#: editor/calendar/index.js:650
+#: editor/kostoly/index.js:733
 #: editor/upratovacie/index.js:509
 #, js-format
 msgid "Chyba: %s"
 msgstr ""
 
-#: editor/calendar/index.js:222
-#: editor/calendar/index.js:358
+#: editor/calendar/index.js:243
+msgid "Toto je pravidelná omša z rozpisu. Pre úpravu času, označenia alebo zmazanie tejto omše prejdite do Farnosť → Kostoly → rozpis."
+msgstr ""
+
+#: editor/calendar/index.js:256
+msgid "Zmazať omšu"
+msgstr ""
+
+#: editor/calendar/index.js:262
+#: editor/calendar/index.js:399
 msgid "Zatvoriť"
 msgstr ""
 
-#: editor/calendar/index.js:225
+#: editor/calendar/index.js:265
 msgid "Uložiť"
 msgstr ""
 
-#: editor/calendar/index.js:249
+#: editor/calendar/index.js:290
 msgid "Zadaj čas vo formáte HH:MM."
 msgstr ""
 
-#: editor/calendar/index.js:253
+#: editor/calendar/index.js:294
 msgid "Zvoľ kostol."
 msgstr ""
 
-#: editor/calendar/index.js:296
+#: editor/calendar/index.js:337
 msgid "Pridať mimoriadnu omšu"
 msgstr ""
 
-#: editor/calendar/index.js:303
+#: editor/calendar/index.js:344
 msgid "Mimoriadna omša sa pridáva nad rámec pravidelného rozpisu (napr. pohreb, sobáš, slávnosť)."
 msgstr ""
 
-#: editor/calendar/index.js:332
+#: editor/calendar/index.js:373
 msgid "Označenie omše"
 msgstr ""
 
-#: editor/calendar/index.js:335
+#: editor/calendar/index.js:376
 msgid "napr. pohrebná, sobášna, púťová"
 msgstr ""
 
-#: editor/calendar/index.js:347
+#: editor/calendar/index.js:388
 msgid "napr. † p. Nováková"
 msgstr ""
 
-#: editor/calendar/index.js:361
-#: editor/calendar/index.js:617
+#: editor/calendar/index.js:402
+#: editor/calendar/index.js:694
 msgid "Pridať omšu"
 msgstr ""
 
-#: editor/calendar/index.js:560
+#: editor/calendar/index.js:625
 msgid "Predošlý"
 msgstr ""
 
-#: editor/calendar/index.js:561
+#: editor/calendar/index.js:626
 msgid "Dnes"
 msgstr ""
 
-#: editor/calendar/index.js:562
+#: editor/calendar/index.js:627
 msgid "Nasledujúci"
 msgstr ""
 
-#: editor/calendar/index.js:577
-#: editor/kostoly/index.js:720
+#: editor/calendar/index.js:644
+msgid "mimoriadna omša (pohreb, sobáš, …)"
+msgstr ""
+
+#: editor/calendar/index.js:649
+#: editor/kostoly/index.js:730
 #: editor/upratovacie/index.js:506
 msgid "Načítavam…"
 msgstr ""
 
-#: editor/calendar/index.js:608
+#: editor/calendar/index.js:681
+msgid "mimoriadna"
+msgstr ""
+
+#: editor/calendar/index.js:685
 msgid "voľný úmysel"
 msgstr ""
 
-#: editor/calendar/index.js:616
+#: editor/calendar/index.js:693
 msgid "Pridať mimoriadnu omšu v tento deň"
 msgstr ""
 
@@ -1300,20 +1320,20 @@ msgstr ""
 msgid "Zmazať"
 msgstr ""
 
-#: editor/kostoly/index.js:709
+#: editor/kostoly/index.js:719
 msgid "Pridať kostol (napr. Farský kostol sv. Martina)"
 msgstr ""
 
-#: editor/kostoly/index.js:716
+#: editor/kostoly/index.js:726
 #: editor/upratovacie/index.js:502
 msgid "Pridať"
 msgstr ""
 
-#: editor/kostoly/index.js:729
+#: editor/kostoly/index.js:739
 msgid "Zatiaľ žiadne kostoly. Pridajte prvý vyššie."
 msgstr ""
 
-#: editor/kostoly/index.js:741
+#: editor/kostoly/index.js:751
 #: editor/upratovacie/index.js:527
 msgid "Ukladám…"
 msgstr ""

@@ -162,8 +162,10 @@ final class Menu
             KostolyPage::SLUG,                                // Kostoly (custom obrazovka)
             'edit.php?post_type=oznam',                       // Oznamy
             'farnost-mimoriadny-oznam',                       // Mimoriadny oznam
-            'edit.php?post_type=omsa_vynimka',                // Výnimky (dočasne, kým nemáme kalendár)
-            'edit.php?post_type=umysel',                      // Úmysly (dočasne, kým nemáme kalendár)
+            // Výnimky a Úmysly nemajú vlastnú položku — vznikajú z kalendára
+            // a editora oznamu (doc/07-admin-ux.md:190). Tu len pre úplnosť
+            // ako referencia, čo sa NEzobrazuje.
+            'edit.php?post_type=umysel',                      // Úmysly (zatiaľ ešte viditeľné)
             UpratovacieSkupinyPage::SLUG,                     // Upratovacie skupiny (custom obrazovka)
             'farnost-nastavenia',                             // Nastavenia
             'farnost-navod',                                  // Návod

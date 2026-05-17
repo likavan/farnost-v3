@@ -105,6 +105,27 @@ function UmyselModal( { mass, onClose, onSaved } ) {
 	const [ saving, setSaving ] = useState( false );
 	const [ error, setError ] = useState( null );
 
+	// Zmazanie celej mimoriadnej omše (vynimka). Pravidelná (rozpis) sa odtiaľto
+	// mazať nedá — rozpis sa upravuje v Farnosť → Kostoly.
+	const handleDeleteVynimka = async () => {
+		// eslint-disable-next-line no-alert
+		if ( ! window.confirm( __( 'Naozaj zmazať túto mimoriadnu omšu? Zmizne z kalendára aj z budúcich oznamov.', 'farnost-plugin' ) ) ) {
+			return;
+		}
+		setSaving( true );
+		setError( null );
+		try {
+			await apiFetch( {
+				path: `/wp/v2/omsa-vynimky/${ mass.vynimka_id }?force=true`,
+				method: 'DELETE',
+			} );
+			onSaved();
+		} catch ( e ) {
+			setError( e.message || String( e ) );
+			setSaving( false );
+		}
+	};
+
 	const handleSave = async () => {
 		setSaving( true );
 		setError( null );
@@ -217,13 +238,33 @@ function UmyselModal( { mass, onClose, onSaved } ) {
 				</p>
 			) }
 
-			<div style={ { display: 'flex', gap: 8, marginTop: 20, justifyContent: 'flex-end' } }>
-				<Button variant="tertiary" onClick={ onClose } disabled={ saving }>
-					{ __( 'Zatvoriť', 'farnost-plugin' ) }
-				</Button>
-				<Button variant="primary" onClick={ handleSave } disabled={ saving }>
-					{ saving ? <Spinner /> : __( 'Uložiť', 'farnost-plugin' ) }
-				</Button>
+			{ mass.source === 'rozpis' && (
+				<p style={ { marginTop: 12, fontSize: 12, color: '#6b7280' } }>
+					{ __( 'Toto je pravidelná omša z rozpisu. Pre úpravu času, označenia alebo zmazanie tejto omše prejdite do Farnosť → Kostoly → rozpis.', 'farnost-plugin' ) }
+				</p>
+			) }
+
+			<div style={ { display: 'flex', gap: 8, marginTop: 20, justifyContent: 'space-between', alignItems: 'center' } }>
+				<div>
+					{ mass.source === 'vynimka' && (
+						<Button
+							variant="tertiary"
+							isDestructive
+							onClick={ handleDeleteVynimka }
+							disabled={ saving }
+						>
+							{ __( 'Zmazať omšu', 'farnost-plugin' ) }
+						</Button>
+					) }
+				</div>
+				<div style={ { display: 'flex', gap: 8 } }>
+					<Button variant="tertiary" onClick={ onClose } disabled={ saving }>
+						{ __( 'Zatvoriť', 'farnost-plugin' ) }
+					</Button>
+					<Button variant="primary" onClick={ handleSave } disabled={ saving }>
+						{ saving ? <Spinner /> : __( 'Uložiť', 'farnost-plugin' ) }
+					</Button>
+				</div>
 			</div>
 		</Modal>
 	);
@@ -513,10 +554,24 @@ function App() {
 				.farnost-calendar { max-width: 100%; }
 				.farnost-calendar-toolbar { display: flex; align-items: center; gap: 8px; margin: 8px 0 16px; }
 				.farnost-calendar-toolbar h2 { margin: 0 16px 0 0; font-size: 18px; }
-				.farnost-calendar-legend { display: flex; gap: 12px; flex-wrap: wrap; margin: 8px 0 16px; font-size: 12px; }
-				.farnost-calendar-legend span { display: inline-flex; align-items: center; gap: 4px; }
-				.farnost-calendar-legend span::before {
-					content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 2px;
+				.farnost-calendar-legend {
+					display: flex; gap: 12px; flex-wrap: wrap;
+					margin: 8px 0 16px; font-size: 12px; color: #374151;
+					align-items: center;
+				}
+				.farnost-calendar-legend > span {
+					display: inline-flex; align-items: center; gap: 6px;
+				}
+				.farnost-calendar-legend-swatch {
+					display: inline-block; width: 12px; height: 12px;
+					border-radius: 2px; border: 1px solid rgba(0,0,0,0.1);
+				}
+				.farnost-calendar-legend-mimoriadna {
+					color: #92400e; padding: 2px 8px; background: #fffbeb;
+					border-radius: 3px; font-style: italic;
+				}
+				.farnost-calendar-legend-mimoriadna span:first-child {
+					font-weight: 700; font-style: normal;
 				}
 				.farnost-calendar-grid {
 					display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
@@ -544,7 +599,17 @@ function App() {
 					cursor: pointer;
 				}
 				.farnost-mass:hover { background: #eef2ff; }
+				.farnost-mass.is-mimoriadna {
+					border-left-style: dashed;
+					background: #fffbeb;
+				}
+				.farnost-mass.is-mimoriadna:hover { background: #fef3c7; }
 				.farnost-mass-time { font-weight: 600; }
+				.farnost-mass-tag {
+					display: inline-block; margin-left: 4px; padding: 0 4px;
+					font-size: 10px; font-style: italic; color: #92400e;
+					background: rgba(217, 119, 6, 0.12); border-radius: 2px;
+				}
 				.farnost-mass-um { color: #6b7280; }
 				.farnost-mass-um.empty { color: #d1d5db; font-style: italic; }
 				.farnost-day-add {
@@ -566,11 +631,18 @@ function App() {
 			{ Object.values( kostolyById ).length > 0 && (
 				<div className="farnost-calendar-legend">
 					{ Object.values( kostolyById ).map( ( k ) => (
-						<span key={ k.id } style={ { '--c': k.color } }>
-							<span style={ { background: k.color } }></span>
+						<span key={ k.id }>
+							<span
+								className="farnost-calendar-legend-swatch"
+								style={ { background: k.color } }
+							/>
 							{ k.title }
 						</span>
 					) ) }
+					<span className="farnost-calendar-legend-mimoriadna">
+						<span aria-hidden="true">┊</span>
+						{ __( 'mimoriadna omša (pohreb, sobáš, …)', 'farnost-plugin' ) }
+					</span>
 				</div>
 			) }
 
@@ -597,13 +669,18 @@ function App() {
 								{ masses.map( ( m, i ) => (
 									<div
 										key={ i }
-										className="farnost-mass"
+										className={ `farnost-mass${ m.source === 'vynimka' ? ' is-mimoriadna' : '' }` }
 										style={ { borderColor: m.kostol_color, color: '#111827' } }
 										title={ `${ m.kostol_title }${ m.oznacenie ? ' · ' + m.oznacenie : '' }${ m.source === 'vynimka' ? ' (mimoriadna)' : '' }` }
 										onClick={ () => setOpenMass( m ) }
 									>
 										<span className="farnost-mass-time">{ m.time }</span>
 										{ m.oznacenie && <span> · { m.oznacenie }</span> }
+										{ m.source === 'vynimka' && (
+											<span className="farnost-mass-tag">
+												{ __( 'mimoriadna', 'farnost-plugin' ) }
+											</span>
+										) }
 										<div className={ `farnost-mass-um${ m.umysel ? '' : ' empty' }` }>
 											{ m.umysel || ( m.source === 'rozpis' ? __( 'voľný úmysel', 'farnost-plugin' ) : '' ) }
 										</div>

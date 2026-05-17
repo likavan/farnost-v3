@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Farnost\Plugin\PostTypes;
 
-use Farnost\Plugin\Admin\Menu;
-
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -26,10 +24,10 @@ final class OmsaVynimka
             ],
             'public'       => false,
             'show_ui'      => true,
-            // Pôvodný plán: vzniká z kalendára a editora oznamu (doc/07-admin-ux.md).
-            // Dočasne pripnuté pod „Farnosť" submenu, kým nemáme kalendár — vtedy
-            // sa hodnota vráti na false.
-            'show_in_menu' => Menu::SLUG,
+            // Výnimky vznikajú z kalendára (doc/07-admin-ux.md:190). Vlastná položka
+            // v menu by farára mýlila. CPT editor (post.php) ostáva funkčný cez
+            // show_ui pre prípadné cesty z kódu (sidebar panel, atď.).
+            'show_in_menu' => false,
             'has_archive'  => false,
             'supports'     => ['title', 'custom-fields'],
             'show_in_rest' => true,
