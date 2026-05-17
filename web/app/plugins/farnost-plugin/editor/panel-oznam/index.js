@@ -1,16 +1,28 @@
 /**
  * Gutenberg sidebar panel pre CPT `oznam` — týždeň, ku ktorému oznam patrí.
  *
- * Oznam pokrýva jeden týždeň pondelok–nedeľa. Dve ISO dátumové polia
- * `farnost_tyzden_od` a `farnost_tyzden_do` definujú jeho rozsah.
+ * Týždeň je **pevný** — určuje sa automaticky pri vytvorení oznamu (PHP:
+ * `Oznam\AutoTemplate::computeNextWeek`). Tu sa zobrazuje len ako info, aby
+ * farár nezmenil dátumy a tým nerozbil snapshot v rozpis-snapshot bloku.
+ *
  * Životný cyklus oznamu viď doc/06-struktura-stranky.md.
  */
 
 import { registerPlugin } from '@wordpress/plugins';
 import { PluginDocumentSettingPanel } from '@wordpress/editor';
-import { useSelect, useDispatch } from '@wordpress/data';
-import { TextControl } from '@wordpress/components';
+import { useSelect } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
+
+function formatLong( iso ) {
+	if ( ! iso ) return '—';
+	const d = new Date( iso + 'T12:00:00' );
+	return d.toLocaleDateString( 'sk-SK', {
+		weekday: 'long',
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric',
+	} );
+}
 
 function OznamTyzdenPanel() {
 	const { postType, tyzdenOd, tyzdenDo } = useSelect( ( select ) => {
@@ -23,15 +35,9 @@ function OznamTyzdenPanel() {
 		};
 	}, [] );
 
-	const { editPost } = useDispatch( 'core/editor' );
-
 	if ( postType !== 'oznam' ) {
 		return null;
 	}
-
-	const setMeta = ( field, value ) => {
-		editPost( { meta: { [ field ]: value } } );
-	};
 
 	return (
 		<PluginDocumentSettingPanel
@@ -39,31 +45,23 @@ function OznamTyzdenPanel() {
 			title={ __( 'Týždeň oznamu', 'farnost-plugin' ) }
 			className="farnost-oznam-tyzden-panel"
 		>
-			<div style={ { display: 'flex', gap: 8 } }>
-				<div style={ { flex: 1 } }>
-					<TextControl
-						label={ __( 'Od pondelka', 'farnost-plugin' ) }
-						type="date"
-						value={ tyzdenOd || '' }
-						onChange={ ( v ) => setMeta( 'farnost_tyzden_od', v ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
+			<div style={ { fontSize: 13, lineHeight: 1.5 } }>
+				<div style={ { display: 'flex', justifyContent: 'space-between', color: '#6b7280', fontSize: 12, marginBottom: 2 } }>
+					<span>{ __( 'Od', 'farnost-plugin' ) }</span>
 				</div>
-				<div style={ { flex: 1 } }>
-					<TextControl
-						label={ __( 'Do nedele', 'farnost-plugin' ) }
-						type="date"
-						value={ tyzdenDo || '' }
-						onChange={ ( v ) => setMeta( 'farnost_tyzden_do', v ) }
-						__nextHasNoMarginBottom
-						__next40pxDefaultSize
-					/>
+				<div style={ { fontWeight: 600, marginBottom: 10 } }>
+					{ formatLong( tyzdenOd ) }
+				</div>
+				<div style={ { display: 'flex', justifyContent: 'space-between', color: '#6b7280', fontSize: 12, marginBottom: 2 } }>
+					<span>{ __( 'Do', 'farnost-plugin' ) }</span>
+				</div>
+				<div style={ { fontWeight: 600 } }>
+					{ formatLong( tyzdenDo ) }
 				</div>
 			</div>
-			<p style={ { color: '#6b7280', marginTop: 8, fontSize: 12 } }>
+			<p style={ { color: '#6b7280', marginTop: 12, fontSize: 12 } }>
 				{ __(
-					'Oznam pokrýva jeden týždeň pondelok–nedeľa. Po publikovaní sa rozpis omší, úmysly a výnimky zamrazia ako snapshot.',
+					'Týždeň oznamu je pevne určený pri vytvorení. Pre iný týždeň vytvorte nový oznam.',
 					'farnost-plugin'
 				) }
 			</p>
