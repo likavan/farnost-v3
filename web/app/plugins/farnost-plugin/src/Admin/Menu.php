@@ -48,9 +48,6 @@ final class Menu
         }
         if ($page === KostolyPage::SLUG) {
             self::enqueueBuilt('farnost-kostoly', 'kostoly');
-            // Color picker pre per-kostol farbu — rovnako ako pre kategórie.
-            wp_enqueue_style('wp-color-picker');
-            wp_enqueue_script('wp-color-picker');
         }
     }
 

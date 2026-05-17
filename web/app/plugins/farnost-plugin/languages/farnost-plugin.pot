@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-05-17T19:47:58+00:00\n"
+"POT-Creation-Date: 2026-05-17T19:57:46+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: farnost-plugin\n"
@@ -40,8 +40,8 @@ msgid "Farský asistent"
 msgstr ""
 
 #: src/Admin/BlockCategory.php:34
-#: src/Admin/Menu.php:82
-#: src/Admin/Menu.php:83
+#: src/Admin/Menu.php:79
+#: src/Admin/Menu.php:80
 msgid "Farnosť"
 msgstr ""
 
@@ -94,8 +94,8 @@ msgid "Nedostatočné oprávnenia."
 msgstr ""
 
 #: src/Admin/KostolyPage.php:33
-#: src/Admin/Menu.php:104
-#: src/Admin/Menu.php:105
+#: src/Admin/Menu.php:101
+#: src/Admin/Menu.php:102
 #: src/PostTypes/Kostol.php:19
 #: src/PostTypes/Kostol.php:23
 msgid "Kostoly"
@@ -105,20 +105,20 @@ msgstr ""
 msgid "Evidencia kostolov pre rozpisy omší a kalendár. Každý kostol má farbu pre vizuálne rozlíšenie v kalendári a vlastný týždenný rozpis omší. Webovú stránku o kostole môžete spraviť ako bežnú WP stránku."
 msgstr ""
 
-#: src/Admin/Menu.php:94
-#: src/Admin/Menu.php:95
-#: src/Admin/Menu.php:201
+#: src/Admin/Menu.php:91
+#: src/Admin/Menu.php:92
+#: src/Admin/Menu.php:198
 msgid "Kalendár omší"
 msgstr ""
 
-#: src/Admin/Menu.php:114
-#: src/Admin/Menu.php:115
+#: src/Admin/Menu.php:111
+#: src/Admin/Menu.php:112
 #: src/Admin/MimoriadnyOznamPage.php:50
 msgid "Mimoriadny oznam"
 msgstr ""
 
-#: src/Admin/Menu.php:124
-#: src/Admin/Menu.php:125
+#: src/Admin/Menu.php:121
+#: src/Admin/Menu.php:122
 #: src/Admin/SettingsPage.php:249
 #: src/Admin/UpratovacieSkupinyPage.php:36
 #: src/PostTypes/UpratovaciaSkupina.php:19
@@ -126,15 +126,15 @@ msgstr ""
 msgid "Upratovacie skupiny"
 msgstr ""
 
-#: src/Admin/Menu.php:134
-#: src/Admin/Menu.php:135
+#: src/Admin/Menu.php:131
+#: src/Admin/Menu.php:132
 #: src/Admin/NavodPage.php:292
 #: src/Admin/NavodPage.php:298
 msgid "Nastavenia"
 msgstr ""
 
-#: src/Admin/Menu.php:144
-#: src/Admin/Menu.php:145
+#: src/Admin/Menu.php:141
+#: src/Admin/Menu.php:142
 #: src/Admin/NavodPage.php:40
 msgid "Návod"
 msgstr ""
@@ -636,7 +636,7 @@ msgid "Nastavenia boli uložené."
 msgstr ""
 
 #: src/Admin/SettingsPage.php:55
-#: editor/wizard/index.js:313
+#: editor/wizard/index.js:318
 msgid "Identita farnosti"
 msgstr ""
 
@@ -649,7 +649,7 @@ msgid "povinné"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:62
-#: editor/wizard/index.js:326
+#: editor/wizard/index.js:331
 msgid "Patrón farnosti"
 msgstr ""
 
@@ -658,7 +658,7 @@ msgid "Dekanát"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:70
-#: editor/wizard/index.js:337
+#: editor/wizard/index.js:342
 msgid "Diecéza"
 msgstr ""
 
@@ -667,12 +667,12 @@ msgid "Rok založenia"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:79
-#: editor/wizard/index.js:352
+#: editor/wizard/index.js:357
 msgid "Kontakt"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:82
-#: editor/wizard/index.js:358
+#: editor/wizard/index.js:363
 msgid "Adresa"
 msgstr ""
 
@@ -1010,12 +1010,12 @@ msgid "Skupina nenájdená."
 msgstr ""
 
 #: editor/block-rozpis-snapshot/index.js:146
-#: editor/kostoly/index.js:237
+#: editor/kostoly/index.js:291
 msgid "označenie"
 msgstr ""
 
 #: editor/block-rozpis-snapshot/index.js:154
-#: editor/kostoly/index.js:245
+#: editor/kostoly/index.js:299
 msgid "Odstrániť omšu"
 msgstr ""
 
@@ -1024,7 +1024,7 @@ msgid "úmysel"
 msgstr ""
 
 #: editor/block-rozpis-snapshot/index.js:177
-#: editor/kostoly/index.js:256
+#: editor/kostoly/index.js:310
 msgid "+ Pridať omšu"
 msgstr ""
 
@@ -1178,7 +1178,7 @@ msgstr ""
 
 #: editor/calendar/index.js:216
 #: editor/calendar/index.js:578
-#: editor/kostoly/index.js:664
+#: editor/kostoly/index.js:723
 #: editor/upratovacie/index.js:509
 #, js-format
 msgid "Chyba: %s"
@@ -1239,7 +1239,7 @@ msgid "Nasledujúci"
 msgstr ""
 
 #: editor/calendar/index.js:577
-#: editor/kostoly/index.js:661
+#: editor/kostoly/index.js:720
 #: editor/upratovacie/index.js:506
 msgid "Načítavam…"
 msgstr ""
@@ -1252,59 +1252,68 @@ msgstr ""
 msgid "Pridať mimoriadnu omšu v tento deň"
 msgstr ""
 
-#: editor/kostoly/index.js:178
-msgid "Farba nie je nastavená (pozičný fallback)"
+#: editor/kostoly/index.js:179
+#, js-format
+msgid "Farba %s — klik pre zmenu"
 msgstr ""
 
-#: editor/kostoly/index.js:185
+#: editor/kostoly/index.js:180
+msgid "Default farba — klik pre explicitné nastavenie"
+msgstr ""
+
+#: editor/kostoly/index.js:189
 msgid "Zmeniť farbu kostola"
 msgstr ""
 
-#: editor/kostoly/index.js:223
+#: editor/kostoly/index.js:245
+msgid "Vyčistiť (použiť default)"
+msgstr ""
+
+#: editor/kostoly/index.js:277
 msgid "nič"
 msgstr ""
 
-#: editor/kostoly/index.js:363
+#: editor/kostoly/index.js:417
 msgid "Naozaj zmazať kostol? Rozpis omší aj všetky výnimky / úmysly pre tento kostol stratíte."
 msgstr ""
 
-#: editor/kostoly/index.js:505
-#: editor/wizard/index.js:412
+#: editor/kostoly/index.js:564
+#: editor/wizard/index.js:417
 msgid "Názov kostola"
 msgstr ""
 
-#: editor/kostoly/index.js:511
+#: editor/kostoly/index.js:570
 msgid "Hlavný"
 msgstr ""
 
-#: editor/kostoly/index.js:528
+#: editor/kostoly/index.js:587
 msgid "Skryť rozpis"
 msgstr ""
 
-#: editor/kostoly/index.js:529
+#: editor/kostoly/index.js:588
 #, js-format
 msgid "Rozpis (%d)"
 msgstr ""
 
-#: editor/kostoly/index.js:540
+#: editor/kostoly/index.js:599
 #: editor/upratovacie/index.js:400
 msgid "Zmazať"
 msgstr ""
 
-#: editor/kostoly/index.js:650
+#: editor/kostoly/index.js:709
 msgid "Pridať kostol (napr. Farský kostol sv. Martina)"
 msgstr ""
 
-#: editor/kostoly/index.js:657
+#: editor/kostoly/index.js:716
 #: editor/upratovacie/index.js:502
 msgid "Pridať"
 msgstr ""
 
-#: editor/kostoly/index.js:670
+#: editor/kostoly/index.js:729
 msgid "Zatiaľ žiadne kostoly. Pridajte prvý vyššie."
 msgstr ""
 
-#: editor/kostoly/index.js:682
+#: editor/kostoly/index.js:741
 #: editor/upratovacie/index.js:527
 msgid "Ukladám…"
 msgstr ""
@@ -1416,99 +1425,99 @@ msgstr ""
 msgid "Vyplň povinné pole."
 msgstr ""
 
-#: editor/wizard/index.js:265
+#: editor/wizard/index.js:270
 #, js-format
 msgid "Krok %1$d z %2$d"
 msgstr ""
 
-#: editor/wizard/index.js:276
+#: editor/wizard/index.js:281
 msgid "Načítavam vaše uložené nastavenia…"
 msgstr ""
 
-#: editor/wizard/index.js:294
+#: editor/wizard/index.js:299
 msgid "‹ Späť"
 msgstr ""
 
-#: editor/wizard/index.js:298
+#: editor/wizard/index.js:303
 msgid "Pokračovať ›"
 msgstr ""
 
-#: editor/wizard/index.js:302
+#: editor/wizard/index.js:307
 msgid "Dokončiť nastavenie"
 msgstr ""
 
-#: editor/wizard/index.js:316
+#: editor/wizard/index.js:321
 msgid "Názov farnosti"
 msgstr ""
 
-#: editor/wizard/index.js:319
+#: editor/wizard/index.js:324
 msgid "Napr. Rímskokatolícka farnosť sv. Martina"
 msgstr ""
 
-#: editor/wizard/index.js:329
+#: editor/wizard/index.js:334
 msgid "Napr. sv. Martin z Tours"
 msgstr ""
 
-#: editor/wizard/index.js:330
+#: editor/wizard/index.js:335
 msgid "Voliteľné — meno svätca/titulu farnosti, použije sa v hlavičke a SEO."
 msgstr ""
 
-#: editor/wizard/index.js:340
+#: editor/wizard/index.js:345
 msgid "Napr. Trnavská arcidiecéza"
 msgstr ""
 
-#: editor/wizard/index.js:354
+#: editor/wizard/index.js:359
 msgid "Všetko voliteľné — môžete doplniť neskôr v Nastaveniach."
 msgstr ""
 
-#: editor/wizard/index.js:368
+#: editor/wizard/index.js:373
 msgid "Telefón"
 msgstr ""
 
-#: editor/wizard/index.js:372
+#: editor/wizard/index.js:377
 msgid "Ďalšie čísla pridáte v Nastaveniach."
 msgstr ""
 
-#: editor/wizard/index.js:379
+#: editor/wizard/index.js:384
 msgid "E-mail"
 msgstr ""
 
-#: editor/wizard/index.js:394
+#: editor/wizard/index.js:399
 msgid "Použije sa v sidebare a v päte webu pre milodary."
 msgstr ""
 
-#: editor/wizard/index.js:406
+#: editor/wizard/index.js:411
 msgid "Prvý kostol"
 msgstr ""
 
-#: editor/wizard/index.js:408
+#: editor/wizard/index.js:413
 msgid "Hlavný kostol farnosti. Rozpis omší a ďalšie filiálky pridáte neskôr cez Farnosť → Kostoly."
 msgstr ""
 
-#: editor/wizard/index.js:415
+#: editor/wizard/index.js:420
 msgid "Napr. Farský kostol sv. Martina"
 msgstr ""
 
-#: editor/wizard/index.js:421
+#: editor/wizard/index.js:426
 msgid "Rozpis omší a farbu pre kalendár nastavíte neskôr cez Farnosť → Kostoly."
 msgstr ""
 
-#: editor/wizard/index.js:430
+#: editor/wizard/index.js:435
 msgid "Režim oznamov"
 msgstr ""
 
-#: editor/wizard/index.js:432
+#: editor/wizard/index.js:437
 msgid "Ako budete spravovať týždenné oznamy?"
 msgstr ""
 
-#: editor/wizard/index.js:438
+#: editor/wizard/index.js:443
 msgid "Plný — štruktúrovaný editor s automatickým rozpisom a úmyslami (odporúčané)"
 msgstr ""
 
-#: editor/wizard/index.js:442
+#: editor/wizard/index.js:447
 msgid "Lite — nahrávam oznamy ako PDF z Wordu, žiadny štruktúrovaný editor"
 msgstr ""
 
-#: editor/wizard/index.js:449
+#: editor/wizard/index.js:454
 msgid "Voľbu môžete kedykoľvek zmeniť v Nastaveniach → Moduly."
 msgstr ""

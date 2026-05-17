@@ -124,35 +124,21 @@ function InlineEdit( { value, onCommit, placeholder, style } ) {
 }
 
 /**
- * Color swatch — kliknutie otvorí wp-color-picker popover. Implementácia cez iris
- * (jQuery), ktorá je v admine k dispozícii.
+ * Color swatch + popover s 6-tlačidlovou paletou a hex inputom. Bez wpColorPicker
+ * (iris) — ten fíruje `change` event na každý posun slidera, čo robí race conditions
+ * s REST POST-mi. Naša paleta je deterministická, jeden klik = jeden save.
+ *
+ * `effective` farba sa zobrazí v swatchi keď je `value` prázdne (legacy kostol bez
+ * explicitne nastavenej farby) — konzistencia s kalendárom.
  */
-function ColorSwatch( { value, onCommit } ) {
+function ColorSwatch( { value, onCommit, effective } ) {
 	const [ open, setOpen ] = useState( false );
+	const [ hexDraft, setHexDraft ] = useState( value );
 	const wrapRef = useRef( null );
-	const inputRef = useRef( null );
 
 	useEffect( () => {
-		if ( ! open || ! inputRef.current || ! window.jQuery ) {
-			return;
-		}
-		const $input = window.jQuery( inputRef.current );
-		$input.wpColorPicker( {
-			defaultColor: value || '',
-			change: ( _event, ui ) => {
-				const next = ui.color.toString();
-				if ( next !== value ) {
-					onCommit( next );
-				}
-			},
-			clear: () => {
-				onCommit( '' );
-			},
-		} );
-		return () => {
-			try { $input.wpColorPicker( 'close' ); } catch ( e ) {}
-		};
-	}, [ open ] );
+		if ( ! open ) setHexDraft( value );
+	}, [ value, open ] );
 
 	// Zatvor pri kliku mimo
 	useEffect( () => {
@@ -166,8 +152,22 @@ function ColorSwatch( { value, onCommit } ) {
 		return () => document.removeEventListener( 'mousedown', handler );
 	}, [ open ] );
 
-	const displayColor = value || '#9ca3af';
 	const isExplicit = !! value;
+	const displayColor = value || effective || '#9ca3af';
+
+	const commitHex = () => {
+		const v = hexDraft.trim().toLowerCase();
+		if ( v === value ) return;
+		if ( v === '' ) {
+			onCommit( '' );
+			setOpen( false );
+			return;
+		}
+		if ( /^#([a-f0-9]{3}|[a-f0-9]{6})$/.test( v ) ) {
+			onCommit( v );
+			setOpen( false );
+		}
+	};
 
 	return (
 		<div ref={ wrapRef } style={ { position: 'relative', flexShrink: 0 } }>
@@ -175,22 +175,76 @@ function ColorSwatch( { value, onCommit } ) {
 				type="button"
 				onClick={ ( e ) => { e.stopPropagation(); setOpen( ! open ); } }
 				onDragStart={ ( e ) => e.preventDefault() }
-				title={ isExplicit ? value : __( 'Farba nie je nastavená (pozičný fallback)', 'farnost-plugin' ) }
+				title={ isExplicit
+					? sprintf( __( 'Farba %s — klik pre zmenu', 'farnost-plugin' ), value )
+					: __( 'Default farba — klik pre explicitné nastavenie', 'farnost-plugin' )
+				}
 				style={ {
 					width: 24, height: 24, borderRadius: 4,
 					background: displayColor,
-					border: isExplicit ? '1px solid rgba(0,0,0,0.2)' : '1px dashed #9ca3af',
+					border: '1px solid rgba(0,0,0,0.2)',
 					cursor: 'pointer', padding: 0,
+					boxShadow: isExplicit ? 'none' : 'inset 0 0 0 2px rgba(255,255,255,0.5)',
 				} }
 				aria-label={ __( 'Zmeniť farbu kostola', 'farnost-plugin' ) }
 			/>
 			{ open && (
-				<div style={ {
-					position: 'absolute', top: '110%', left: 0, zIndex: 100,
-					background: '#fff', border: '1px solid #e5e7eb', borderRadius: 4,
-					padding: 8, boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-				} }>
-					<input ref={ inputRef } type="text" defaultValue={ value || '' } />
+				<div
+					onClick={ ( e ) => e.stopPropagation() }
+					style={ {
+						position: 'absolute', top: '110%', left: 0, zIndex: 100,
+						background: '#fff', border: '1px solid #e5e7eb', borderRadius: 6,
+						padding: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+						minWidth: 220,
+					} }
+				>
+					<div style={ { display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 } }>
+						{ FALLBACK_COLORS.map( ( c ) => {
+							const selected = value === c;
+							return (
+								<button
+									key={ c }
+									type="button"
+									onClick={ () => { onCommit( c ); setOpen( false ); } }
+									style={ {
+										width: 26, height: 26, borderRadius: 4,
+										background: c,
+										border: selected ? '2px solid #111' : '1px solid rgba(0,0,0,0.15)',
+										cursor: 'pointer', padding: 0,
+									} }
+									aria-label={ c }
+									title={ c }
+								/>
+							);
+						} ) }
+					</div>
+					<div style={ { display: 'flex', gap: 6, alignItems: 'center', marginBottom: 8 } }>
+						<input
+							type="text"
+							value={ hexDraft }
+							onChange={ ( e ) => setHexDraft( e.target.value ) }
+							onKeyDown={ ( e ) => {
+								if ( e.key === 'Enter' ) commitHex();
+								else if ( e.key === 'Escape' ) setOpen( false );
+							} }
+							onBlur={ commitHex }
+							placeholder="#1e40af"
+							style={ {
+								flex: 1, padding: '4px 8px', fontSize: 12,
+								border: '1px solid #d1d5db', borderRadius: 3,
+							} }
+						/>
+					</div>
+					{ isExplicit && (
+						<Button
+							variant="link"
+							isDestructive
+							onClick={ () => { onCommit( '' ); setOpen( false ); } }
+							style={ { fontSize: 11, padding: 0 } }
+						>
+							{ __( 'Vyčistiť (použiť default)', 'farnost-plugin' ) }
+						</Button>
+					) }
 				</div>
 			) }
 		</div>
@@ -387,7 +441,9 @@ function App() {
 		try {
 			await apiFetch( { path: `${ REST_BASE }/${ id }`, method: 'POST', data: { title: newT } } );
 		} catch ( e ) {
-			setError( e.message || String( e ) );
+			// eslint-disable-next-line no-console
+			console.error( '[farnost-kostoly]', e );
+			setError( e?.message || e?.code || String( e ) );
 			void fetchAll();
 		}
 	};
@@ -405,7 +461,9 @@ function App() {
 				data: { meta: { [ key ]: value } },
 			} );
 		} catch ( e ) {
-			setError( e.message || String( e ) );
+			// eslint-disable-next-line no-console
+			console.error( '[farnost-kostoly]', e );
+			setError( e?.message || e?.code || String( e ) );
 			void fetchAll();
 		}
 	};
@@ -496,6 +554,7 @@ function App() {
 						<div className="farnost-kostoly-handle" aria-hidden="true">☰</div>
 						<ColorSwatch
 							value={ item.meta?.farnost_color || '' }
+							effective={ color }
 							onCommit={ ( v ) => handleUpdateMeta( item.id, 'farnost_color', v ) }
 						/>
 						<div className="farnost-kostoly-title">

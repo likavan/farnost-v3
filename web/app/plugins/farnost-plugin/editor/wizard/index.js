@@ -187,6 +187,8 @@ function App({ homeUrl }) {
 			} );
 
 			// 2) Vytvor alebo aktualizuj hlavný kostol
+			// Pre nový kostol auto-pridelíme prvú farbu z palety — kalendárna legenda
+			// tak hneď ukáže explicitnú farbu, nie pozičný fallback.
 			if ( kostol.id > 0 ) {
 				await apiFetch( {
 					path: `/wp/v2/kostoly/${ kostol.id }`,
@@ -204,7 +206,10 @@ function App({ homeUrl }) {
 					data: {
 						title:  kostol.nazov,
 						status: 'publish',
-						meta: { farnost_je_hlavny: true },
+						meta: {
+							farnost_je_hlavny: true,
+							farnost_color:     '#1e40af',
+						},
 					},
 				} );
 			}
