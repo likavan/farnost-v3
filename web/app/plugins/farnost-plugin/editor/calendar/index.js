@@ -566,13 +566,10 @@ function App() {
 					display: inline-block; width: 12px; height: 12px;
 					border-radius: 2px; border: 1px solid rgba(0,0,0,0.1);
 				}
-				.farnost-calendar-legend-mimoriadna {
-					color: #6b7280; font-style: italic;
-				}
-				.farnost-calendar-legend-mimoriadna span:first-child {
-					font-style: normal; color: #374151;
-					font-family: monospace; font-size: 14px;
-					letter-spacing: -2px;
+				.farnost-calendar-legend-mimoriadna { color: #6b7280; }
+				.farnost-calendar-legend-mimoriadna em {
+					padding: 1px 4px; background: #fefce8; border-radius: 2px;
+					color: #111827; font-weight: 600;
 				}
 				.farnost-calendar-grid {
 					display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
@@ -601,10 +598,14 @@ function App() {
 				}
 				.farnost-mass:hover { background: #eef2ff; }
 				.farnost-mass.is-mimoriadna {
-					/* Pravidelný rozpis = solid border, mimoriadna = dashed. Subtílne, ale
-					   pri rýchlom skenovaní kalendára okamžite rozlíšiteľné. Pozadie
-					   ostáva neutrálne — nepreťažujeme farbami. */
-					border-left-style: dashed;
+					/* Pravidelná aj mimoriadna majú rovnaký solid border (kostol farba).
+					   Mimoriadnu rozlíši italic čas + jemný teplý bg tint — bez chunky
+					   dashed border, ktorý browsery pri 3px renderujú ako štvorčeky. */
+					background: #fefce8;
+				}
+				.farnost-mass.is-mimoriadna:hover { background: #fef9c3; }
+				.farnost-mass.is-mimoriadna .farnost-mass-time {
+					font-style: italic;
 				}
 				.farnost-mass-time { font-weight: 600; }
 				.farnost-mass-um { color: #6b7280; }
@@ -637,8 +638,8 @@ function App() {
 						</span>
 					) ) }
 					<span className="farnost-calendar-legend-mimoriadna">
-						<span aria-hidden="true">┊</span>
-						{ __( 'mimoriadna omša (pohreb, sobáš, …)', 'farnost-plugin' ) }
+						<em aria-hidden="true">14:00</em>
+						{ __( '= mimoriadna omša (pohreb, sobáš, …)', 'farnost-plugin' ) }
 					</span>
 				</div>
 			) }
