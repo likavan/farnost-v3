@@ -39,13 +39,25 @@ final class AutoTemplate
         if (empty($_GET['farnost_redirected_to_existing'])) {
             return;
         }
+        $message = __('Oznam pre tento týždeň už existuje — namiesto vytvorenia nového ste presmerovaní na jeho editáciu. Pre úplne nový oznam treba najprv existujúci publikovať alebo zmazať.', 'farnost-plugin');
+
+        // 1) Klasické admin notice (zobrazí sa na ne-Gutenberg stránkach).
         ?>
         <div class="notice notice-info is-dismissible">
-            <p>
-                <?php esc_html_e('Oznam pre tento týždeň už existuje — namiesto vytvorenia nového ste presmerovaní na jeho editáciu. Pre úplne nový oznam treba najprv existujúci publikovať alebo zmazať.', 'farnost-plugin'); ?>
-            </p>
+            <p><?php echo esc_html($message); ?></p>
         </div>
         <?php
+
+        // 2) Gutenberg notice (zobrazí sa v block editore, kde sa klasické admin_notices skryjú).
+        $js = sprintf(
+            "( function() { if ( typeof wp !== 'undefined' && wp.data && wp.domReady ) {
+                wp.domReady( function() {
+                    wp.data.dispatch( 'core/notices' ).createInfoNotice( %s, { isDismissible: true, type: 'snackbar' } );
+                } );
+            } } )();",
+            wp_json_encode($message)
+        );
+        wp_add_inline_script('wp-notices', $js);
     }
 
     /**
