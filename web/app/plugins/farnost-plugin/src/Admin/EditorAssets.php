@@ -32,10 +32,9 @@ final class EditorAssets
         }
 
         // Panely sa nahrávajú per CPT — každý panel má vlastný entry v build/.
+        // CPT `kostol` Gutenberg editor nepoužíva — má vlastnú admin obrazovku
+        // (Admin\KostolyPage). Žiadny panel-kostol.
         switch ($screen->post_type) {
-            case 'kostol':
-                self::enqueueBuilt('farnost-panel-kostol', 'panel-kostol');
-                break;
             case 'oznam':
                 self::enqueueBuilt('farnost-panel-oznam', 'panel-oznam');
                 // Bloky kategórie „Farnosť" — zatiaľ len rozpis-snapshot, ďalšie pribudnú.

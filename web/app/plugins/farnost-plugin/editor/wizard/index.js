@@ -40,9 +40,8 @@ function App({ homeUrl }) {
 		iban: '',
 	} );
 	const [ kostol, setKostol ] = useState( {
-		id: 0,           // 0 = nový, > 0 = update existujúceho
+		id: 0,    // 0 = nový, > 0 = update existujúceho
 		nazov: '',
-		adresa: '',
 	} );
 	const [ rezim, setRezim ] = useState( 'full' );
 
@@ -75,9 +74,8 @@ function App({ homeUrl }) {
 				const hlavny = kostoly.find( ( k ) => k.meta?.farnost_je_hlavny ) || kostoly[ 0 ];
 				if ( hlavny ) {
 					setKostol( {
-						id:     hlavny.id,
-						nazov:  hlavny.title?.rendered || '',
-						adresa: hlavny.meta?.farnost_adresa || '',
+						id:    hlavny.id,
+						nazov: hlavny.title?.rendered || '',
 					} );
 				}
 
@@ -196,10 +194,7 @@ function App({ homeUrl }) {
 					data: {
 						title:  kostol.nazov,
 						status: 'publish',
-						meta: {
-							farnost_adresa:    kostol.adresa,
-							farnost_je_hlavny: true,
-						},
+						meta: { farnost_je_hlavny: true },
 					},
 				} );
 			} else {
@@ -209,10 +204,7 @@ function App({ homeUrl }) {
 					data: {
 						title:  kostol.nazov,
 						status: 'publish',
-						meta: {
-							farnost_adresa:    kostol.adresa,
-							farnost_je_hlavny: true,
-						},
+						meta: { farnost_je_hlavny: true },
 					},
 				} );
 			}
@@ -425,16 +417,9 @@ function StepKostol( { value, onChange } ) {
 					__next40pxDefaultSize
 				/>
 			</div>
-			<div className="farnost-wizard-field">
-				<TextareaControl
-					label={ __( 'Adresa', 'farnost-plugin' ) }
-					value={ value.adresa }
-					onChange={ ( v ) => onChange( { ...value, adresa: v } ) }
-					rows={ 2 }
-					placeholder="Hlavná 1, 917 01 Trnava"
-					__nextHasNoMarginBottom
-				/>
-			</div>
+			<p className="farnost-wizard-help">
+				{ __( 'Rozpis omší a farbu pre kalendár nastavíte neskôr cez Farnosť → Kostoly.', 'farnost-plugin' ) }
+			</p>
 		</>
 	);
 }

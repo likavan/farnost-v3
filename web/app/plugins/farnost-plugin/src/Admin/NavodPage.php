@@ -216,10 +216,11 @@ final class NavodPage
                 <details>
                     <summary><?php esc_html_e('Ako pridať nový kostol s rozpisom', 'farnost-plugin'); ?></summary>
                     <ol>
-                        <li><?php esc_html_e('Farnosť → Kostoly → Pridať nový.', 'farnost-plugin'); ?></li>
-                        <li><?php esc_html_e('Zadajte názov (napr. „Kostol sv. Martina").', 'farnost-plugin'); ?></li>
-                        <li><?php esc_html_e('V pravom sidebare nájdete panel „Rozpis omší" — pridávajte časy per deň v týždni, voliteľne s označením („detská", „sviatočná").', 'farnost-plugin'); ?></li>
-                        <li><?php esc_html_e('Doplňte adresu a kontakt. Uložte. Kostol sa automaticky zobrazí na webe.', 'farnost-plugin'); ?></li>
+                        <li><?php esc_html_e('Farnosť → Kostoly.', 'farnost-plugin'); ?></li>
+                        <li><?php esc_html_e('Hore napíšte názov (napr. „Kostol sv. Martina") a kliknite Pridať. Kostol dostane farbu automaticky podľa poradia — môžete ju zmeniť klikom na farebný štvorček.', 'farnost-plugin'); ?></li>
+                        <li><?php esc_html_e('Pri jednom kostole zapnite prepínač „Hlavný" — slúži ako default v dropdownoch (napr. pri vytváraní mimoriadnej omše).', 'farnost-plugin'); ?></li>
+                        <li><?php esc_html_e('Kliknite Rozpis → otvorí sa 7-dňový grid. Pre každý deň pridávate časy s voliteľným označením („detská", „sviatočná"). Klik na čas alebo označenie ich umožní inline upraviť.', 'farnost-plugin'); ?></li>
+                        <li><?php esc_html_e('Poradie kostolov v zozname (a v kalendárnej legende) zmeníte pretiahnutím ☰ ikony naľavo.', 'farnost-plugin'); ?></li>
                     </ol>
                 </details>
 
@@ -299,7 +300,7 @@ final class NavodPage
             [
                 'title' => __('Pridať aspoň jeden kostol s rozpisom omší', 'farnost-plugin'),
                 'done'  => $kostolCount > 0,
-                'url'   => admin_url('post-new.php?post_type=kostol'),
+                'url'   => admin_url('admin.php?page=' . KostolyPage::SLUG),
                 'cta'   => __('Pridať kostol', 'farnost-plugin'),
             ],
             [

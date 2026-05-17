@@ -46,6 +46,12 @@ final class Menu
         if ($page === UpratovacieSkupinyPage::SLUG) {
             self::enqueueBuilt('farnost-upratovacie', 'upratovacie');
         }
+        if ($page === KostolyPage::SLUG) {
+            self::enqueueBuilt('farnost-kostoly', 'kostoly');
+            // Color picker pre per-kostol farbu — rovnako ako pre kategórie.
+            wp_enqueue_style('wp-color-picker');
+            wp_enqueue_script('wp-color-picker');
+        }
     }
 
     private static function enqueueBuilt(string $handle, string $name): void
@@ -90,6 +96,16 @@ final class Menu
             self::CAPABILITY,
             self::SLUG,
             [self::class, 'renderCalendar']
+        );
+
+        // Submenu: Kostoly (custom obrazovka — nahrádza default CPT listing)
+        add_submenu_page(
+            self::SLUG,
+            __('Kostoly', 'farnost-plugin'),
+            __('Kostoly', 'farnost-plugin'),
+            self::CAPABILITY,
+            KostolyPage::SLUG,
+            [self::class, 'renderKostoly']
         );
 
         // Submenu: Mimoriadny oznam
@@ -146,7 +162,7 @@ final class Menu
 
         $desired = [
             self::SLUG,                                       // Kalendár omší (parent slug)
-            'edit.php?post_type=kostol',                      // Kostoly
+            KostolyPage::SLUG,                                // Kostoly (custom obrazovka)
             'edit.php?post_type=oznam',                       // Oznamy
             'farnost-mimoriadny-oznam',                       // Mimoriadny oznam
             'edit.php?post_type=omsa_vynimka',                // Výnimky (dočasne, kým nemáme kalendár)
@@ -196,6 +212,11 @@ final class Menu
     public static function renderUpratovacie(): void
     {
         UpratovacieSkupinyPage::render();
+    }
+
+    public static function renderKostoly(): void
+    {
+        KostolyPage::render();
     }
 
     public static function renderSettings(): void

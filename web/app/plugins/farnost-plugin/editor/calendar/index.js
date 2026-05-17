@@ -31,8 +31,18 @@ const MONTH_NAMES = [
 	__( 'November', 'farnost-plugin' ), __( 'December', 'farnost-plugin' ),
 ];
 
-// Paleta pre rozlíšenie kostolov (cyklicky).
-const KOSTOL_COLORS = [ '#1e40af', '#15803d', '#b45309', '#7c3aed', '#be185d', '#0e7490' ];
+// Pozičný fallback pre kostoly bez explicitne nastavenej farby v meta.
+// Pravdivý zdroj je teraz `kostol.meta.farnost_color` — táto paleta sa použije
+// len keď meta je prázdna (legacy kostoly pred zavedením farby).
+const FALLBACK_COLORS = [ '#1e40af', '#15803d', '#b45309', '#7c3aed', '#be185d', '#0e7490' ];
+
+function effectiveKostolColor( meta, idx ) {
+	const c = meta?.farnost_color;
+	if ( typeof c === 'string' && /^#[A-Fa-f0-9]{3,6}$/.test( c ) ) {
+		return c;
+	}
+	return FALLBACK_COLORS[ idx % FALLBACK_COLORS.length ];
+}
 
 function pad2( n ) {
 	return String( n ).padStart( 2, '0' );
@@ -398,7 +408,7 @@ function App() {
 			map[ k.id ] = {
 				id: k.id,
 				title: k.title?.rendered || `#${ k.id }`,
-				color: KOSTOL_COLORS[ idx % KOSTOL_COLORS.length ],
+				color: effectiveKostolColor( k.meta, idx ),
 				rozpis: parseRozpis( k.meta?.farnost_rozpis ),
 			};
 		} );
