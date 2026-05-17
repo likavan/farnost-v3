@@ -123,9 +123,10 @@ final class BufferManager
 
         $dni = SnapshotBuilder::buildForWeek($monIso, $sunIso);
         $attrs = [
-            'tyzdenOd' => $monIso,
-            'tyzdenDo' => $sunIso,
-            'dni'      => $dni,
+            'tyzdenOd'   => $monIso,
+            'tyzdenDo'   => $sunIso,
+            'dni'        => $dni,
+            'snapshotAt' => current_datetime()->format(DATE_ATOM),
         ];
         $json = wp_json_encode($attrs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         if ($json === false) {

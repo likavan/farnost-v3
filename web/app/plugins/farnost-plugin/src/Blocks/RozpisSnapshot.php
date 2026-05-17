@@ -43,9 +43,10 @@ final class RozpisSnapshot
             'editor_script'   => 'farnost-block-rozpis-snapshot',
             'render_callback' => [self::class, 'render'],
             'attributes'      => [
-                'tyzdenOd' => ['type' => 'string', 'default' => ''],
-                'tyzdenDo' => ['type' => 'string', 'default' => ''],
-                'dni'      => ['type' => 'array', 'default' => []],
+                'tyzdenOd'   => ['type' => 'string', 'default' => ''],
+                'tyzdenDo'   => ['type' => 'string', 'default' => ''],
+                'dni'        => ['type' => 'array', 'default' => []],
+                'snapshotAt' => ['type' => 'string', 'default' => ''],
             ],
         ]);
     }

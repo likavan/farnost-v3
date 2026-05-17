@@ -58,9 +58,10 @@ final class AutoTemplate
 
         $dni = SnapshotBuilder::buildForWeek($od, $do);
         $attrs = [
-            'tyzdenOd' => $od,
-            'tyzdenDo' => $do,
-            'dni'      => $dni,
+            'tyzdenOd'   => $od,
+            'tyzdenDo'   => $do,
+            'dni'        => $dni,
+            'snapshotAt' => current_datetime()->format(DATE_ATOM),
         ];
         $json = wp_json_encode($attrs, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         if ($json === false) {

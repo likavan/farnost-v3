@@ -16,8 +16,9 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { useBlockProps } from '@wordpress/block-editor';
 import { useEffect, useRef, useState } from '@wordpress/element';
-import { Button } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
+import { Button, Spinner } from '@wordpress/components';
+import apiFetch from '@wordpress/api-fetch';
+import { __, sprintf } from '@wordpress/i18n';
 
 const DAY_LABELS = {
 	mon: __( 'Pondelok', 'farnost-plugin' ),
@@ -179,11 +180,67 @@ function DayCardEdit( { day, dayIdx, updateMass, addMass, removeMass } ) {
 	);
 }
 
+function formatSnapshotAt( iso ) {
+	if ( ! iso ) {
+		return '';
+	}
+	try {
+		const d = new Date( iso );
+		return d.toLocaleString( 'sk-SK', {
+			day: 'numeric', month: 'long', year: 'numeric',
+			hour: '2-digit', minute: '2-digit',
+		} );
+	} catch ( e ) {
+		return iso;
+	}
+}
+
 function Edit( { attributes, setAttributes } ) {
-	const blockProps = useBlockProps( { className: 'farnost-rozpis-snapshot' } );
+	const blockProps = useBlockProps( { className: 'farnost-rozpis-snapshot-wrap' } );
 	const dni = Array.isArray( attributes.dni ) ? attributes.dni : [];
+	const [ refreshing, setRefreshing ] = useState( false );
 
 	const persist = ( nextDni ) => setAttributes( { dni: nextDni } );
+
+	const handleRefresh = async () => {
+		const confirmed = window.confirm(
+			__(
+				'Tým prepíšete všetky úpravy v rozpise (časy, označenia, úmysly), ktoré ste tu spravili. Snapshot sa nahradí aktuálnymi dátami zo rozpisu omší, výnimiek a úmyslov.\n\nPokračovať?',
+				'farnost-plugin'
+			)
+		);
+		if ( ! confirmed ) {
+			return;
+		}
+		if ( ! attributes.tyzdenOd || ! attributes.tyzdenDo ) {
+			window.alert( __( 'Týždeň nie je nastavený — nemôžem obnoviť.', 'farnost-plugin' ) );
+			return;
+		}
+		setRefreshing( true );
+		try {
+			const result = await apiFetch( {
+				path: '/farnost/v1/snapshot/build',
+				method: 'POST',
+				data: {
+					tyzdenOd: attributes.tyzdenOd,
+					tyzdenDo: attributes.tyzdenDo,
+				},
+			} );
+			setAttributes( {
+				dni: Array.isArray( result.dni ) ? result.dni : [],
+				snapshotAt: result.snapshotAt || '',
+			} );
+		} catch ( e ) {
+			window.alert(
+				sprintf(
+					__( 'Obnovenie zlyhalo: %s', 'farnost-plugin' ),
+					e?.message || String( e )
+				)
+			);
+		} finally {
+			setRefreshing( false );
+		}
+	};
 
 	const updateMass = ( dayIdx, massIdx, field, value ) => {
 		const next = dni.map( ( d, i ) => {
@@ -217,9 +274,16 @@ function Edit( { attributes, setAttributes } ) {
 	return (
 		<div { ...blockProps }>
 			<style>{ `
+				.farnost-rozpis-snapshot-wrap { margin: 16px 0; }
+				.farnost-rozpis-snapshot-bar {
+					display: flex; align-items: center; justify-content: space-between;
+					padding: 8px 12px; background: #f9fafb; border: 1px solid #e5e7eb;
+					border-radius: 6px; margin-bottom: 12px; font-size: 12px;
+				}
+				.farnost-rozpis-snapshot-bar__info { color: #6b7280; }
 				.farnost-rozpis-snapshot {
 					display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-					gap: 12px; margin: 16px 0;
+					gap: 12px;
 				}
 				.farnost-rozpis-snapshot__card {
 					border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px; background: #fff;
@@ -256,21 +320,42 @@ function Edit( { attributes, setAttributes } ) {
 				}
 			` }</style>
 
+			<div className="farnost-rozpis-snapshot-bar">
+				<div className="farnost-rozpis-snapshot-bar__info">
+					{ attributes.snapshotAt
+						? sprintf(
+							__( 'Snapshot odobraný %s', 'farnost-plugin' ),
+							formatSnapshotAt( attributes.snapshotAt )
+						)
+						: __( 'Snapshot ešte nebol odobraný.', 'farnost-plugin' ) }
+				</div>
+				<Button
+					variant="secondary"
+					size="small"
+					onClick={ handleRefresh }
+					disabled={ refreshing }
+				>
+					{ refreshing ? <Spinner /> : __( '↻ Obnoviť snapshot', 'farnost-plugin' ) }
+				</Button>
+			</div>
+
 			{ dni.length === 0 ? (
 				<div style={ { padding: 24, textAlign: 'center', color: '#6b7280', border: '1px dashed #d1d5db', borderRadius: 6 } }>
 					{ __( 'Rozpis omší — prázdny snapshot. Pri vytvorení oznamu sa naplní automaticky.', 'farnost-plugin' ) }
 				</div>
 			) : (
-				dni.map( ( day, idx ) => (
-					<DayCardEdit
-						key={ idx }
-						day={ day }
-						dayIdx={ idx }
-						updateMass={ updateMass }
-						addMass={ addMass }
-						removeMass={ removeMass }
-					/>
-				) )
+				<div className="farnost-rozpis-snapshot">
+					{ dni.map( ( day, idx ) => (
+						<DayCardEdit
+							key={ idx }
+							day={ day }
+							dayIdx={ idx }
+							updateMass={ updateMass }
+							addMass={ addMass }
+							removeMass={ removeMass }
+						/>
+					) ) }
+				</div>
 			) }
 		</div>
 	);
@@ -292,9 +377,10 @@ registerBlockType( 'farnost/rozpis-snapshot', {
 		multiple: false,
 	},
 	attributes: {
-		tyzdenOd: { type: 'string', default: '' },
-		tyzdenDo: { type: 'string', default: '' },
-		dni: { type: 'array', default: [] },
+		tyzdenOd:   { type: 'string', default: '' },
+		tyzdenDo:   { type: 'string', default: '' },
+		dni:        { type: 'array',  default: [] },
+		snapshotAt: { type: 'string', default: '' },
 	},
 	edit: Edit,
 	save: Save,
