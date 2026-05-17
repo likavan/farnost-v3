@@ -37,25 +37,19 @@ final class BufferManager
         add_action(self::CRON_HOOK, [self::class, 'refill']);
         add_action('transition_post_status', [self::class, 'onTransition'], 10, 3);
         add_action('update_option_' . Settings::OPTION_KEY, [self::class, 'refill']);
-        // Keď farár / asistent zmaže alebo zahodí oznam z buffera, doplníme medzeru hneď —
-        // bez tohto by sa diera prejavila až pri ďalšom dennom cron tiku.
-        // `deleted_post` (po reálnom mazaní), `trashed_post` (po presune do koša).
-        // `before_delete_post` by bol predčasný — post je ešte v DB, refill by ho videl a preskočil.
-        add_action('deleted_post', [self::class, 'onPostGone'], 10, 2);
-        add_action('trashed_post', [self::class, 'onPostGone']);
-    }
-
-    public static function onPostGone(int $postId, ?\WP_Post $post = null): void
-    {
-        // `deleted_post` poskytne aj $post (post object kým bol mazaný), `trashed_post` len $postId.
-        // Pre trashed musíme `get_post`, aby sme zistili post_type.
-        if ($post === null) {
-            $post = get_post($postId);
-        }
-        if (!$post || $post->post_type !== Oznam::POST_TYPE) {
-            return;
-        }
-        self::refill();
+        // Zámerne NEnapočúvame na `deleted_post` / `trashed_post`. Predošlá verzia
+        // to robila a refillovala buffer hneď po zmazaní — z user perspektívy to
+        // vyzeralo, že delete nefunguje (zmazaný oznam sa do sekundy zobrazí späť
+        // pre rovnaký týždeň, len s iným post ID a freshným snapshotom).
+        //
+        // Trade-off: vzniknutá medzera v buffere sa doplní až pri:
+        //  - dennom cron tiku (max do 24h)
+        //  - publikácii predošlého oznamu
+        //  - uložení Nastavení
+        //
+        // Pre „skip week" semantiku (farár chce reálne preskočiť týždeň, bez aut.
+        // znovuvytvorenia) by sme potrebovali explicitnejší mechanizmus (napr.
+        // flag „skip" na deleted week). Out of scope pre v3 MVP.
     }
 
     public static function scheduleCron(): void
