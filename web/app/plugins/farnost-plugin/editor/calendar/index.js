@@ -593,7 +593,7 @@ function App() {
 				.farnost-calendar-day.today .day-num { color: #1d4ed8; }
 				.farnost-mass {
 					font-size: 11px; line-height: 1.3; padding: 3px 5px; margin-bottom: 2px;
-					border-left: 3px solid; border-radius: 2px; background: #f9fafb;
+					border-left: 3px solid; background: #f9fafb;
 					cursor: pointer;
 				}
 				.farnost-mass:hover { background: #eef2ff; }
