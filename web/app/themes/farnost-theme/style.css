@@ -898,6 +898,21 @@ body > * { position: relative; z-index: 1; }
 @media (max-width: 980px) {
   .site-main.has-sidebar { grid-template-columns: 1fr; gap: 48px; }
   .farnost-sidebar { position: static; }
+
+  /* Tablet: rozbalený search by inline pretlačil brand name do dvoch riadkov
+     a brand mark by sa vizuálne uvoľnil mimo. Riešime overlay pozíciou —
+     otvorený search prekryje header-top right side. */
+  .site-header-top { position: relative; }
+  .farnost-search.is-open {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%);
+    width: 280px;
+    max-width: calc(100% - 24px);
+    z-index: 20;
+  }
+  .farnost-brand-name { white-space: normal; }
 }
 @media (max-width: 760px) {
   .farnost-oznamy-list li { grid-template-columns: 1fr; gap: 4px; }
