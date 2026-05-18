@@ -15,6 +15,12 @@ add_action('after_setup_theme', static function (): void {
     add_editor_style('style.css');
 });
 
+add_action('init', static function (): void {
+    register_block_pattern_category('farnost-pages', [
+        'label' => __('Farnosť — stránky', 'farnost-theme'),
+    ]);
+});
+
 add_action('wp_enqueue_scripts', static function (): void {
     wp_enqueue_style(
         'farnost-fonts',

@@ -674,6 +674,173 @@ body > * { position: relative; z-index: 1; }
   max-width: 56ch;
 }
 
+.farnost-prose p { margin: 0 0 1em; }
+.farnost-prose h2 {
+  font-family: var(--wp--preset--font-family--display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 36px 0 14px;
+  color: var(--wp--preset--color--accent);
+}
+
+.farnost-people-list { list-style: none; padding: 0; margin: 0; }
+.farnost-people-list li { padding: 10px 0; border-bottom: 1px solid var(--wp--preset--color--rule); }
+
+.farnost-schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15px;
+}
+.farnost-schedule-table th {
+  text-align: left;
+  font-family: var(--wp--preset--font-family--body);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--wp--preset--color--muted);
+  padding: 14px 12px;
+  border-bottom: 2px solid var(--wp--preset--color--ink);
+}
+.farnost-schedule-table td {
+  padding: 16px 12px;
+  border-bottom: 1px solid var(--wp--preset--color--rule);
+  vertical-align: top;
+}
+.farnost-schedule-table td:first-child,
+.farnost-schedule-table th:first-child { padding-left: 0; }
+.farnost-schedule-table .muted { color: var(--wp--preset--color--muted); }
+.farnost-schedule-section + .farnost-schedule-section { margin-top: 36px; }
+.farnost-schedule-section-title {
+  font-family: var(--wp--preset--font-family--display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 14px;
+  color: var(--wp--preset--color--ink);
+}
+
+.farnost-sviatosti-list { list-style: none; padding: 0; margin: 0; counter-reset: sv; }
+.farnost-sviatosti-list li {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 28px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--wp--preset--color--rule);
+}
+.farnost-sviatosti-list li:last-child { border-bottom: 0; }
+.farnost-sviatosti-list .sv-num {
+  font-family: var(--wp--preset--font-family--display);
+  font-size: 2.5rem;
+  line-height: 1;
+  color: var(--wp--preset--color--accent);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.farnost-sviatosti-list h3 {
+  font-family: var(--wp--preset--font-family--display);
+  font-size: 1.35rem;
+  margin: 0 0 8px;
+}
+.farnost-sviatosti-list p { margin: 0; color: var(--wp--preset--color--muted); }
+
+.farnost-kontakt-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: start;
+}
+.farnost-block-title {
+  font-family: var(--wp--preset--font-family--display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--wp--preset--color--rule);
+}
+.farnost-kontakt-dl { margin: 0; }
+.farnost-kontakt-dl > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--wp--preset--color--rule);
+  font-size: 15px;
+}
+.farnost-kontakt-dl > div:last-child { border-bottom: 0; }
+.farnost-kontakt-dl dt {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wp--preset--color--muted);
+  padding-top: 3px;
+  margin: 0;
+}
+.farnost-kontakt-dl dd { margin: 0; }
+.farnost-kontakt-form { display: flex; flex-direction: column; gap: 14px; }
+.farnost-kontakt-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wp--preset--color--muted);
+}
+.farnost-kontakt-form input,
+.farnost-kontakt-form textarea {
+  background: var(--wp--preset--color--surface);
+  border: 1px solid var(--wp--preset--color--rule);
+  padding: 10px 12px;
+  font-family: var(--wp--preset--font-family--body);
+  font-size: 15px;
+  color: var(--wp--preset--color--ink);
+  border-radius: 2px;
+  outline: none;
+  text-transform: none;
+  letter-spacing: 0;
+}
+.farnost-kontakt-form input:focus,
+.farnost-kontakt-form textarea:focus { border-color: var(--wp--preset--color--accent); }
+.farnost-btn-primary {
+  align-self: flex-start;
+  background: var(--wp--preset--color--accent);
+  color: var(--wp--preset--color--bg);
+  border: 0;
+  padding: 12px 28px;
+  font-family: var(--wp--preset--font-family--body);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+  margin-top: 6px;
+}
+.farnost-btn-primary:hover { background: var(--wp--preset--color--ink); }
+
+.farnost-archive-list { list-style: none; padding: 0; margin: 0; }
+.farnost-archive-list li { border-bottom: 1px solid var(--wp--preset--color--rule); }
+.farnost-archive-link {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  padding: 18px 0;
+  align-items: baseline;
+  color: var(--wp--preset--color--ink);
+  text-decoration: none;
+}
+.farnost-archive-link:hover .farnost-archive-title { color: var(--wp--preset--color--accent); }
+.farnost-archive-date {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wp--preset--color--muted);
+}
+.farnost-archive-title {
+  font-family: var(--wp--preset--font-family--display);
+  font-size: 1.15rem;
+  transition: color 0.15s;
+}
+
 /* ─── Responsive ─────────────────────────────────────────────────────────── */
 @media (max-width: 980px) {
   .site-main.has-sidebar { grid-template-columns: 1fr; gap: 48px; }
@@ -693,4 +860,6 @@ body > * { position: relative; z-index: 1; }
   .farnost-alert-close   { order: 5; margin-left: auto; }
   .site-main             { padding: 36px 24px 60px; }
   .farnost-post          { padding: 22px 20px 24px; }
+  .farnost-kontakt-grid  { grid-template-columns: 1fr; gap: 36px; }
+  .farnost-archive-link  { grid-template-columns: 1fr; gap: 6px; }
 }
