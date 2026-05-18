@@ -41,6 +41,7 @@ final class SiteBrand
         $nazov   = trim((string) ($s['identita']['nazov'] ?? ''));
         $dekanat = trim((string) ($s['identita']['dekanat'] ?? ''));
         $rok     = (int) ($s['identita']['rok_zalozenia'] ?? 0);
+        $logoId  = (int) ($s['branding']['logo_id'] ?? 0);
 
         if ($nazov === '') {
             $nazov = (string) get_bloginfo('name');
@@ -56,14 +57,28 @@ final class SiteBrand
         }
         $subLine = implode(' · ', $subParts);
 
+        // Logo: ak admin nahral obrázok v Nastavenia → Logo a farby, použijeme ho.
+        // Inak fallback na cross pattée SVG vo farbe accent.
+        $logoHtml = '';
+        if ($logoId > 0) {
+            $logoHtml = wp_get_attachment_image($logoId, 'medium', false, [
+                'class' => 'farnost-brand-logo-img',
+                'alt'   => $nazov,
+            ]);
+        }
+
         ob_start();
         ?>
-        <a class="farnost-brand" href="<?php echo esc_url(home_url('/')); ?>" aria-label="<?php esc_attr_e('Domov', 'farnost-plugin'); ?>">
-            <span class="farnost-brand-mark" aria-hidden="true">
-                <svg width="24" height="24" viewBox="0 0 24 24">
-                    <path d="M10 2 L14 2 L13.4 8.6 L20.4 8 L22 10 L22 14 L20.4 16 L13.4 15.4 L14 22 L10 22 L10.6 15.4 L3.6 16 L2 14 L2 10 L3.6 8 L10.6 8.6 Z" fill="currentColor"/>
-                </svg>
-            </span>
+        <a class="farnost-brand<?php echo $logoHtml !== '' ? ' has-logo' : ''; ?>" href="<?php echo esc_url(home_url('/')); ?>" aria-label="<?php esc_attr_e('Domov', 'farnost-plugin'); ?>">
+            <?php if ($logoHtml !== '') : ?>
+                <span class="farnost-brand-logo" aria-hidden="true"><?php echo $logoHtml; ?></span>
+            <?php else : ?>
+                <span class="farnost-brand-mark" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M10 2 L14 2 L13.4 8.6 L20.4 8 L22 10 L22 14 L20.4 16 L13.4 15.4 L14 22 L10 22 L10.6 15.4 L3.6 16 L2 14 L2 10 L3.6 8 L10.6 8.6 Z" fill="currentColor"/>
+                    </svg>
+                </span>
+            <?php endif; ?>
             <span class="farnost-brand-text">
                 <span class="farnost-brand-name"><?php echo esc_html($nazov); ?></span>
                 <?php if ($subLine !== '') : ?>

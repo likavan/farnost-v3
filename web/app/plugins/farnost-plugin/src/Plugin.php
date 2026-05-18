@@ -17,6 +17,7 @@ use Farnost\Plugin\Blocks\RozpisSnapshot;
 use Farnost\Plugin\Blocks\ScheduleTable;
 use Farnost\Plugin\Blocks\SiteBrand;
 use Farnost\Plugin\Blocks\SiteFooter;
+use Farnost\Plugin\Blocks\SiteHeader;
 use Farnost\Plugin\Oznam\BufferManager;
 use Farnost\Plugin\Admin\CommentsHide;
 use Farnost\Plugin\Admin\EditorAssets;
@@ -79,6 +80,7 @@ final class Plugin
         ArchiveList::register();
         MainNav::register();
         SiteBrand::register();
+        SiteHeader::register();
         SiteFooter::register();
         AutoTemplate::register();
         BufferManager::register();
