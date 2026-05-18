@@ -40,8 +40,10 @@ final class SiteFooter
         $nazov   = trim((string) ($s['identita']['nazov'] ?? '')) ?: (string) get_bloginfo('name');
         $adresa  = trim((string) ($s['kontakt']['adresa'] ?? ''));
         $iban    = trim((string) ($s['financie']['iban'] ?? ''));
+        $banka   = trim((string) ($s['financie']['banka'] ?? ''));
         $telefony = is_array($s['kontakt']['telefony'] ?? null) ? $s['kontakt']['telefony'] : [];
         $emaily   = is_array($s['kontakt']['emaily'] ?? null) ? $s['kontakt']['emaily'] : [];
+        $year     = (int) current_datetime()->format('Y');
 
         $contactBits = [];
         foreach ($telefony as $row) {
@@ -74,12 +76,25 @@ final class SiteFooter
                     <li><a href="https://www.bbdieceza.sk/" rel="noopener" target="_blank">Banskobystrická diecéza</a></li>
                     <li><a href="https://www.kbs.sk/" rel="noopener" target="_blank">Konferencia biskupov Slovenska</a></li>
                     <li><a href="https://lh.kbs.sk/" rel="noopener" target="_blank">Liturgia hodín</a></li>
+                    <li><a href="https://dennyevanjelista.sk/" rel="noopener" target="_blank">Denný evanjelista</a></li>
                 </ul>
             </div>
             <?php if ($iban !== '') : ?>
                 <div>
                     <h3 class="farnost-footer-title"><?php esc_html_e('Bankové spojenie', 'farnost-plugin'); ?></h3>
                     <div class="farnost-footer-line"><?php echo esc_html($iban); ?></div>
+                    <?php if ($banka !== '') : ?>
+                        <div class="farnost-footer-line farnost-footer-muted"><?php echo esc_html($banka); ?></div>
+                    <?php endif; ?>
+                    <div class="farnost-footer-line farnost-footer-muted" style="margin-top:8px;">
+                        <?php
+                        printf(
+                            /* translators: %d = current year as variable symbol */
+                            esc_html__('Variabilný symbol: %d', 'farnost-plugin'),
+                            $year
+                        );
+                        ?>
+                    </div>
                 </div>
             <?php endif; ?>
         </div>
@@ -88,7 +103,7 @@ final class SiteFooter
             printf(
                 /* translators: %1$d = current year, %2$s = parish name */
                 esc_html__('© %1$d %2$s. Všetky práva vyhradené.', 'farnost-plugin'),
-                (int) current_datetime()->format('Y'),
+                $year,
                 esc_html($nazov)
             );
             ?>

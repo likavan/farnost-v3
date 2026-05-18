@@ -150,6 +150,10 @@ final class SettingsPage
                         <td><input type="text" id="fp-iban" name="farnost_settings[financie][iban]" value="<?php echo esc_attr($s['financie']['iban']); ?>" class="regular-text" placeholder="SK00 0000 0000 0000 0000 0000"></td>
                     </tr>
                     <tr>
+                        <th scope="row"><label for="fp-banka"><?php esc_html_e('Banka', 'farnost-plugin'); ?></label></th>
+                        <td><input type="text" id="fp-banka" name="farnost_settings[financie][banka]" value="<?php echo esc_attr($s['financie']['banka'] ?? ''); ?>" class="regular-text" placeholder="<?php esc_attr_e('napr. Slovenská sporiteľňa, a. s.', 'farnost-plugin'); ?>"></td>
+                    </tr>
+                    <tr>
                         <th scope="row"><label for="fp-dvap">2 %</label></th>
                         <td><input type="text" id="fp-dvap" name="farnost_settings[financie][dva_percenta]" value="<?php echo esc_attr($s['financie']['dva_percenta']); ?>" class="regular-text"></td>
                     </tr>
@@ -400,6 +404,7 @@ final class SettingsPage
         $out['kontakt']['uradne_hodiny'] = isset($input['kontakt']['uradne_hodiny']) ? sanitize_textarea_field((string) $input['kontakt']['uradne_hodiny']) : '';
 
         $out['financie']['iban']         = isset($input['financie']['iban']) ? sanitize_text_field((string) $input['financie']['iban']) : '';
+        $out['financie']['banka']        = isset($input['financie']['banka']) ? sanitize_text_field((string) $input['financie']['banka']) : '';
         $out['financie']['dva_percenta'] = isset($input['financie']['dva_percenta']) ? sanitize_text_field((string) $input['financie']['dva_percenta']) : '';
         $out['financie']['ico']          = isset($input['financie']['ico']) ? sanitize_text_field((string) $input['financie']['ico']) : '';
 

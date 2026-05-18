@@ -46,6 +46,7 @@ final class Settings
             ],
             'financie'   => [
                 'iban'         => '',
+                'banka'        => '',
                 'dva_percenta' => '',
                 'ico'          => '',
             ],
@@ -136,6 +137,7 @@ final class Settings
                     'type'       => 'object',
                     'properties' => [
                         'iban'         => ['type' => 'string'],
+                        'banka'        => ['type' => 'string'],
                         'dva_percenta' => ['type' => 'string'],
                         'ico'          => ['type' => 'string'],
                     ],
