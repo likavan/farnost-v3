@@ -22,6 +22,14 @@ final class EditorAssets
     public static function register(): void
     {
         add_action('enqueue_block_editor_assets', [self::class, 'enqueue']);
+        // Site Editor (Dizajn) potrebuje site-bloky vždy — registrujeme cez
+        // samostatný hook ktorý beží naprieč všetkými Gutenberg editormi.
+        add_action('enqueue_block_editor_assets', [self::class, 'enqueueSiteBlocks']);
+    }
+
+    public static function enqueueSiteBlocks(): void
+    {
+        self::enqueueBuilt('farnost-site-blocks', 'site-blocks');
     }
 
     public static function enqueue(): void
