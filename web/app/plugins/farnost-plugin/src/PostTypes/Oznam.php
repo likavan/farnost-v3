@@ -43,10 +43,14 @@ final class Oznam
             //
             // Technický fallback pre adminov: WP-CLI `wp post delete <id>` obíde
             // capability check (CLI nemá user context).
+            // Override len primary caps. `delete_post` (meta cap) WP rieši cez
+            // map_meta_cap → primary caps, takže ho v override netreba a jeho
+            // explicitné nastavenie vyvolávalo „delete_post called incorrectly"
+            // notice z WP 6.1+ keď admin code volal current_user_can('delete_post')
+            // bez post ID (napr. niektoré template parts pred resolved postom).
             'capabilities' => [
                 'create_posts'           => 'do_not_allow',
                 'publish_posts'          => 'do_not_allow',
-                'delete_post'            => 'do_not_allow',
                 'delete_posts'           => 'do_not_allow',
                 'delete_published_posts' => 'do_not_allow',
                 'delete_others_posts'    => 'do_not_allow',
