@@ -19,6 +19,7 @@ final class Activator
 
     public static function activate(): void
     {
+        self::ensureSlovakTimezone();
         self::ensureRole();
         self::ensureAdministratorCaps();
         self::ensureDefaultCategories();
@@ -27,6 +28,27 @@ final class Activator
         // skôr na init), wp_insert_post bude fungovať.
         BufferManager::refill();
         flush_rewrite_rules();
+    }
+
+    /**
+     * Default WP inštalácia má timezone_string="" a gmt_offset=0 → UTC.
+     * Pre slovenskú farnosť to znamená že "14:40" zadané farárom v admin form
+     * sa interpretuje ako UTC, nie ako lokálny čas → expiry banner nefunguje
+     * správne v máji-októbri (CEST = UTC+2).
+     *
+     * Pri prvej aktivácii nastavíme `Europe/Bratislava`. Ak admin už explicitne
+     * nastavil iný timezone (timezone_string alebo gmt_offset !== 0), nech tam
+     * ostane — nezasahujeme.
+     */
+    private static function ensureSlovakTimezone(): void
+    {
+        $current = (string) get_option('timezone_string', '');
+        $offset  = (float) get_option('gmt_offset', 0);
+        if ($current !== '' || $offset !== 0.0) {
+            return;
+        }
+        update_option('timezone_string', 'Europe/Bratislava');
+        update_option('gmt_offset', '');
     }
 
     public static function deactivate(): void
