@@ -49,7 +49,7 @@ final class RotationPointerController
     public function set(WP_REST_Request $request): WP_REST_Response|WP_Error
     {
         $id = (int) $request->get_param('id');
-        if ($id <= 0) {
+        if ($id < 0) {
             return new WP_Error('farnost_invalid_id', __('Neplatné ID skupiny.', 'farnost-plugin'), ['status' => 400]);
         }
 

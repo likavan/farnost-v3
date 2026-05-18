@@ -30,7 +30,9 @@ final class SettingsPage
         $saved = false;
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             check_admin_referer(self::NONCE_ACTION);
-            $raw = $_POST['farnost_settings'] ?? [];
+            // WP pridáva slashes do $_POST (legacy magic-quotes). Bez wp_unslash() by
+            // sa do DB cez sanitize_text_field uložili spätné lomky pred quotes.
+            $raw = wp_unslash($_POST['farnost_settings'] ?? []);
             $sanitized = self::sanitize(is_array($raw) ? $raw : []);
             update_option(Settings::OPTION_KEY, $sanitized);
             $saved = true;
