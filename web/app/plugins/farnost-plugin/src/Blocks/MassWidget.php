@@ -63,7 +63,18 @@ final class MassWidget
         ?>
         <section class="farnost-widget">
             <h3 class="farnost-widget-title"><?php esc_html_e('Bohoslužby tento týždeň', 'farnost-plugin'); ?></h3>
-            <?php foreach ($kostoly as $k) : ?>
+            <?php foreach ($kostoly as $k) :
+                // Ak kostol nemá v týždni ani jednu omšu, celú sekciu skipneme.
+                $hasAnyMass = false;
+                for ($d = 0; $d < 7; $d++) {
+                    $dayIso = $weekStart->modify("+{$d} day")->format('Y-m-d');
+                    if (!empty($weekIndex[(int) $k['id']][$dayIso] ?? [])) {
+                        $hasAnyMass = true;
+                        break;
+                    }
+                }
+                if (!$hasAnyMass) { continue; }
+                ?>
                 <div class="farnost-kostol-section">
                     <?php if (count($kostoly) > 1) : ?>
                         <h4 class="farnost-kostol-section-title"><?php echo esc_html($k['title']); ?></h4>
@@ -73,6 +84,7 @@ final class MassWidget
                             $day = $weekStart->modify("+{$i} day");
                             $iso = $day->format('Y-m-d');
                             $resolved = $weekIndex[(int) $k['id']][$iso] ?? [];
+                            if (empty($resolved)) { continue; }
                             $name = self::SLOVAK_WEEKDAYS[(int) $day->format('N')] ?? '';
                             $isHighlight = $iso === $today;
                             $notes = self::buildNotes($resolved);
@@ -83,13 +95,9 @@ final class MassWidget
                                     <span class="farnost-mass-day-date"><?php echo esc_html(self::shortDate($day)); ?></span>
                                 </div>
                                 <div class="farnost-mass-times">
-                                    <?php if (empty($resolved)) : ?>
-                                        <span class="farnost-mass-time">—</span>
-                                    <?php else : ?>
-                                        <?php foreach ($resolved as $m) : ?>
-                                            <span class="farnost-mass-time"><?php echo esc_html((string) ($m['cas'] ?? '')); ?></span>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
+                                    <?php foreach ($resolved as $m) : ?>
+                                        <span class="farnost-mass-time"><?php echo esc_html((string) ($m['cas'] ?? '')); ?></span>
+                                    <?php endforeach; ?>
                                 </div>
                                 <?php foreach ($notes as $note) : ?>
                                     <div class="farnost-mass-note"><?php echo esc_html($note); ?></div>
