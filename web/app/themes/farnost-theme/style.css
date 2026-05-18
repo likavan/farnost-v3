@@ -451,6 +451,23 @@ body > * { position: relative; z-index: 1; }
 .farnost-post-body { color: var(--wp--preset--color--ink); font-size: 17px; line-height: 1.7; }
 .farnost-post-body p { margin: 0 0 1em; }
 .farnost-post-body p:last-child { margin-bottom: 0; }
+.farnost-post-more {
+  margin: 22px 0 0;
+  font-family: var(--wp--preset--font-family--body);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.farnost-post-more a {
+  color: var(--wp--preset--color--accent);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  transition: color 0.15s, border-bottom-color 0.15s;
+}
+.farnost-post-more a:hover {
+  color: var(--wp--preset--color--accent-deep);
+}
 
 /* Drop cap pre dlhšie textové posty */
 .farnost-post--text-foto .farnost-post-body > p:first-of-type::first-letter,

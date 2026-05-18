@@ -109,6 +109,9 @@ final class Feed
             <div class="farnost-post-body">
                 <?php echo apply_filters('the_content', $post->post_content); ?>
             </div>
+            <p class="farnost-post-more">
+                <a href="<?php echo $permalink; ?>"><?php esc_html_e('Čítať viac', 'farnost-plugin'); ?> <span aria-hidden="true">→</span></a>
+            </p>
         </article>
         <?php
         return (string) ob_get_clean();
