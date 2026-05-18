@@ -6,8 +6,7 @@ namespace Farnost\Plugin\Blocks;
 
 use DateTimeImmutable;
 use Farnost\Plugin\PostTypes\Kostol;
-use Farnost\Plugin\Schedule\Resolver;
-use Farnost\Plugin\Schedule\RozpisReader;
+use Farnost\Plugin\Schedule\WeeklyResolver;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -46,6 +45,13 @@ final class ScheduleTable
             return '<p class="farnost-empty">' . esc_html__('Rozpis omší zatiaľ nie je dostupný.', 'farnost-plugin') . '</p>';
         }
         $weekStart = self::weekStart();
+        $weekEnd = $weekStart->modify('+6 day');
+        $kostolIds = array_map(static fn(array $k): int => (int) $k['id'], $kostoly);
+        $weekIndex = WeeklyResolver::forWeek(
+            $kostolIds,
+            $weekStart->format('Y-m-d'),
+            $weekEnd->format('Y-m-d')
+        );
 
         ob_start();
         foreach ($kostoly as $k) :
@@ -66,7 +72,7 @@ final class ScheduleTable
                         <?php for ($i = 0; $i < 7; $i++) :
                             $day = $weekStart->modify("+{$i} day");
                             $iso = $day->format('Y-m-d');
-                            $resolved = RozpisReader::forDate((int) $k['id'], $iso);
+                            $resolved = $weekIndex[(int) $k['id']][$iso] ?? [];
                             $name = self::WEEKDAYS[(int) $day->format('N')] ?? '';
                             $note = self::extractNote($resolved);
                             $times = array_map(static fn(array $m): string => (string) ($m['cas'] ?? ''), $resolved);

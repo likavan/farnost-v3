@@ -6,7 +6,7 @@ namespace Farnost\Plugin\Blocks;
 
 use DateTimeImmutable;
 use Farnost\Plugin\PostTypes\Kostol;
-use Farnost\Plugin\Schedule\RozpisReader;
+use Farnost\Plugin\Schedule\WeeklyResolver;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -49,7 +49,15 @@ final class MassWidget
         }
 
         $weekStart = self::weekStart();
+        $weekEnd = $weekStart->modify('+6 day');
         $today = (new DateTimeImmutable('now', wp_timezone()))->format('Y-m-d');
+
+        $kostolIds = array_map(static fn(array $k): int => (int) $k['id'], $kostoly);
+        $weekIndex = WeeklyResolver::forWeek(
+            $kostolIds,
+            $weekStart->format('Y-m-d'),
+            $weekEnd->format('Y-m-d')
+        );
 
         ob_start();
         ?>
@@ -64,7 +72,7 @@ final class MassWidget
                         <?php for ($i = 0; $i < 7; $i++) :
                             $day = $weekStart->modify("+{$i} day");
                             $iso = $day->format('Y-m-d');
-                            $resolved = RozpisReader::forDate((int) $k['id'], $iso);
+                            $resolved = $weekIndex[(int) $k['id']][$iso] ?? [];
                             $name = self::SLOVAK_WEEKDAYS[(int) $day->format('N')] ?? '';
                             $isHighlight = $iso === $today;
                             $notes = self::buildNotes($resolved);
