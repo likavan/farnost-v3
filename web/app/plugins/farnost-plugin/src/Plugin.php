@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Farnost\Plugin;
 
 use Farnost\Plugin\Admin\BlockCategory;
+use Farnost\Plugin\Admin\BlockRestrictions;
 use Farnost\Plugin\Admin\CategoryAdmin;
 use Farnost\Plugin\Blocks\ArchiveList;
 use Farnost\Plugin\Blocks\Banner as BannerBlock;
@@ -93,6 +94,7 @@ final class Plugin
             WizardPage::register();
             SetupNotice::register();
             CategoryAdmin::register();
+            BlockRestrictions::register();
         }
     }
 
