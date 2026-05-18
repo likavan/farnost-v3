@@ -36,14 +36,14 @@ final class QuoteWidget
     {
         $s = Settings::get();
         $citaty = is_array($s['citaty'] ?? null) ? $s['citaty'] : [];
-        // Filter platné citáty
+        // Filter platné citáty.
         $citaty = array_values(array_filter($citaty, static fn($c): bool =>
             is_array($c) && isset($c['text']) && is_string($c['text']) && trim($c['text']) !== ''
         ));
 
+        // Žiadne fallback citáty — ak admin nemá nič nastavené, widget sa nezobrazí.
         if (empty($citaty)) {
-            // Default fallback citát keď administrátor ešte nenastavil žiadne.
-            $citaty = [['text' => 'Kde sú dvaja alebo traja zhromaždení v mojom mene, tam som ja medzi nimi.', 'autor' => 'Mt 18, 20']];
+            return '';
         }
 
         $dayOfYear = (int) current_datetime()->format('z');
