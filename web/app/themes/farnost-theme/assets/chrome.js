@@ -78,9 +78,36 @@
         });
     }
 
+    function initNavToggle() {
+        var toggle = document.querySelector('.site-nav-toggle');
+        var list = document.querySelector('.site-nav-list');
+        if (!toggle || !list) {
+            return;
+        }
+        var setOpen = function (open) {
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            toggle.setAttribute(
+                'aria-label',
+                open ? 'Zavrieť menu' : 'Otvoriť menu'
+            );
+            list.classList.toggle('is-open', open);
+        };
+        toggle.addEventListener('click', function () {
+            var open = toggle.getAttribute('aria-expanded') !== 'true';
+            setOpen(open);
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+                setOpen(false);
+                toggle.focus();
+            }
+        });
+    }
+
     function boot() {
         document.querySelectorAll('.farnost-search').forEach(initSearch);
         initAlertDismiss();
+        initNavToggle();
     }
 
     if (document.readyState === 'loading') {

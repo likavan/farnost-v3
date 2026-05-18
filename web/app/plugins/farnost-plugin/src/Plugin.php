@@ -10,6 +10,7 @@ use Farnost\Plugin\Blocks\ArchiveList;
 use Farnost\Plugin\Blocks\Banner as BannerBlock;
 use Farnost\Plugin\Blocks\ContactWidget;
 use Farnost\Plugin\Blocks\Feed;
+use Farnost\Plugin\Blocks\MainNav;
 use Farnost\Plugin\Blocks\MassWidget;
 use Farnost\Plugin\Blocks\QuoteWidget;
 use Farnost\Plugin\Blocks\RozpisSnapshot;
@@ -74,6 +75,7 @@ final class Plugin
         QuoteWidget::register();
         ScheduleTable::register();
         ArchiveList::register();
+        MainNav::register();
         AutoTemplate::register();
         BufferManager::register();
         Upratovanie::register();
