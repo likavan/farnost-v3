@@ -261,10 +261,10 @@ final class SettingsPage
                         <td><input type="time" id="fp-pcas" name="farnost_settings[oznamy][publikacny_cas]" value="<?php echo esc_attr($s['oznamy']['publikacny_cas']); ?>"></td>
                     </tr>
                     <tr>
-                        <th scope="row"><label for="fp-dopredne"><?php esc_html_e('Dopredné drafty', 'farnost-plugin'); ?></label></th>
+                        <th scope="row"><label for="fp-dopredne"><?php esc_html_e('Oznamy pripravené dopredu', 'farnost-plugin'); ?></label></th>
                         <td>
                             <input type="number" id="fp-dopredne" name="farnost_settings[oznamy][dopredne_drafty]" value="<?php echo esc_attr((string) ($s['oznamy']['dopredne_drafty'] ?? 2)); ?>" min="1" max="4" class="small-text">
-                            <p class="description"><?php esc_html_e('Koľko budúcich oznamov má systém držať pripravených (status „naplánované"). Default 2 — tento týždeň a nasledujúci.', 'farnost-plugin'); ?></p>
+                            <p class="description"><?php esc_html_e('Koľko budúcich oznamov má systém držať pripravených (status „naplánované"). Pri hodnote 2 sú dopredu prichystané tento týždeň a nasledujúci.', 'farnost-plugin'); ?></p>
                         </td>
                     </tr>
                 </table>
