@@ -83,18 +83,6 @@ final class SiteFooter
                 <div>
                     <h3 class="farnost-footer-title"><?php esc_html_e('Bankové spojenie', 'farnost-plugin'); ?></h3>
                     <div class="farnost-footer-line"><?php echo esc_html($iban); ?></div>
-                    <?php if ($banka !== '') : ?>
-                        <div class="farnost-footer-line farnost-footer-muted"><?php echo esc_html($banka); ?></div>
-                    <?php endif; ?>
-                    <div class="farnost-footer-line farnost-footer-muted" style="margin-top:8px;">
-                        <?php
-                        printf(
-                            /* translators: %d = current year as variable symbol */
-                            esc_html__('Variabilný symbol: %d', 'farnost-plugin'),
-                            $year
-                        );
-                        ?>
-                    </div>
                 </div>
             <?php endif; ?>
         </div>

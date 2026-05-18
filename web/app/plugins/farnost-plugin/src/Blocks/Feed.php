@@ -107,7 +107,7 @@ final class Feed
             <?php endif; ?>
             <h2 class="farnost-post-title"><a href="<?php echo $permalink; ?>"><?php echo $title; ?></a></h2>
             <div class="farnost-post-body">
-                <?php echo apply_filters('the_content', $post->post_content); ?>
+                <?php echo self::renderBody($post, $variant); ?>
             </div>
             <p class="farnost-post-more">
                 <a href="<?php echo $permalink; ?>"><?php esc_html_e('Čítať viac', 'farnost-plugin'); ?> <span aria-hidden="true">→</span></a>
@@ -115,6 +115,28 @@ final class Feed
         </article>
         <?php
         return (string) ob_get_clean();
+    }
+
+    /**
+     * Oznam vo feede zobrazí plný obsah (týždenný rozpis + voľný text — to je
+     * core hodnota pre veriaceho). `post` (udalost/text-foto/text) zobrazí len
+     * krátky náhľad — plný text až na single page po klike „Čítať viac".
+     */
+    private static function renderBody(WP_Post $post, string $variant): string
+    {
+        if ($variant === 'oznamy') {
+            return (string) apply_filters('the_content', $post->post_content);
+        }
+        // Explicit excerpt má prednosť; ak chýba, auto-trim z post_content.
+        $excerpt = trim((string) $post->post_excerpt);
+        if ($excerpt === '') {
+            $stripped = wp_strip_all_tags(strip_shortcodes((string) $post->post_content));
+            $excerpt  = wp_trim_words($stripped, 40, '…');
+        }
+        if ($excerpt === '') {
+            return '';
+        }
+        return '<p>' . esc_html($excerpt) . '</p>';
     }
 
     private static function variantFor(WP_Post $post): string

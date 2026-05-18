@@ -652,6 +652,9 @@ body > * { position: relative; z-index: 1; }
   color: var(--wp--preset--color--muted);
   margin-bottom: 1px;
 }
+.farnost-contact-hours-text {
+  white-space: pre-line;
+}
 
 /* Quote widget */
 .farnost-widget-quote {
@@ -747,6 +750,13 @@ body > * { position: relative; z-index: 1; }
   margin: 0;
   text-wrap: pretty;
   max-width: 56ch;
+}
+.farnost-page-date {
+  font-family: var(--wp--preset--font-family--display);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--wp--preset--color--muted);
+  margin: 0 0 32px;
 }
 
 .farnost-prose p { margin: 0 0 1em; }

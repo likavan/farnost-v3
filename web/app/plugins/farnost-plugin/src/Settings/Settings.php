@@ -45,16 +45,14 @@ final class Settings
                 'uradne_hodiny' => '',
             ],
             'financie'   => [
-                'iban'         => '',
-                'banka'        => '',
-                'dva_percenta' => '',
-                'ico'          => '',
+                'iban'        => '',
+                'banka'       => '',
+                'majitel'     => '',
+                'ico'         => '',
             ],
-            'socialne'   => [
-                'facebook'  => '',
-                'youtube'   => '',
-                'instagram' => '',
-            ],
+            // Repeater pole [{popis, url}] — admin pridá ľubovoľné siete
+            // (FB, IG, YT, X, TikTok, ...). Žiadny mapping na fixed kľúče.
+            'socialne'   => [],
             'branding'   => [
                 'logo_id'       => 0,
                 'primary_color' => '#1e40af',
@@ -136,18 +134,20 @@ final class Settings
                 'financie'    => [
                     'type'       => 'object',
                     'properties' => [
-                        'iban'         => ['type' => 'string'],
-                        'banka'        => ['type' => 'string'],
-                        'dva_percenta' => ['type' => 'string'],
-                        'ico'          => ['type' => 'string'],
+                        'iban'    => ['type' => 'string'],
+                        'banka'   => ['type' => 'string'],
+                        'majitel' => ['type' => 'string'],
+                        'ico'     => ['type' => 'string'],
                     ],
                 ],
                 'socialne'    => [
-                    'type'       => 'object',
-                    'properties' => [
-                        'facebook'  => ['type' => 'string'],
-                        'youtube'   => ['type' => 'string'],
-                        'instagram' => ['type' => 'string'],
+                    'type'  => 'array',
+                    'items' => [
+                        'type'       => 'object',
+                        'properties' => [
+                            'popis' => ['type' => 'string'],
+                            'url'   => ['type' => 'string'],
+                        ],
                     ],
                 ],
                 'branding'    => [

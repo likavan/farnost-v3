@@ -37,8 +37,9 @@ final class ContactWidget
         $adresa = (string) ($s['kontakt']['adresa'] ?? '');
         $telefony = is_array($s['kontakt']['telefony'] ?? null) ? $s['kontakt']['telefony'] : [];
         $emaily   = is_array($s['kontakt']['emaily']   ?? null) ? $s['kontakt']['emaily']   : [];
+        $uradneHodiny = trim((string) ($s['kontakt']['uradne_hodiny'] ?? ''));
 
-        if ($adresa === '' && empty($telefony) && empty($emaily)) {
+        if ($adresa === '' && empty($telefony) && empty($emaily) && $uradneHodiny === '') {
             return '';
         }
 
@@ -79,6 +80,12 @@ final class ContactWidget
                     <a href="mailto:<?php echo esc_attr($adr); ?>"><?php echo esc_html($adr); ?></a>
                 </div>
             <?php endforeach; ?>
+            <?php if ($uradneHodiny !== '') : ?>
+                <div class="farnost-contact-line farnost-contact-hours">
+                    <span class="farnost-contact-label"><?php esc_html_e('Úradné hodiny', 'farnost-plugin'); ?></span>
+                    <span class="farnost-contact-hours-text"><?php echo esc_html($uradneHodiny); ?></span>
+                </div>
+            <?php endif; ?>
         </section>
         <?php
         return (string) ob_get_clean();

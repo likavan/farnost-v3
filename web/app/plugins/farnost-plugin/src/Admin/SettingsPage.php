@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Farnost\Plugin\Admin;
 
-use Farnost\Plugin\PostTypes\UpratovaciaSkupina;
 use Farnost\Plugin\Settings\Settings;
 
 if (!defined('ABSPATH')) {
@@ -39,7 +38,6 @@ final class SettingsPage
         }
 
         $s = Settings::get();
-        $skupiny = self::loadUpratovacieSkupiny();
 
         ?>
         <div class="wrap">
@@ -154,8 +152,8 @@ final class SettingsPage
                         <td><input type="text" id="fp-banka" name="farnost_settings[financie][banka]" value="<?php echo esc_attr($s['financie']['banka'] ?? ''); ?>" class="regular-text" placeholder="<?php esc_attr_e('napr. Slovenská sporiteľňa, a. s.', 'farnost-plugin'); ?>"></td>
                     </tr>
                     <tr>
-                        <th scope="row"><label for="fp-dvap">2 %</label></th>
-                        <td><input type="text" id="fp-dvap" name="farnost_settings[financie][dva_percenta]" value="<?php echo esc_attr($s['financie']['dva_percenta']); ?>" class="regular-text"></td>
+                        <th scope="row"><label for="fp-majitel"><?php esc_html_e('Majiteľ účtu', 'farnost-plugin'); ?></label></th>
+                        <td><input type="text" id="fp-majitel" name="farnost_settings[financie][majitel]" value="<?php echo esc_attr($s['financie']['majitel'] ?? ''); ?>" class="regular-text" placeholder="<?php esc_attr_e('Rímskokatolícka farnosť ...', 'farnost-plugin'); ?>"></td>
                     </tr>
                     <tr>
                         <th scope="row"><label for="fp-ico">IČO</label></th>
@@ -166,16 +164,27 @@ final class SettingsPage
                 <h2><?php esc_html_e('Sociálne siete', 'farnost-plugin'); ?></h2>
                 <table class="form-table" role="presentation">
                     <tr>
-                        <th scope="row"><label for="fp-fb">Facebook</label></th>
-                        <td><input type="url" id="fp-fb" name="farnost_settings[socialne][facebook]" value="<?php echo esc_attr($s['socialne']['facebook']); ?>" class="regular-text"></td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><label for="fp-yt">YouTube</label></th>
-                        <td><input type="url" id="fp-yt" name="farnost_settings[socialne][youtube]" value="<?php echo esc_attr($s['socialne']['youtube']); ?>" class="regular-text"></td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><label for="fp-ig">Instagram</label></th>
-                        <td><input type="url" id="fp-ig" name="farnost_settings[socialne][instagram]" value="<?php echo esc_attr($s['socialne']['instagram']); ?>" class="regular-text"></td>
+                        <th scope="row"><?php esc_html_e('Účty', 'farnost-plugin'); ?></th>
+                        <td>
+                            <div class="fp-repeater" data-field="socialne" data-popis-placeholder="<?php esc_attr_e('napr. Facebook', 'farnost-plugin'); ?>" data-value-placeholder="https://..." data-value-name="url">
+                                <?php
+                                $socialne = is_array($s['socialne'] ?? null) ? $s['socialne'] : [];
+                                if (empty($socialne)) {
+                                    $socialne = [['popis' => '', 'url' => '']];
+                                }
+                                foreach ($socialne as $i => $row) :
+                                    $popis = isset($row['popis']) ? (string) $row['popis'] : '';
+                                    $url   = isset($row['url'])   ? (string) $row['url']   : '';
+                                ?>
+                                    <div class="fp-repeater-row">
+                                        <input type="text" class="regular-text" name="farnost_settings[socialne][<?php echo (int) $i; ?>][popis]" value="<?php echo esc_attr($popis); ?>" placeholder="<?php esc_attr_e('napr. Facebook', 'farnost-plugin'); ?>">
+                                        <input type="url" class="regular-text" name="farnost_settings[socialne][<?php echo (int) $i; ?>][url]" value="<?php echo esc_attr($url); ?>" placeholder="https://...">
+                                        <button type="button" class="button-link-delete fp-repeater-remove" aria-label="<?php esc_attr_e('Odstrániť', 'farnost-plugin'); ?>">✕</button>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <button type="button" class="button button-secondary fp-repeater-add" data-target="socialne"><?php esc_html_e('+ Pridať sociálnu sieť', 'farnost-plugin'); ?></button>
+                        </td>
                     </tr>
                 </table>
 
@@ -207,26 +216,6 @@ final class SettingsPage
                     </tr>
                 </table>
 
-                <h2><?php esc_html_e('Moduly', 'farnost-plugin'); ?></h2>
-                <table class="form-table" role="presentation">
-                    <tr>
-                        <th scope="row"><?php esc_html_e('Oznamy', 'farnost-plugin'); ?></th>
-                        <td><label><input type="checkbox" name="farnost_settings[moduly][oznamy_zapnute]" value="1" <?php checked($s['moduly']['oznamy_zapnute']); ?>> <?php esc_html_e('CPT oznam, predvyplnená šablóna, životný cyklus s archívom', 'farnost-plugin'); ?></label></td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><?php esc_html_e('Úmysly', 'farnost-plugin'); ?></th>
-                        <td><label><input type="checkbox" name="farnost_settings[moduly][umysly_zapnute]" value="1" <?php checked($s['moduly']['umysly_zapnute']); ?>> <?php esc_html_e('Kalendár úmyslov, auto-dotiahnutie do oznamu', 'farnost-plugin'); ?></label></td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><?php esc_html_e('Rozpis omší', 'farnost-plugin'); ?></th>
-                        <td><label><input type="checkbox" name="farnost_settings[moduly][rozpis_omsi_zapnuty]" value="1" <?php checked($s['moduly']['rozpis_omsi_zapnuty']); ?>> <?php esc_html_e('CPT kostol + výnimky, sidebar widget „Najbližšia omša"', 'farnost-plugin'); ?></label></td>
-                    </tr>
-                    <tr>
-                        <th scope="row"><?php esc_html_e('Zdieľanie', 'farnost-plugin'); ?></th>
-                        <td><label><input type="checkbox" name="farnost_settings[moduly][zdielanie_zapnute]" value="1" <?php checked($s['moduly']['zdielanie_zapnute']); ?>> <?php esc_html_e('Tlačidlá Facebook / WhatsApp / Kopírovať odkaz pod detailom oznamu', 'farnost-plugin'); ?></label></td>
-                    </tr>
-                </table>
-
                 <h2><?php esc_html_e('Oznamy — publikačný rytmus', 'farnost-plugin'); ?></h2>
                 <table class="form-table" role="presentation">
                     <tr>
@@ -248,27 +237,6 @@ final class SettingsPage
                         <td>
                             <input type="number" id="fp-dopredne" name="farnost_settings[oznamy][dopredne_drafty]" value="<?php echo esc_attr((string) ($s['oznamy']['dopredne_drafty'] ?? 2)); ?>" min="1" max="4" class="small-text">
                             <p class="description"><?php esc_html_e('Koľko budúcich oznamov má systém držať pripravených (status „naplánované"). Default 2 — tento týždeň a nasledujúci.', 'farnost-plugin'); ?></p>
-                        </td>
-                    </tr>
-                </table>
-
-                <h2><?php esc_html_e('Upratovacie skupiny', 'farnost-plugin'); ?></h2>
-                <table class="form-table" role="presentation">
-                    <tr>
-                        <th scope="row"><label for="fp-uprat"><?php esc_html_e('Ďalšia skupina na rade', 'farnost-plugin'); ?></label></th>
-                        <td>
-                            <?php if (empty($skupiny)) : ?>
-                                <p class="description"><?php esc_html_e('Najskôr pridajte upratovacie skupiny v menu „Farnosť → Upratovacie skupiny".', 'farnost-plugin'); ?></p>
-                                <input type="hidden" name="farnost_settings[upratovanie][dalsia_skupina]" value="0">
-                            <?php else : ?>
-                                <select id="fp-uprat" name="farnost_settings[upratovanie][dalsia_skupina]">
-                                    <option value="0" <?php selected($s['upratovanie']['dalsia_skupina'], 0); ?>>— <?php esc_html_e('nezvolené', 'farnost-plugin'); ?> —</option>
-                                    <?php foreach ($skupiny as $sk) : ?>
-                                        <option value="<?php echo esc_attr((string) $sk->ID); ?>" <?php selected($s['upratovanie']['dalsia_skupina'], $sk->ID); ?>><?php echo esc_html($sk->post_title); ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                                <p class="description"><?php esc_html_e('Skupina, ktorá je nasledujúca v rotácii pri tvorbe oznamu.', 'farnost-plugin'); ?></p>
-                            <?php endif; ?>
                         </td>
                     </tr>
                 </table>
@@ -403,22 +371,15 @@ final class SettingsPage
         $out['kontakt']['web']           = isset($input['kontakt']['web']) ? esc_url_raw((string) $input['kontakt']['web']) : '';
         $out['kontakt']['uradne_hodiny'] = isset($input['kontakt']['uradne_hodiny']) ? sanitize_textarea_field((string) $input['kontakt']['uradne_hodiny']) : '';
 
-        $out['financie']['iban']         = isset($input['financie']['iban']) ? sanitize_text_field((string) $input['financie']['iban']) : '';
-        $out['financie']['banka']        = isset($input['financie']['banka']) ? sanitize_text_field((string) $input['financie']['banka']) : '';
-        $out['financie']['dva_percenta'] = isset($input['financie']['dva_percenta']) ? sanitize_text_field((string) $input['financie']['dva_percenta']) : '';
-        $out['financie']['ico']          = isset($input['financie']['ico']) ? sanitize_text_field((string) $input['financie']['ico']) : '';
+        $out['financie']['iban']    = isset($input['financie']['iban']) ? sanitize_text_field((string) $input['financie']['iban']) : '';
+        $out['financie']['banka']   = isset($input['financie']['banka']) ? sanitize_text_field((string) $input['financie']['banka']) : '';
+        $out['financie']['majitel'] = isset($input['financie']['majitel']) ? sanitize_text_field((string) $input['financie']['majitel']) : '';
+        $out['financie']['ico']     = isset($input['financie']['ico']) ? sanitize_text_field((string) $input['financie']['ico']) : '';
 
-        $out['socialne']['facebook']  = isset($input['socialne']['facebook']) ? esc_url_raw((string) $input['socialne']['facebook']) : '';
-        $out['socialne']['youtube']   = isset($input['socialne']['youtube']) ? esc_url_raw((string) $input['socialne']['youtube']) : '';
-        $out['socialne']['instagram'] = isset($input['socialne']['instagram']) ? esc_url_raw((string) $input['socialne']['instagram']) : '';
+        $out['socialne'] = self::sanitizeSocialne($input['socialne'] ?? []);
 
         $out['branding']['logo_id']       = isset($input['branding']['logo_id']) ? max(0, (int) $input['branding']['logo_id']) : 0;
         $out['branding']['primary_color'] = isset($input['branding']['primary_color']) ? self::sanitizeColor((string) $input['branding']['primary_color']) : '#1e40af';
-
-        $out['moduly']['oznamy_zapnute']      = !empty($input['moduly']['oznamy_zapnute']);
-        $out['moduly']['umysly_zapnute']      = !empty($input['moduly']['umysly_zapnute']);
-        $out['moduly']['rozpis_omsi_zapnuty'] = !empty($input['moduly']['rozpis_omsi_zapnuty']);
-        $out['moduly']['zdielanie_zapnute']   = !empty($input['moduly']['zdielanie_zapnute']);
 
         $den = isset($input['oznamy']['publikacny_den']) ? (string) $input['oznamy']['publikacny_den'] : 'sunday';
         $out['oznamy']['publikacny_den'] = array_key_exists($den, self::days()) ? $den : 'sunday';
@@ -428,16 +389,18 @@ final class SettingsPage
         $dopredne = isset($input['oznamy']['dopredne_drafty']) ? (int) $input['oznamy']['dopredne_drafty'] : 2;
         $out['oznamy']['dopredne_drafty'] = max(1, min(4, $dopredne));
 
-        $out['upratovanie']['dalsia_skupina'] = isset($input['upratovanie']['dalsia_skupina']) ? max(0, (int) $input['upratovanie']['dalsia_skupina']) : 0;
-
         $citatyText = isset($input['citaty']) && is_string($input['citaty']) ? $input['citaty'] : '';
         $out['citaty'] = self::citatyFromText($citatyText);
 
         // Polia, ktoré sa nespravujú cez tento form — zachovať z aktuálnych settings,
-        // aby ich save neprepísal na defaults. Konkrétne `setup.completed` (riadi sa
-        // wizard-om); bez tohto by každé uloženie Nastavení znova spustilo wizard.
+        // aby ich save neprepísal na defaults:
+        // - `setup.completed` — riadi setup wizard
+        // - `moduly` — sekcia v SettingsPage je skrytá (feature flags pre menu visibility, zatiaľ ghost)
+        // - `upratovanie.dalsia_skupina` — pointer rotácie, edituje sa cez Farnosť → Upratovacie
         $current = Settings::get();
-        $out['setup'] = $current['setup'] ?? $defaults['setup'];
+        $out['setup']       = $current['setup']       ?? $defaults['setup'];
+        $out['moduly']      = $current['moduly']      ?? $defaults['moduly'];
+        $out['upratovanie'] = $current['upratovanie'] ?? $defaults['upratovanie'];
 
         return $out;
     }
@@ -488,6 +451,30 @@ final class SettingsPage
         return $out;
     }
 
+    /**
+     * @param mixed $input
+     * @return list<array{popis: string, url: string}>
+     */
+    private static function sanitizeSocialne(mixed $input): array
+    {
+        if (!is_array($input)) {
+            return [];
+        }
+        $out = [];
+        foreach ($input as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $popis = isset($row['popis']) ? sanitize_text_field((string) $row['popis']) : '';
+            $url   = isset($row['url']) ? esc_url_raw((string) $row['url']) : '';
+            if ($url === '') {
+                continue;
+            }
+            $out[] = ['popis' => $popis, 'url' => $url];
+        }
+        return $out;
+    }
+
     private static function sanitizeColor(string $value): string
     {
         $value = trim($value);
@@ -534,18 +521,4 @@ final class SettingsPage
         return $out;
     }
 
-    /**
-     * @return array<int, \WP_Post>
-     */
-    private static function loadUpratovacieSkupiny(): array
-    {
-        $posts = get_posts([
-            'post_type'      => UpratovaciaSkupina::POST_TYPE,
-            'posts_per_page' => -1,
-            'orderby'        => 'menu_order title',
-            'order'          => 'ASC',
-            'post_status'    => 'publish',
-        ]);
-        return is_array($posts) ? $posts : [];
-    }
 }
