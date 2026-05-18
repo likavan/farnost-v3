@@ -6,7 +6,6 @@ namespace Farnost\Plugin;
 
 use Farnost\Plugin\Admin\BlockCategory;
 use Farnost\Plugin\Admin\CategoryAdmin;
-use Farnost\Plugin\Admin\HideOznamAddNew;
 use Farnost\Plugin\Blocks\RozpisSnapshot;
 use Farnost\Plugin\Oznam\BufferManager;
 use Farnost\Plugin\Admin\CommentsHide;
@@ -64,10 +63,6 @@ final class Plugin
         AutoTemplate::register();
         BufferManager::register();
         Upratovanie::register();
-
-        if (is_admin()) {
-            HideOznamAddNew::register();
-        }
 
         if (is_admin()) {
             Menu::register();

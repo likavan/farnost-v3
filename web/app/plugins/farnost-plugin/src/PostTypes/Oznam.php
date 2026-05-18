@@ -32,6 +32,27 @@ final class Oznam
             'show_in_rest' => true,
             'rest_base'    => 'oznamy',
             'show_in_menu' => Menu::SLUG,
+            // Lifecycle oznamov je výhradne automatický: BufferManager ich vytvára
+            // a WP cron publikuje pri dosiahnutí post_date. Manuálne ovládanie
+            // (Pridať / Publikovať / Zmazať) by spôsobilo desync s rotáciou
+            // upratovania a duplicity v týždňoch — preto kompletný UI lockdown.
+            //
+            // Cron flow (future→publish) volá wp_publish_post() priamo, bez cap
+            // checku, takže auto-publikácia funguje aj pri do_not_allow. Rovnako
+            // BufferManager::createWeekOznam volá wp_insert_post() priamo.
+            //
+            // Technický fallback pre adminov: WP-CLI `wp post delete <id>` obíde
+            // capability check (CLI nemá user context).
+            'capabilities' => [
+                'create_posts'           => 'do_not_allow',
+                'publish_posts'          => 'do_not_allow',
+                'delete_post'            => 'do_not_allow',
+                'delete_posts'           => 'do_not_allow',
+                'delete_published_posts' => 'do_not_allow',
+                'delete_others_posts'    => 'do_not_allow',
+                'delete_private_posts'   => 'do_not_allow',
+            ],
+            'map_meta_cap' => true,
         ]);
     }
 
