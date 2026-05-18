@@ -35,7 +35,7 @@ detaily / scope si dohodneme pred implementáciou každej.
 |---|---|---|---|
 | 38 | **Sidebar kontakt zmeniť** | open | `ContactWidget` — formát/obsah. Upresniť čo presne meniť. |
 | 39 | **Pridať úradné hodiny** | open | `settings.kontakt.uradne_hodiny` (textarea, viacriadkový text) sa zatiaľ nezobrazuje. Pridať do `ContactWidget` v sidebare ako samostatnú sekciu s preserved newlines (`white-space: pre-line`). Možno aj na Kontakt page. |
-| 53 | **Sidebar: posúvať sa zároveň s feedom** | open | Aktuálne `.farnost-sidebar` má `position: sticky; top: 24px`. User chce iné správanie — sidebar má scrollovať spolu s feedom. Upresniť: úplne preč sticky (a) alebo sticky-to-bottom pattern (b). |
+| 53 | **Sidebar twin-sticky** | open (nice-to-have) | User chce: scroll dole → spodok pripnúť na vp bottom; scroll hore → vrch pripnúť na vp top. Dvakrát implementované cez transform algoritmus, pri rýchlom scrolle "trasie" (rAF throttle, multi-pixel deltas). Revertnuté na default `position: sticky; top: 24px`. Pre kvalitné riešenie pravdepodobne potreba knižnice (StickySidebar.js) alebo CSS scroll-driven animations keď bude širšia podpora. Nice-to-have, neskôr. |
 
 ## Admin
 
