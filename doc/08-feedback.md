@@ -13,6 +13,7 @@ detaily / scope si dohodneme pred implementáciou každej.
 | 35 | **Udalosti — krátky náhľad namiesto plného obsahu** | open | Vo feede zobraziť excerpt (cez `get_the_excerpt` / `wp_trim_words`); plný content až na single page. Pre `oznam` CPT pravdepodobne ponechať plný (týždenný rozpis je relevantný v feede). |
 | 37 | **Zmeniť formát oznamov vo feede** | open | Aktuálne renderuje plný post_content (rozpis-snapshot block + paragraph upratuje + voľný text). Upresniť čo má vyzerať inak (excerpt? prvé 2-3 odrážky?). |
 | 43 | **Single template pre oznam** | open | Vlastný `templates/single-oznam.html` s page-header (eyebrow "Farské oznamy" + dátum + autor) podľa štýlu feed karty. Aktuálne `single.html` je generický. |
+| 45 | **Pridávanie a zobrazenie PDF ako oznamov** | open | Možnosť nahrať PDF (sken/originál tlačených oznamov) a publikovať ho ako oznam vo feede. Open otázky: upload UX, link vs. embedded preview, OCR pre textový obsah / fulltext search. |
 
 ## Frontend — galéria
 
