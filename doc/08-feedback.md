@@ -52,6 +52,12 @@ detaily / scope si dohodneme pred implementáciou každej.
 | 41 | **Skryť niektoré bloky z inserter-u** | open | Filtrovať dostupné Gutenberg bloky cez `allowed_block_types_all`. Upresniť ktoré skryť (napr. social-icons, embeds, core/calendar) a v ktorých post typoch. |
 | 42 | **Kalendár omší: edit kostol + označenie omše** | open | V admin React UI pri editácii omše (modal s úmyslom) doplniť možnosť meniť aj kostol a označenie omše. Pre výnimky (`omsa_vynimka`) ide o meta `farnost_kostol_id` a `farnost_oznacenie`. Pre pravidelné omše editácia ide cez Kostoly admin. |
 
+## Infraštruktúra / Kvalita
+
+| # | Položka | Stav | Poznámka |
+|---|---|---|---|
+| 78 | **Integračné testy cez wp-env + Playwright** | open | Pest unit testy pokrývajú pure logiku (Resolver, Gallery, Feed helpers), ale zlyhajú zachytiť real-world regressie pri WP majori (6→7), JS bundle bumpe alebo block.json schema zmenách. Hodí sa smoke suite (~5 testov) na golden path: (a) edit oznam → snapshot refresh → publish → view feed, (b) hover sidebar tooltip s úmyslom, (c) gallery lightbox carousel na detail strane, (d) mobile drawer open/close, (e) permaliny `/oznamy/<slug>/`. Setup: `@wordpress/env` (Docker WP), Playwright config, seed kostoly + posts fixture. ~1 deň práce, navždy zachytí 80% regressí. Kandidát pred WP 7 release. |
+
 ## Hotové z dnešnej iterácie (Etapa 3)
 
 Pre referenciu — zoznam commitov ktoré tvorili Etapu 3 (frontend):
