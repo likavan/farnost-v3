@@ -744,24 +744,55 @@ body > * { position: relative; z-index: 1; }
 .farnost-mass-time + .farnost-mass-time::before { content: "·"; margin-right: 8px; color: var(--wp--preset--color--muted); }
 .farnost-mass-row.is-highlight .farnost-mass-day-name,
 .farnost-mass-row.is-highlight .farnost-mass-times { color: var(--wp--preset--color--accent); }
-.farnost-mass-row { cursor: default; tabindex: 0; }
-.farnost-mass-note {
-  grid-column: 1 / -1;
-  font-size: 12px;
-  font-style: italic;
-  color: var(--wp--preset--color--muted);
-  /* Default skryté — sidebar zostáva kompaktný; hover/focus odhalí. */
-  max-height: 0;
-  margin-top: 0;
-  overflow: hidden;
-  opacity: 0;
-  transition: max-height 180ms ease, margin-top 180ms ease, opacity 140ms ease;
+/* Tooltip nad časom omše (označenie + úmysel) — zobrazí sa pri hover/focus.
+   Default sidebar zostáva kompaktný; popup ukáže detail bez expanzie layoutu. */
+.farnost-mass-time.has-note {
+  position: relative;
+  cursor: help;
+  border-bottom: 1px dotted var(--wp--preset--color--muted);
 }
-.farnost-mass-row:hover .farnost-mass-note,
-.farnost-mass-row:focus-within .farnost-mass-note {
-  max-height: 6em;
-  margin-top: 4px;
+.farnost-mass-time.has-note::after {
+  content: attr(data-note);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 60;
+  min-width: 180px;
+  max-width: 260px;
+  padding: 8px 12px;
+  background: var(--wp--preset--color--ink);
+  color: var(--wp--preset--color--bg);
+  font-family: var(--wp--preset--font-family--body);
+  font-size: 12.5px;
+  font-variant-numeric: normal;
+  line-height: 1.45;
+  white-space: normal;
+  text-align: left;
+  border-radius: 3px;
+  box-shadow: 0 4px 14px rgba(28, 22, 16, 0.18);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 160ms ease;
+}
+.farnost-mass-time.has-note::before {
+  content: "";
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  border: 6px solid transparent;
+  border-top-color: var(--wp--preset--color--ink);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 140ms ease, transform 160ms ease;
+}
+.farnost-mass-time.has-note:hover::after,
+.farnost-mass-time.has-note:focus::after,
+.farnost-mass-time.has-note:hover::before,
+.farnost-mass-time.has-note:focus::before {
   opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
 
 .farnost-kostol-section + .farnost-kostol-section { margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--wp--preset--color--rule); }

@@ -92,7 +92,6 @@ final class MassWidget
                             if (empty($resolved)) { continue; }
                             $name = self::SLOVAK_WEEKDAYS[(int) $day->format('N')] ?? '';
                             $isHighlight = $iso === $today;
-                            $notes = self::buildNotes($resolved);
                         ?>
                             <li class="farnost-mass-row<?php echo $isHighlight ? ' is-highlight' : ''; ?>">
                                 <div>
@@ -100,13 +99,18 @@ final class MassWidget
                                     <span class="farnost-mass-day-date"><?php echo esc_html(self::shortDate($day)); ?></span>
                                 </div>
                                 <div class="farnost-mass-times">
-                                    <?php foreach ($resolved as $m) : ?>
-                                        <span class="farnost-mass-time"><?php echo esc_html((string) ($m['cas'] ?? '')); ?></span>
+                                    <?php foreach ($resolved as $m) :
+                                        $cas = trim((string) ($m['cas'] ?? ''));
+                                        $oznacenie = trim((string) ($m['oznacenie'] ?? ''));
+                                        $umysel    = trim((string) ($m['umysel']    ?? ''));
+                                        $tooltipParts = [];
+                                        if ($oznacenie !== '') { $tooltipParts[] = $oznacenie; }
+                                        if ($umysel !== '')    { $tooltipParts[] = $umysel; }
+                                        $tooltip = implode(' — ', $tooltipParts);
+                                    ?>
+                                        <span class="farnost-mass-time<?php echo $tooltip !== '' ? ' has-note' : ''; ?>"<?php if ($tooltip !== '') : ?> tabindex="0" data-note="<?php echo esc_attr($tooltip); ?>" aria-label="<?php echo esc_attr($cas . ' — ' . $tooltip); ?>"<?php endif; ?>><?php echo esc_html($cas); ?></span>
                                     <?php endforeach; ?>
                                 </div>
-                                <?php foreach ($notes as $note) : ?>
-                                    <div class="farnost-mass-note"><?php echo esc_html($note); ?></div>
-                                <?php endforeach; ?>
                             </li>
                         <?php endfor; ?>
                     </ul>
