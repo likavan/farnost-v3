@@ -11,6 +11,7 @@ use Farnost\Plugin\Blocks\ArchiveList;
 use Farnost\Plugin\Blocks\Banner as BannerBlock;
 use Farnost\Plugin\Blocks\ContactWidget;
 use Farnost\Plugin\Blocks\Feed;
+use Farnost\Plugin\Blocks\Gallery;
 use Farnost\Plugin\Blocks\MainNav;
 use Farnost\Plugin\Blocks\MassWidget;
 use Farnost\Plugin\Blocks\QuoteWidget;
@@ -65,6 +66,11 @@ final class Plugin
         add_action('init', [$this, 'registerMeta']);
         add_action('init', [Settings::class, 'register']);
         add_action('rest_api_init', [$this, 'registerRest']);
+        // Self-healing rewrite rules po deploy-i kde sa zmenil CPT slug —
+        // Activator::activate sa pri update pluginu nespúšťa, takže permalink
+        // pre /oznamy/<slug>/ by inak vracal 404. Beží len v admin scope —
+        // zachytí prvého admina ktorý sa po deploy-i prihlási.
+        add_action('admin_init', [Activator::class, 'maybeFlushRewriteRules']);
 
         // Komentáre — odstavené naprieč admin aj frontend (hooks musia byť globálne).
         CommentsHide::register();
@@ -74,6 +80,7 @@ final class Plugin
         RozpisSnapshot::register();
         BannerBlock::register();
         Feed::register();
+        Gallery::register();
         MassWidget::register();
         ContactWidget::register();
         QuoteWidget::register();

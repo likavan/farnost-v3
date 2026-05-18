@@ -97,41 +97,52 @@ final class RozpisSnapshot
                     <?php else : ?>
                         <ul class="farnost-rozpis-snapshot__kostoly">
                             <?php foreach ($kostoly as $k) :
-                                $hasIntents = false;
+                                // Detail riadky (čas + badge popisu + úmysel) zobrazujeme pre
+                                // každú omšu ktorá má aspoň popis ALEBO úmysel. Časy vedľa
+                                // kostola sú len čistý prehľad (bez popisov) — popisy idú
+                                // do detail riadkov ako badge.
+                                $hasDetails = false;
                                 foreach ($k['omse'] as $m) {
-                                    if (trim((string) ($m['umysel'] ?? '')) !== '') { $hasIntents = true; break; }
+                                    if (trim((string) ($m['umysel']    ?? '')) !== '') { $hasDetails = true; break; }
+                                    if (trim((string) ($m['oznacenie'] ?? '')) !== '') { $hasDetails = true; break; }
                                 }
                                 $color = self::sanitizeHexColor((string) ($k['color'] ?? ''));
                                 $styleAttr = $color !== '' ? ' style="--frs-kostol-color: ' . esc_attr($color) . '"' : '';
                                 ?>
                                 <li class="farnost-rozpis-snapshot__kostol"<?php echo $styleAttr; ?>>
                                     <div class="farnost-rozpis-snapshot__kostol-row">
-                                        <?php if (count($kostoly) > 1) : ?>
-                                            <span class="farnost-rozpis-snapshot__kostol-name"><?php echo esc_html((string) ($k['title'] ?? '')); ?></span>
+                                        <?php $kTitle = (string) ($k['title'] ?? ''); ?>
+                                        <?php if ($kTitle !== '') : ?>
+                                            <span class="farnost-rozpis-snapshot__kostol-name"><?php echo esc_html($kTitle); ?></span>
                                         <?php endif; ?>
                                         <span class="farnost-rozpis-snapshot__times">
-                                            <?php foreach ($k['omse'] as $i => $m) :
+                                            <?php foreach ($k['omse'] as $m) :
                                                 $cas = (string) ($m['cas'] ?? '');
-                                                $oznacenie = trim((string) ($m['oznacenie'] ?? ''));
                                                 $isVynimka = ($m['source'] ?? '') === 'vynimka';
                                                 if ($cas === '') { continue; }
                                                 ?>
-                                                <span class="farnost-rozpis-snapshot__time<?php echo $isVynimka ? ' is-vynimka' : ''; ?>"><?php echo esc_html($cas); ?><?php if ($oznacenie !== '') : ?> <em class="farnost-rozpis-snapshot__oznacenie"><?php echo esc_html($oznacenie); ?></em><?php endif; ?></span>
+                                                <span class="farnost-rozpis-snapshot__time<?php echo $isVynimka ? ' is-vynimka' : ''; ?>"><?php echo esc_html($cas); ?></span>
                                             <?php endforeach; ?>
                                         </span>
                                     </div>
-                                    <?php if ($hasIntents) : ?>
+                                    <?php if ($hasDetails) : ?>
                                         <ul class="farnost-rozpis-snapshot__intents">
                                             <?php foreach ($k['omse'] as $m) :
-                                                $umysel = trim((string) ($m['umysel'] ?? ''));
-                                                if ($umysel === '') { continue; }
+                                                $umysel    = trim((string) ($m['umysel']    ?? ''));
+                                                $oznacenie = trim((string) ($m['oznacenie'] ?? ''));
+                                                if ($umysel === '' && $oznacenie === '') { continue; }
                                                 $cas = (string) ($m['cas'] ?? '');
                                                 ?>
                                                 <li>
-                                                    <?php if ($cas !== '') : ?>
-                                                        <span class="farnost-rozpis-snapshot__intent-time"><?php echo esc_html($cas); ?></span>
-                                                    <?php endif; ?>
-                                                    <span class="farnost-rozpis-snapshot__intent-text"><?php echo esc_html($umysel); ?></span>
+                                                    <span class="farnost-rozpis-snapshot__intent-time"><?php echo esc_html($cas); ?></span>
+                                                    <span class="farnost-rozpis-snapshot__intent-body">
+                                                        <?php if ($oznacenie !== '') : ?>
+                                                            <span class="farnost-rozpis-snapshot__intent-badge"><?php echo esc_html($oznacenie); ?></span>
+                                                        <?php endif; ?>
+                                                        <?php if ($umysel !== '') : ?>
+                                                            <span class="farnost-rozpis-snapshot__intent-text"><?php echo esc_html($umysel); ?></span>
+                                                        <?php endif; ?>
+                                                    </span>
                                                 </li>
                                             <?php endforeach; ?>
                                         </ul>

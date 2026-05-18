@@ -20,6 +20,7 @@ module.exports = {
 		'upratovacie':           './editor/upratovacie/index.js',
 		'wizard':                './editor/wizard/index.js',
 		'block-rozpis-snapshot': './editor/block-rozpis-snapshot/index.js',
+		'block-gallery':         './editor/block-gallery/index.js',
 		'site-blocks':           './editor/site-blocks/index.js',
 	},
 };

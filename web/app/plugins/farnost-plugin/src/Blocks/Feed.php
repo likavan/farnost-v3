@@ -109,6 +109,9 @@ final class Feed
             <div class="farnost-post-body">
                 <?php echo self::renderBody($post, $variant); ?>
             </div>
+            <?php if ($variant !== 'oznamy') : ?>
+                <?php echo self::renderFeedGallery($post, $permalink); ?>
+            <?php endif; ?>
             <p class="farnost-post-more">
                 <a href="<?php echo $permalink; ?>"><?php esc_html_e('Čítať viac', 'farnost-plugin'); ?> <span aria-hidden="true">→</span></a>
             </p>
@@ -186,12 +189,13 @@ final class Feed
             return '';
         }
         ob_start();
+        $whenLabel = $when !== '' ? self::formatEventWhen($when) : '';
         ?>
         <div class="farnost-udalost-grid">
-            <?php if ($when !== '') : ?>
+            <?php if ($whenLabel !== '') : ?>
                 <div>
                     <div class="farnost-udalost-label"><?php esc_html_e('Kedy', 'farnost-plugin'); ?></div>
-                    <div class="farnost-udalost-value"><?php echo esc_html($when); ?></div>
+                    <div class="farnost-udalost-value"><?php echo esc_html($whenLabel); ?></div>
                 </div>
             <?php endif; ?>
             <?php if ($where !== '') : ?>
@@ -203,6 +207,137 @@ final class Feed
         </div>
         <?php
         return (string) ob_get_clean();
+    }
+
+    /**
+     * Detekuje prvý `farnost/gallery` blok v obsahu postu (vrátane nested
+     * innerBlocks) a vykreslí teaser grid pre feed kartu — max 3 viditeľné
+     * fotky, 4. dlaždica je „+N" overlay ak je v galérii viac fotiek.
+     *
+     * Všetky dlaždice sú odkaz na permalink článku (NIE lightbox) — vo feed-e
+     * fotka slúži ako teaser, browse celej galérie a lightbox sa otvára až
+     * na detail stránke.
+     */
+    private static function renderFeedGallery(WP_Post $post, string $permalinkEscaped): string
+    {
+        $images = self::findFirstGalleryImages((string) $post->post_content);
+        if (empty($images)) {
+            return '';
+        }
+        $count    = count($images);
+        $visible  = array_slice($images, 0, 3);
+        $overflow = $count - count($visible);
+        $variant  = match (true) {
+            $count === 1 => 'count-1',
+            $count === 2 => 'count-2',
+            default      => 'count-3',
+        };
+
+        ob_start();
+        ?>
+        <div class="farnost-feed-gallery farnost-feed-gallery--<?php echo esc_attr($variant); ?>">
+            <?php foreach ($visible as $i => $img) :
+                $url    = (string) ($img['url'] ?? '');
+                $alt    = (string) ($img['alt'] ?? '');
+                $isLast = $i === count($visible) - 1;
+                $hasOverlay = $isLast && $overflow > 0;
+                if ($url === '') { continue; }
+                ?>
+                <a
+                    class="farnost-feed-gallery__item<?php echo $hasOverlay ? ' has-overlay' : ''; ?>"
+                    href="<?php echo $permalinkEscaped; ?>"
+                    aria-label="<?php echo esc_attr($hasOverlay
+                        ? sprintf(__('Otvoriť článok — galéria obsahuje +%d ďalších fotiek', 'farnost-plugin'), $overflow)
+                        : __('Otvoriť článok', 'farnost-plugin')); ?>"
+                >
+                    <img class="farnost-feed-gallery__img" src="<?php echo esc_url($url); ?>" alt="<?php echo esc_attr($alt); ?>" loading="lazy" decoding="async" />
+                    <?php if ($hasOverlay) : ?>
+                        <span class="farnost-feed-gallery__overlay">+<?php echo (int) $overflow; ?></span>
+                    <?php endif; ?>
+                </a>
+            <?php endforeach; ?>
+        </div>
+        <?php
+        return (string) ob_get_clean();
+    }
+
+    /**
+     * Rekurzívne prejde block tree post_content-u a vráti `images[]` atribút
+     * prvej `farnost/gallery` ktorú nájde. Prázdne pole ak galéria nie je.
+     *
+     * Public pre unit testy (pure deterministická logika, žiadne side-effects
+     * okrem WP block parser-u).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function findFirstGalleryImages(string $content): array
+    {
+        if ($content === '' || !has_block('farnost/gallery', $content)) {
+            return [];
+        }
+        $blocks = parse_blocks($content);
+        $found  = self::walkForGallery($blocks);
+        if (!is_array($found)) {
+            return [];
+        }
+        return array_values(array_filter($found, 'is_array'));
+    }
+
+    /**
+     * @param list<array<string, mixed>> $blocks
+     * @return list<array<string, mixed>>|null
+     */
+    private static function walkForGallery(array $blocks): ?array
+    {
+        foreach ($blocks as $b) {
+            if (($b['blockName'] ?? '') === 'farnost/gallery') {
+                $imgs = $b['attrs']['images'] ?? [];
+                if (is_array($imgs) && !empty($imgs)) {
+                    return $imgs;
+                }
+            }
+            if (!empty($b['innerBlocks']) && is_array($b['innerBlocks'])) {
+                $nested = self::walkForGallery($b['innerBlocks']);
+                if ($nested !== null) {
+                    return $nested;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Lokalizuje raw event-when string do slovenského formátu cez `wp_date()`.
+     * Akceptuje viaceré tvary uložené v meta `farnost_event_when`:
+     *  - "Y-m-d H:i"      (nový default zo DateTimePicker — pripísal ' '+čas)
+     *  - "Y-m-d\TH:i:s"   (ISO 8601 ak by sa raw hodnota z DateTimePicker uložila)
+     *  - "Y-m-d"          (len dátum, bez času)
+     * Pre legacy / free-form text ktorý sa neparsne vráti ho raw — autor si
+     * mohol napísať čokoľvek (napr. „Sobota 18:30").
+     *
+     * Public pre unit testy.
+     */
+    public static function formatEventWhen(string $raw): string
+    {
+        $raw = trim($raw);
+        if ($raw === '') {
+            return '';
+        }
+        $tz = wp_timezone();
+        $formats = [
+            ['Y-m-d H:i',     true],
+            ['Y-m-d\\TH:i:s', true],
+            ['Y-m-d\\TH:i',   true],
+            ['Y-m-d',         false],
+        ];
+        foreach ($formats as [$fmt, $hasTime]) {
+            $dt = DateTimeImmutable::createFromFormat($fmt, $raw, $tz);
+            if ($dt instanceof DateTimeImmutable) {
+                $pattern = $hasTime ? 'j. F Y, H:i' : 'j. F Y';
+                return (string) wp_date($pattern, $dt->getTimestamp());
+            }
+        }
+        return $raw;
     }
 
     /**

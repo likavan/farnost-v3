@@ -25,6 +25,26 @@ final class EditorAssets
         // Site Editor (Dizajn) potrebuje site-bloky vždy — registrujeme cez
         // samostatný hook ktorý beží naprieč všetkými Gutenberg editormi.
         add_action('enqueue_block_editor_assets', [self::class, 'enqueueSiteBlocks']);
+        // Skryť header/footer/sidebar template-parts v post/page editor
+        // canvas-e — autor edituje len content, okolité chrome ho rozptyľuje.
+        // V Site editori (Dizajn) ostávajú viditeľné — tam $context->post nie je.
+        add_filter('block_editor_settings_all', [self::class, 'hideTemplatePartsInPostEditor'], 10, 2);
+    }
+
+    /**
+     * @param array<string, mixed> $settings
+     * @param object $context  Block editor context — v post editori má `->post`.
+     * @return array<string, mixed>
+     */
+    public static function hideTemplatePartsInPostEditor(array $settings, $context): array
+    {
+        if (!isset($context->post)) {
+            return $settings;
+        }
+        $css = '.wp-block-template-part { display: none !important; }';
+        $settings['styles'] = $settings['styles'] ?? [];
+        $settings['styles'][] = ['css' => $css];
+        return $settings;
     }
 
     public static function enqueueSiteBlocks(): void
@@ -47,6 +67,7 @@ final class EditorAssets
                 self::enqueueBuilt('farnost-panel-oznam', 'panel-oznam');
                 // Bloky kategórie „Farnosť" — zatiaľ len rozpis-snapshot, ďalšie pribudnú.
                 self::enqueueBuilt('farnost-block-rozpis-snapshot', 'block-rozpis-snapshot');
+                self::enqueueBuilt('farnost-block-gallery', 'block-gallery');
                 break;
             case 'omsa_vynimka':
                 self::enqueueBuilt('farnost-panel-vynimka', 'panel-vynimka');
@@ -56,6 +77,10 @@ final class EditorAssets
                 break;
             case 'post':
                 self::enqueueBuilt('farnost-panel-udalost', 'panel-udalost');
+                self::enqueueBuilt('farnost-block-gallery', 'block-gallery');
+                break;
+            case 'page':
+                self::enqueueBuilt('farnost-block-gallery', 'block-gallery');
                 break;
         }
     }

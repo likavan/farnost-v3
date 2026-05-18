@@ -41,4 +41,11 @@ add_action('wp_enqueue_scripts', static function (): void {
         wp_get_theme()->get('Version'),
         ['strategy' => 'defer']
     );
+    wp_enqueue_script(
+        'farnost-lightbox',
+        get_theme_file_uri('assets/lightbox.js'),
+        [],
+        wp_get_theme()->get('Version'),
+        ['strategy' => 'defer']
+    );
 });

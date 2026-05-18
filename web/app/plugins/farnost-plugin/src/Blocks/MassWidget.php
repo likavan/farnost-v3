@@ -74,14 +74,15 @@ final class MassWidget
                     }
                 }
                 if (!$hasAnyMass) { continue; }
+                $styleAttr = $k['color'] !== '' ? ' style="--mw-kostol-color: ' . esc_attr($k['color']) . '"' : '';
                 ?>
-                <div class="farnost-kostol-section">
+                <div class="farnost-kostol-section<?php echo $k['color'] !== '' ? ' has-color' : ''; ?>"<?php echo $styleAttr; ?>>
                     <?php if (count($kostoly) > 1) : ?>
                         <h4 class="farnost-kostol-section-title">
+                            <?php echo esc_html($k['title']); ?>
                             <?php if (!empty($k['is_main'])) : ?>
                                 <span class="farnost-kostol-badge"><?php esc_html_e('Farský', 'farnost-plugin'); ?></span>
                             <?php endif; ?>
-                            <?php echo esc_html($k['title']); ?>
                         </h4>
                     <?php endif; ?>
                     <ul class="farnost-mass-list">
@@ -124,7 +125,7 @@ final class MassWidget
     /**
      * Hlavný kostol prvý, ostatné podľa menu_order.
      *
-     * @return list<array{id: int, title: string, is_main: bool}>
+     * @return list<array{id: int, title: string, is_main: bool, color: string}>
      */
     private static function loadKostoly(): array
     {
@@ -147,6 +148,7 @@ final class MassWidget
                 'id'      => (int) $p->ID,
                 'title'   => (string) $p->post_title,
                 'is_main' => $isHlavny,
+                'color'   => self::sanitizeHexColor((string) get_post_meta($p->ID, 'farnost_color', true)),
             ];
             if ($isHlavny) {
                 $main[] = $row;
@@ -155,6 +157,17 @@ final class MassWidget
             }
         }
         return array_merge($main, $rest);
+    }
+
+    private static function sanitizeHexColor(string $color): string
+    {
+        $color = trim($color);
+        if ($color === '') {
+            return '';
+        }
+        return preg_match('/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/', $color) === 1
+            ? strtolower($color)
+            : '';
     }
 
     private static function weekStart(): DateTimeImmutable

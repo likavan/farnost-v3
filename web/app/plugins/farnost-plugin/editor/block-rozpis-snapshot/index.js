@@ -3,12 +3,15 @@
  *
  * Atribúty:
  *   - tyzdenOd, tyzdenDo: 'YYYY-MM-DD'
- *   - dni: pole 7 položiek
- *       { date, dayKey, sviatok, omse: [{ kostol_title, time, oznacenie, umysel, source }] }
+ *   - dni: pole 7 položiek (nový shape, per kostol)
+ *       { date, dayKey, sviatok,
+ *         kostoly: [{ id, title, color, omse: [{ cas, oznacenie, umysel, source }] }] }
+ *     Legacy shape (staršie oznamy): { ..., omse: [{ kostol_title, time, oznacenie, umysel, source }] }
+ *     — pri editácii ho znormalizujeme do nového shape.
  *
  * Edit UI: každá bunka (čas / označenie / úmysel) je click-to-edit; klik na text
- * prepne na <input>, blur alebo Enter ulož, Escape zruš. Tlačidlá per deň: pridať
- * omšu, odstrániť konkrétnu omšu.
+ * prepne na <input>, blur alebo Enter ulož, Escape zruš. Tlačidlá per deň/kostol:
+ * pridať omšu, odstrániť konkrétnu omšu.
  *
  * Dynamic block — JS save() vracia null, frontend rendruje PHP (RozpisSnapshot.php).
  */
@@ -34,6 +37,47 @@ function formatShortDate( iso ) {
 	if ( ! iso ) return '';
 	const d = new Date( iso + 'T12:00:00' );
 	return d.toLocaleDateString( 'sk-SK', { day: 'numeric', month: 'numeric' } );
+}
+
+/**
+ * Vráti deň v normalizovanom shape `kostoly[]` (nový formát).
+ * Ak day má legacy `omse[]` flat shape, re-groupne podľa `kostol_title`.
+ * Ak chýbajú obe pole, vráti `kostoly: []`.
+ *
+ * Tým editor vie pracovať jednotne — vždy iteruje `day.kostoly[]`. Legacy
+ * snapshots (uložené pred prerodom shape) sa za behu prevedú do nového
+ * formátu, takže edit/save funguje bez migrácie content-u v databáze.
+ */
+function normalizeDay( day ) {
+	if ( Array.isArray( day.kostoly ) ) {
+		return day;
+	}
+	const omse = Array.isArray( day.omse ) ? day.omse : [];
+	if ( omse.length === 0 ) {
+		return { ...day, kostoly: [] };
+	}
+	const byTitle = new Map();
+	const order = [];
+	for ( const m of omse ) {
+		const title = String( m.kostol_title || '' );
+		if ( ! byTitle.has( title ) ) {
+			byTitle.set( title, [] );
+			order.push( title );
+		}
+		byTitle.get( title ).push( {
+			cas:       String( m.cas || m.time || '' ),
+			oznacenie: String( m.oznacenie || '' ),
+			umysel:    String( m.umysel || '' ),
+			source:    String( m.source || 'rozpis' ),
+		} );
+	}
+	const kostoly = order.map( ( title ) => ( {
+		id:    0,
+		title,
+		color: '',
+		omse:  byTitle.get( title ),
+	} ) );
+	return { ...day, kostoly };
 }
 
 /**
@@ -111,7 +155,12 @@ function InlineEdit( { value, onChange, placeholder, inputType = 'text', style }
 
 function DayCardEdit( { day, dayIdx, updateMass, addMass, removeMass } ) {
 	const label = DAY_LABELS[ day.dayKey ] || day.dayKey;
-	const omse = Array.isArray( day.omse ) ? day.omse : [];
+	const kostoly = Array.isArray( day.kostoly ) ? day.kostoly : [];
+
+	const totalOmse = kostoly.reduce(
+		( acc, k ) => acc + ( Array.isArray( k.omse ) ? k.omse.length : 0 ),
+		0
+	);
 
 	return (
 		<div className="farnost-rozpis-snapshot__card">
@@ -125,57 +174,79 @@ function DayCardEdit( { day, dayIdx, updateMass, addMass, removeMass } ) {
 				) }
 			</div>
 
-			{ omse.length === 0 ? (
+			{ totalOmse === 0 && kostoly.length === 0 ? (
 				<div className="farnost-rozpis-snapshot__empty">
 					{ __( 'Sv. omša nie je', 'farnost-plugin' ) }
 				</div>
 			) : (
-				<ul className="farnost-rozpis-snapshot__list">
-					{ omse.map( ( m, i ) => (
-						<li key={ i } className="farnost-rozpis-snapshot__row">
-							<div className="farnost-rozpis-snapshot__row-line">
-								<InlineEdit
-									value={ m.time || '' }
-									onChange={ ( v ) => updateMass( dayIdx, i, 'time', v ) }
-									placeholder="HH:MM"
-									style={ { width: 56, fontWeight: 600 } }
-								/>
-								<InlineEdit
-									value={ m.oznacenie || '' }
-									onChange={ ( v ) => updateMass( dayIdx, i, 'oznacenie', v ) }
-									placeholder={ __( 'označenie', 'farnost-plugin' ) }
-									style={ { flex: 1, fontSize: 12, color: '#6b7280' } }
-								/>
-								<Button
-									isDestructive
-									variant="tertiary"
-									size="small"
-									onClick={ () => removeMass( dayIdx, i ) }
-									label={ __( 'Odstrániť omšu', 'farnost-plugin' ) }
-									showTooltip
-								>
-									✕
-								</Button>
-							</div>
-							<InlineEdit
-								value={ m.umysel || '' }
-								onChange={ ( v ) => updateMass( dayIdx, i, 'umysel', v ) }
-								placeholder={ __( 'úmysel', 'farnost-plugin' ) }
-								style={ { display: 'block', width: '100%', fontSize: 12, color: '#374151', marginTop: 2 } }
-							/>
-						</li>
-					) ) }
-				</ul>
-			) }
+				kostoly.map( ( k, ki ) => {
+					const omse = Array.isArray( k.omse ) ? k.omse : [];
+					const borderColor = k.color || '#e5e7eb';
+					return (
+						<div
+							key={ ki }
+							className="farnost-rozpis-snapshot__kostol"
+							style={ { borderLeftColor: borderColor } }
+						>
+							{ k.title && (
+								<div className="farnost-rozpis-snapshot__kostol-title">{ k.title }</div>
+							) }
 
-			<Button
-				variant="secondary"
-				size="small"
-				onClick={ () => addMass( dayIdx ) }
-				style={ { marginTop: 8 } }
-			>
-				{ __( '+ Pridať omšu', 'farnost-plugin' ) }
-			</Button>
+							{ omse.length === 0 ? (
+								<div className="farnost-rozpis-snapshot__empty">
+									{ __( 'Sv. omša nie je', 'farnost-plugin' ) }
+								</div>
+							) : (
+								<ul className="farnost-rozpis-snapshot__list">
+									{ omse.map( ( m, i ) => (
+										<li key={ i } className="farnost-rozpis-snapshot__row">
+											<div className="farnost-rozpis-snapshot__row-line">
+												<InlineEdit
+													value={ m.cas || '' }
+													onChange={ ( v ) => updateMass( dayIdx, ki, i, 'cas', v ) }
+													placeholder="HH:MM"
+													style={ { width: 56, fontWeight: 600 } }
+												/>
+												<InlineEdit
+													value={ m.oznacenie || '' }
+													onChange={ ( v ) => updateMass( dayIdx, ki, i, 'oznacenie', v ) }
+													placeholder={ __( 'označenie', 'farnost-plugin' ) }
+													style={ { flex: 1, fontSize: 12, color: '#6b7280' } }
+												/>
+												<Button
+													isDestructive
+													variant="tertiary"
+													size="small"
+													onClick={ () => removeMass( dayIdx, ki, i ) }
+													label={ __( 'Odstrániť omšu', 'farnost-plugin' ) }
+													showTooltip
+												>
+													✕
+												</Button>
+											</div>
+											<InlineEdit
+												value={ m.umysel || '' }
+												onChange={ ( v ) => updateMass( dayIdx, ki, i, 'umysel', v ) }
+												placeholder={ __( 'úmysel', 'farnost-plugin' ) }
+												style={ { display: 'block', width: '100%', fontSize: 12, color: '#374151', marginTop: 2 } }
+											/>
+										</li>
+									) ) }
+								</ul>
+							) }
+
+							<Button
+								variant="secondary"
+								size="small"
+								onClick={ () => addMass( dayIdx, ki ) }
+								style={ { marginTop: 8 } }
+							>
+								{ __( '+ Pridať omšu', 'farnost-plugin' ) }
+							</Button>
+						</div>
+					);
+				} )
+			) }
 		</div>
 	);
 }
@@ -197,7 +268,8 @@ function formatSnapshotAt( iso ) {
 
 function Edit( { attributes, setAttributes } ) {
 	const blockProps = useBlockProps( { className: 'farnost-rozpis-snapshot-wrap' } );
-	const dni = Array.isArray( attributes.dni ) ? attributes.dni : [];
+	const rawDni = Array.isArray( attributes.dni ) ? attributes.dni : [];
+	const dni = rawDni.map( normalizeDay );
 	const [ refreshing, setRefreshing ] = useState( false );
 
 	const persist = ( nextDni ) => setAttributes( { dni: nextDni } );
@@ -242,33 +314,54 @@ function Edit( { attributes, setAttributes } ) {
 		}
 	};
 
-	const updateMass = ( dayIdx, massIdx, field, value ) => {
+	// `dni` (lokálny) je už normalizovaný. Pri persist-e dropneme legacy
+	// `omse` pole z dňa (ak ešte v stave bolo), aby content v DB obsahoval
+	// len nový shape — single source of truth.
+	const persistNormalized = ( nextDni ) =>
+		persist( nextDni.map( ( { omse: _legacy, ...rest } ) => rest ) );
+
+	const updateMass = ( dayIdx, kostolIdx, massIdx, field, value ) => {
 		const next = dni.map( ( d, i ) => {
 			if ( i !== dayIdx ) return d;
-			const omse = Array.isArray( d.omse ) ? d.omse : [];
-			const nextOmse = omse.map( ( m, j ) => ( j === massIdx ? { ...m, [ field ]: value } : m ) );
-			return { ...d, omse: nextOmse };
+			const kostoly = Array.isArray( d.kostoly ) ? d.kostoly : [];
+			const nextKostoly = kostoly.map( ( k, ki ) => {
+				if ( ki !== kostolIdx ) return k;
+				const omse = Array.isArray( k.omse ) ? k.omse : [];
+				const nextOmse = omse.map( ( m, j ) => ( j === massIdx ? { ...m, [ field ]: value } : m ) );
+				return { ...k, omse: nextOmse };
+			} );
+			return { ...d, kostoly: nextKostoly };
 		} );
-		persist( next );
+		persistNormalized( next );
 	};
 
-	const addMass = ( dayIdx ) => {
+	const addMass = ( dayIdx, kostolIdx ) => {
 		const next = dni.map( ( d, i ) => {
 			if ( i !== dayIdx ) return d;
-			const omse = Array.isArray( d.omse ) ? [ ...d.omse ] : [];
-			omse.push( { kostol_title: '', time: '', oznacenie: '', umysel: '', source: 'manual' } );
-			return { ...d, omse };
+			const kostoly = Array.isArray( d.kostoly ) ? d.kostoly : [];
+			const nextKostoly = kostoly.map( ( k, ki ) => {
+				if ( ki !== kostolIdx ) return k;
+				const omse = Array.isArray( k.omse ) ? [ ...k.omse ] : [];
+				omse.push( { cas: '', oznacenie: '', umysel: '', source: 'manual' } );
+				return { ...k, omse };
+			} );
+			return { ...d, kostoly: nextKostoly };
 		} );
-		persist( next );
+		persistNormalized( next );
 	};
 
-	const removeMass = ( dayIdx, massIdx ) => {
+	const removeMass = ( dayIdx, kostolIdx, massIdx ) => {
 		const next = dni.map( ( d, i ) => {
 			if ( i !== dayIdx ) return d;
-			const omse = Array.isArray( d.omse ) ? d.omse.filter( ( _, j ) => j !== massIdx ) : [];
-			return { ...d, omse };
+			const kostoly = Array.isArray( d.kostoly ) ? d.kostoly : [];
+			const nextKostoly = kostoly.map( ( k, ki ) => {
+				if ( ki !== kostolIdx ) return k;
+				const omse = Array.isArray( k.omse ) ? k.omse.filter( ( _, j ) => j !== massIdx ) : [];
+				return { ...k, omse };
+			} );
+			return { ...d, kostoly: nextKostoly };
 		} );
-		persist( next );
+		persistNormalized( next );
 	};
 
 	return (
@@ -290,6 +383,14 @@ function Edit( { attributes, setAttributes } ) {
 				}
 				.farnost-rozpis-snapshot__header {
 					padding-bottom: 8px; border-bottom: 1px solid #f3f4f6; margin-bottom: 8px;
+				}
+				.farnost-rozpis-snapshot__kostol {
+					border-left: 2px solid #e5e7eb; padding-left: 10px; margin: 8px 0 12px;
+				}
+				.farnost-rozpis-snapshot__kostol:last-child { margin-bottom: 0; }
+				.farnost-rozpis-snapshot__kostol-title {
+					font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+					text-transform: uppercase; color: #6b7280; margin-bottom: 4px;
 				}
 				.farnost-rozpis-snapshot__date {
 					margin-left: 8px; color: #6b7280; font-size: 12px;

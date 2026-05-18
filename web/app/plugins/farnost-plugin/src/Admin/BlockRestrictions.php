@@ -35,6 +35,10 @@ final class BlockRestrictions
         'farnost/quote-widget',
         'farnost/schedule-table',
         'farnost/archive-list',
+        // Core gallery — nahradený `farnost/gallery` s mosaicom + custom
+        // lightboxom. Legacy core/gallery v existujúcom obsahu sa stále
+        // vyrendruje (filter zasahuje len inserter), takže nič nestratíme.
+        'core/gallery',
     ];
 
     public static function register(): void

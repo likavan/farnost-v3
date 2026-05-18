@@ -6,6 +6,7 @@ namespace Farnost\Plugin\Schedule;
 
 use DateTimeImmutable;
 use Farnost\Plugin\PostTypes\OmsaVynimka;
+use Farnost\Plugin\PostTypes\Umysel;
 use WP_Query;
 
 if (!defined('ABSPATH')) {
@@ -42,6 +43,7 @@ final class WeeklyResolver
         }
 
         $exceptions = self::loadExceptionsForWeek($kostolIds, $weekStart, $weekEnd);
+        $umysly     = self::loadUmyslyForWeek($kostolIds, $weekStart, $weekEnd);
 
         $result = [];
         foreach ($kostolIds as $kid) {
@@ -50,7 +52,20 @@ final class WeeklyResolver
                 $day = $start->modify("+{$i} day");
                 $iso = $day->format('Y-m-d');
                 $vyn = $exceptions["{$kid}|{$iso}"] ?? [];
-                $result[(int) $kid][$iso] = Resolver::resolve($rozpis, $vyn, $iso);
+                $resolved = Resolver::resolve($rozpis, $vyn, $iso);
+                // Doplň úmysly z CPT `umysel` pre rozpis omše (výnimky majú
+                // vlastný umysel field). Bez tohto sidebar tooltip nemá obsah,
+                // hoci úmysel v admin Kalendári existuje.
+                foreach ($resolved as &$m) {
+                    if (($m['zdroj'] ?? '') === 'rozpis' && trim((string) ($m['umysel'] ?? '')) === '') {
+                        $key = (int) $kid . '|' . $iso . '|' . (string) ($m['cas'] ?? '');
+                        if (isset($umysly[$key])) {
+                            $m['umysel'] = $umysly[$key];
+                        }
+                    }
+                }
+                unset($m);
+                $result[(int) $kid][$iso] = $resolved;
             }
         }
         return $result;
@@ -124,6 +139,52 @@ final class WeeklyResolver
                 'oznacenie' => $oz,
                 'umysel'    => $umysel,
             ];
+        }
+        return $out;
+    }
+
+    /**
+     * Batch-loaduje úmysly (CPT `umysel`) pre celý týždeň + všetky kostoly.
+     * Index: "$kostolId|$datum|$cas" → text úmyslu. Last-write-wins ak je
+     * pre rovnaký slot viac úmyslov (admin to považuje za chybu — UI nedovolí
+     * uložiť 2 úmysly na ten istý slot, ale v dátach to môže nastať).
+     *
+     * @param list<int> $kostolIds
+     * @return array<string, string>
+     */
+    private static function loadUmyslyForWeek(array $kostolIds, string $weekStart, string $weekEnd): array
+    {
+        $q = new WP_Query([
+            'post_type'      => Umysel::POST_TYPE,
+            'posts_per_page' => -1,
+            'post_status'    => 'publish',
+            'no_found_rows'  => true,
+            'meta_query'     => [
+                'relation' => 'AND',
+                [
+                    'key'     => 'farnost_kostol_id',
+                    'value'   => array_map('intval', $kostolIds),
+                    'compare' => 'IN',
+                ],
+                [
+                    'key'     => 'farnost_datum',
+                    'value'   => [$weekStart, $weekEnd],
+                    'compare' => 'BETWEEN',
+                    'type'    => 'CHAR',
+                ],
+            ],
+        ]);
+
+        $out = [];
+        foreach ($q->posts as $post) {
+            $kid   = (int) get_post_meta($post->ID, 'farnost_kostol_id', true);
+            $datum = (string) get_post_meta($post->ID, 'farnost_datum', true);
+            $cas   = (string) get_post_meta($post->ID, 'farnost_cas', true);
+            $text  = (string) get_post_meta($post->ID, 'farnost_text', true);
+            if ($text === '') {
+                continue;
+            }
+            $out["{$kid}|{$datum}|{$cas}"] = $text;
         }
         return $out;
     }

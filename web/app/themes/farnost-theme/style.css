@@ -611,6 +611,28 @@ body > * { position: relative; z-index: 1; }
   font-variant-numeric: tabular-nums;
   color: var(--wp--preset--color--muted);
 }
+.farnost-rozpis-snapshot__intent-body {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 8px;
+}
+.farnost-rozpis-snapshot__intent-badge {
+  display: inline-block;
+  font-family: var(--wp--preset--font-family--body);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wp--preset--color--surface);
+  background: var(--wp--preset--color--accent-soft);
+  border-radius: 2px;
+  padding: 2px 7px;
+  line-height: 1.3;
+  white-space: nowrap;
+  vertical-align: 2px;
+}
 .farnost-rozpis-snapshot__intent-text {
   font-family: var(--wp--preset--font-family--display);
   font-style: italic;
@@ -795,7 +817,13 @@ body > * { position: relative; z-index: 1; }
   transform: translateX(-50%) translateY(0);
 }
 
-.farnost-kostol-section + .farnost-kostol-section { margin-top: 22px; padding-top: 22px; border-top: 1px solid var(--wp--preset--color--rule); }
+.farnost-kostol-section + .farnost-kostol-section { margin-top: 32px; }
+/* Per-kostol accent: ľavá farebná lišta z farnost_color (post meta). Bez
+   farby kostol nemá lištu — len mierne odsadenie aby ladilo s ostatnými. */
+.farnost-kostol-section.has-color {
+  border-left: 3px solid var(--mw-kostol-color);
+  padding-left: 12px;
+}
 .farnost-kostol-section-title {
   font-family: var(--wp--preset--font-family--display);
   font-size: 1rem;
@@ -806,17 +834,17 @@ body > * { position: relative; z-index: 1; }
 }
 .farnost-kostol-badge {
   display: inline-block;
-  margin-right: 6px;
-  padding: 2px 7px;
+  margin-left: 6px;
+  padding: 1px 6px;
   font-family: var(--wp--preset--font-family--body);
-  font-size: 10px;
-  letter-spacing: 0.14em;
+  font-size: 9px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   font-weight: 700;
   color: var(--wp--preset--color--surface);
   background: var(--wp--preset--color--accent);
   border-radius: 2px;
-  vertical-align: 2px;
+  vertical-align: 3px;
 }
 
 /* Contact widget — stack label nad hodnotou, dovolí ľubovoľne dlhý popis
@@ -1300,4 +1328,236 @@ body > * { position: relative; z-index: 1; }
   .site-nav-submenu li:last-child a {
     border-bottom: 0;
   }
+}
+
+/* ─── Galéria (farnost/gallery) ─────────────────────────────────────────── */
+/* Mosaic layouty: 1 = single, 2 = vedľa seba, 3 = 1+2 (ľavá veľká + 2 stack
+   vpravo), 4 = 2×2, 5+ = 4 viditeľné s overlay „+N" na poslednom.
+   Gap a aspect-ratio konzistentné naprieč variantmi pre čistý vizuál. */
+.farnost-gallery {
+  display: grid;
+  gap: 8px;
+  margin: 22px 0;
+}
+.farnost-gallery__item {
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  background: var(--wp--preset--color--rule);
+  cursor: zoom-in;
+}
+.farnost-gallery__item[data-farnost-lightbox]:focus-visible {
+  outline: 2px solid var(--wp--preset--color--accent);
+  outline-offset: 2px;
+}
+.farnost-gallery__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 220ms ease;
+}
+.farnost-gallery__item:hover .farnost-gallery__img {
+  transform: scale(1.03);
+}
+.farnost-gallery__caption {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 8px 12px;
+  font-family: var(--wp--preset--font-family--body);
+  font-size: 12px;
+  color: var(--wp--preset--color--surface);
+  background: linear-gradient(0deg, rgba(0,0,0,0.65), rgba(0,0,0,0));
+  pointer-events: none;
+}
+.farnost-gallery__item.has-overlay { cursor: pointer; }
+.farnost-gallery__overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(28, 22, 16, 0.55);
+  color: var(--wp--preset--color--surface);
+  font-family: var(--wp--preset--font-family--display);
+  font-size: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  backdrop-filter: blur(2px);
+}
+
+/* count-1: single big, max výška aby nebola portrétová foto cez celú stránku */
+.farnost-gallery--count-1 .farnost-gallery__item { aspect-ratio: 16 / 9; max-height: 540px; }
+
+/* count-2: vedľa seba, square */
+.farnost-gallery--count-2 { grid-template-columns: 1fr 1fr; }
+.farnost-gallery--count-2 .farnost-gallery__item { aspect-ratio: 1 / 1; }
+
+/* count-3: 1 veľká vľavo + 2 stack vpravo. Pre 3+ fotky rovnaký layout —
+   4+ figures sú skryté cez CSS, ale stále v DOM aby ich lightbox carousel
+   vedel listovať. „+N" overlay je na 3. dlaždici. */
+.farnost-gallery--count-3 {
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  aspect-ratio: 3 / 2;
+}
+.farnost-gallery--count-3 .farnost-gallery__item:nth-child(1) {
+  grid-row: span 2; aspect-ratio: auto;
+}
+.farnost-gallery--count-3 .farnost-gallery__item:nth-child(n + 4) { display: none; }
+
+@media (max-width: 600px) {
+  .farnost-gallery--count-3 { grid-template-columns: 1fr 1fr; aspect-ratio: auto; }
+  .farnost-gallery--count-3 .farnost-gallery__item:nth-child(1) { grid-row: auto; }
+  .farnost-gallery__overlay { font-size: 1.75rem; }
+}
+
+/* Feed gallery — teaser grid vo feed karte. Max 3 dlaždice, 4. nemá miesto
+   (overflow „+N" je na 3. dlaždici). Klik na hociktorú vedie na detail článku
+   (nie lightbox) — vo feed-e fotka slúži ako teaser. */
+.farnost-feed-gallery {
+  display: grid;
+  gap: 6px;
+  margin: 14px 0 4px;
+  width: 100%;
+}
+.farnost-feed-gallery__item {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  background: var(--wp--preset--color--rule);
+  text-decoration: none;
+}
+.farnost-feed-gallery__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 220ms ease;
+}
+.farnost-feed-gallery__item:hover .farnost-feed-gallery__img { transform: scale(1.04); }
+.farnost-feed-gallery__overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(28, 22, 16, 0.55);
+  color: var(--wp--preset--color--surface);
+  font-family: var(--wp--preset--font-family--display);
+  font-size: 1.6rem;
+  font-weight: 600;
+  backdrop-filter: blur(2px);
+}
+
+.farnost-feed-gallery--count-1 .farnost-feed-gallery__item { aspect-ratio: 16 / 9; }
+.farnost-feed-gallery--count-2 { grid-template-columns: 1fr 1fr; }
+.farnost-feed-gallery--count-2 .farnost-feed-gallery__item { aspect-ratio: 4 / 3; }
+.farnost-feed-gallery--count-3 {
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  aspect-ratio: 3 / 2;
+}
+.farnost-feed-gallery--count-3 .farnost-feed-gallery__item:nth-child(1) {
+  grid-row: span 2; aspect-ratio: auto;
+}
+
+@media (max-width: 600px) {
+  .farnost-feed-gallery--count-3 { grid-template-columns: 1fr 1fr; aspect-ratio: auto; }
+  .farnost-feed-gallery--count-3 .farnost-feed-gallery__item:nth-child(1) { grid-row: auto; aspect-ratio: 4 / 3; }
+  .farnost-feed-gallery--count-3 .farnost-feed-gallery__item { aspect-ratio: 4 / 3; }
+}
+
+/* Lightbox overlay — shared pre gallery aj core/image. Carousel s šípkami,
+   counterom a swipe gesture. Scrollbar v <body> sa zachová cez padding-right
+   compensation (nepoužívame tu — pre wide viewport scrollbar rezerva), pre
+   úzku úsekov je padding minimálny. */
+.farnost-lightbox-open { overflow: hidden; }
+.farnost-lightbox {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(28, 22, 16, 0.92);
+  display: flex; align-items: center; justify-content: center;
+  padding: 32px;
+  animation: farnost-lightbox-fade 180ms ease;
+}
+.farnost-lightbox[hidden] { display: none; }
+.farnost-lightbox__stage {
+  margin: 0;
+  max-width: 100%; max-height: 100%;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.farnost-lightbox__img {
+  max-width: min(1200px, 100%);
+  max-height: 85vh;
+  object-fit: contain;
+  background: var(--wp--preset--color--ink);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.farnost-lightbox__caption {
+  font-family: var(--wp--preset--font-family--display);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: var(--wp--preset--color--surface);
+  text-align: center;
+  max-width: 720px;
+}
+.farnost-lightbox__close,
+.farnost-lightbox__nav {
+  position: absolute;
+  background: transparent;
+  border: 1px solid rgba(253, 248, 236, 0.3);
+  color: var(--wp--preset--color--surface);
+  font-family: var(--wp--preset--font-family--display);
+  cursor: pointer;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.farnost-lightbox__close:hover,
+.farnost-lightbox__nav:hover {
+  background: rgba(253, 248, 236, 0.12);
+  border-color: rgba(253, 248, 236, 0.6);
+}
+.farnost-lightbox__close {
+  top: 16px; right: 16px;
+  width: 44px; height: 44px;
+  font-size: 18px;
+  border-radius: 50%;
+}
+.farnost-lightbox__nav {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px; height: 52px;
+  font-size: 32px; line-height: 1;
+  border-radius: 50%;
+}
+.farnost-lightbox__nav--prev { left: 24px; }
+.farnost-lightbox__nav--next { right: 24px; }
+.farnost-lightbox__counter {
+  position: absolute;
+  bottom: 20px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--wp--preset--font-family--body);
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  color: rgba(253, 248, 236, 0.7);
+  font-variant-numeric: tabular-nums;
+}
+@keyframes farnost-lightbox-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@media (max-width: 600px) {
+  .farnost-lightbox { padding: 16px; }
+  .farnost-lightbox__nav { width: 40px; height: 40px; font-size: 24px; }
+  .farnost-lightbox__nav--prev { left: 8px; }
+  .farnost-lightbox__nav--next { right: 8px; }
+}
+
+/* ─── Editor-only ────────────────────────────────────────────────────────── */
+/* Theme používa add_editor_style('style.css') v functions.php, takže tieto
+   selektory sú aplikované iba v Gutenberg editor canvas (iframe), nie na
+   frontende. Titulok postu/oznam/page má byť výrazne väčší — bez ohľadu na
+   default theme.json font-size pre h1, ktoré sa zhoduje s nadpisom na detail
+   stránke a v editor canvase pôsobí slabo. */
+.editor-styles-wrapper .wp-block-post-title,
+.editor-post-title,
+.editor-post-title__input {
+  font-family: var(--wp--preset--font-family--display, serif);
+  font-size: 2.5rem;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }

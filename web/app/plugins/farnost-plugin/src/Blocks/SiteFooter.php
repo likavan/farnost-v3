@@ -40,7 +40,9 @@ final class SiteFooter
         $s = Settings::get();
         $nazov   = trim((string) ($s['identita']['nazov'] ?? '')) ?: (string) get_bloginfo('name');
         $adresa  = trim((string) ($s['kontakt']['adresa'] ?? ''));
-        $iban    = trim((string) ($s['financie']['iban'] ?? ''));
+        $iban    = trim((string) ($s['financie']['iban']    ?? ''));
+        $banka   = trim((string) ($s['financie']['banka']   ?? ''));
+        $majitel = trim((string) ($s['financie']['majitel'] ?? ''));
         $telefony = is_array($s['kontakt']['telefony'] ?? null) ? $s['kontakt']['telefony'] : [];
         $emaily   = is_array($s['kontakt']['emaily']   ?? null) ? $s['kontakt']['emaily']   : [];
         $year     = (int) current_datetime()->format('Y');
@@ -97,10 +99,18 @@ final class SiteFooter
                     <?php endforeach; ?>
                 </ul>
             </div>
-            <?php if ($iban !== '') : ?>
+            <?php if ($iban !== '' || $banka !== '' || $majitel !== '') : ?>
                 <div>
                     <h3 class="farnost-footer-title"><?php esc_html_e('Bankové spojenie', 'farnost-plugin'); ?></h3>
-                    <div class="farnost-footer-line"><?php echo esc_html($iban); ?></div>
+                    <?php if ($majitel !== '') : ?>
+                        <div class="farnost-footer-line"><?php echo esc_html($majitel); ?></div>
+                    <?php endif; ?>
+                    <?php if ($iban !== '') : ?>
+                        <div class="farnost-footer-line"><?php echo esc_html($iban); ?></div>
+                    <?php endif; ?>
+                    <?php if ($banka !== '') : ?>
+                        <div class="farnost-footer-line farnost-footer-muted"><?php echo esc_html($banka); ?></div>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>

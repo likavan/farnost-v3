@@ -17,6 +17,14 @@ final class Activator
 {
     public const ROLE = 'farnost_asistent';
 
+    /**
+     * Bumpni keď meníš `rewrite` slug / `has_archive` / pridávaš nový CPT —
+     * tým sa pri ďalšom admin loade rewrite rules sám refreshne, bez toho
+     * aby admin musel re-aktivovať plugin alebo manuálne kliknúť Save
+     * v Permalinks.
+     */
+    private const REWRITE_VERSION = '2026-05-18';
+
     public static function activate(): void
     {
         self::ensureSlovakTimezone();
@@ -28,6 +36,22 @@ final class Activator
         // skôr na init), wp_insert_post bude fungovať.
         BufferManager::refill();
         flush_rewrite_rules();
+        update_option('farnost_rewrite_version', self::REWRITE_VERSION);
+    }
+
+    /**
+     * Auto-flush rewrite rules pri zmene REWRITE_VERSION. Beží na `admin_init`
+     * neskorej priorite (po `init` kde sú CPT registrované). Bez tohto by
+     * `/oznamy/<slug>/` URL vracali 404 po deploy-i kde sme zmenili CPT slug,
+     * lebo Activator::activate beží len pri zapnutí pluginu — nie pri update.
+     */
+    public static function maybeFlushRewriteRules(): void
+    {
+        if (get_option('farnost_rewrite_version', '') === self::REWRITE_VERSION) {
+            return;
+        }
+        flush_rewrite_rules();
+        update_option('farnost_rewrite_version', self::REWRITE_VERSION);
     }
 
     /**
