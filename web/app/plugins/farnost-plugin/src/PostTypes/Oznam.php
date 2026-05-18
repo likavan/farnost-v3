@@ -22,6 +22,11 @@ final class Oznam
         // pôvodný status (future/publish/draft) pri každom update.
         add_filter('wp_insert_post_data', [self::class, 'preserveStatusOnUpdate'], 10, 2);
 
+        // Súvisiace UX: premapuje Gutenberg "Submit for Review" labely na "Uložiť",
+        // aby farár nevidel review-flow terminológiu. Scope-ované na oznam editor
+        // screen aby gettext filter nešiel pri každom request-e celého webu.
+        add_action('current_screen', [self::class, 'maybeOverrideGutenbergLabels']);
+
         register_post_type(self::POST_TYPE, [
             'labels'       => [
                 'name'          => __('Oznamy', 'farnost-plugin'),
@@ -64,6 +69,38 @@ final class Oznam
             ],
             'map_meta_cap' => true,
         ]);
+    }
+
+    public static function maybeOverrideGutenbergLabels(\WP_Screen $screen): void
+    {
+        if ($screen->post_type !== self::POST_TYPE || $screen->base !== 'post') {
+            return;
+        }
+        add_filter('gettext', [self::class, 'overrideLabels'], 10, 3);
+    }
+
+    /**
+     * Pre Gutenberg "submit for review" UX premapuje labely na neutrálne "Uložiť".
+     * Pre farára je review flow mätúci — chce len uložiť zmeny.
+     */
+    public static function overrideLabels(string $translation, string $text, string $domain): string
+    {
+        if ($domain !== 'default') {
+            return $translation;
+        }
+        static $map = null;
+        if ($map === null) {
+            $map = [
+                'Submit for Review'    => __('Uložiť', 'farnost-plugin'),
+                'Submit for review'    => __('Uložiť', 'farnost-plugin'),
+                'Save as Pending'      => __('Uložiť', 'farnost-plugin'),
+                'Submitting for Review' => __('Ukladá sa…', 'farnost-plugin'),
+                'Submitted for review' => __('Uložené', 'farnost-plugin'),
+                'Pending review'       => __('Koncept', 'farnost-plugin'),
+                'Pending Review'       => __('Koncept', 'farnost-plugin'),
+            ];
+        }
+        return $map[$text] ?? $translation;
     }
 
     /**
