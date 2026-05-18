@@ -609,11 +609,19 @@ body > * { position: relative; z-index: 1; }
   line-height: 1.2;
 }
 
-/* Contact widget */
-.farnost-contact-line { font-size: 14px; padding: 4px 0; color: var(--wp--preset--color--ink); }
+/* Contact widget — stack label nad hodnotou, dovolí ľubovoľne dlhý popis
+   (telefon/email popis je voľný text editovaný adminom). Fixed-width inline
+   label by sa wrap-oval cez hodnotu. */
+.farnost-contact-line {
+  font-size: 14px;
+  padding: 6px 0;
+  color: var(--wp--preset--color--ink);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 .farnost-contact-label {
-  display: inline-block;
-  width: 56px;
+  display: block;
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
