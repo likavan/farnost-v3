@@ -67,7 +67,7 @@ final class MassWidget
                             $resolved = RozpisReader::forDate((int) $k['id'], $iso);
                             $name = self::SLOVAK_WEEKDAYS[(int) $day->format('N')] ?? '';
                             $isHighlight = $iso === $today;
-                            $note = self::extractNote($resolved);
+                            $notes = self::buildNotes($resolved);
                         ?>
                             <li class="farnost-mass-row<?php echo $isHighlight ? ' is-highlight' : ''; ?>">
                                 <div>
@@ -83,9 +83,9 @@ final class MassWidget
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </div>
-                                <?php if ($note !== '') : ?>
+                                <?php foreach ($notes as $note) : ?>
                                     <div class="farnost-mass-note"><?php echo esc_html($note); ?></div>
-                                <?php endif; ?>
+                                <?php endforeach; ?>
                             </li>
                         <?php endfor; ?>
                     </ul>
@@ -142,16 +142,33 @@ final class MassWidget
     }
 
     /**
+     * Pre každú omšu s neprázdnym označením alebo úmyslom vyrobí jeden note
+     * riadok vo formáte „HH:MM označenie — úmysel". Tým má sidebar užitočný
+     * kontext (svadobná / pohrebná / Fatimská pobožnosť + meno úmyslu) bez
+     * zaberania extra šírky.
+     *
      * @param array<int, array{cas?: string, oznacenie?: string, umysel?: string, zdroj?: string}> $resolved
+     * @return list<string>
      */
-    private static function extractNote(array $resolved): string
+    private static function buildNotes(array $resolved): array
     {
+        $notes = [];
         foreach ($resolved as $m) {
-            $oznacenie = (string) ($m['oznacenie'] ?? '');
-            if ($oznacenie !== '') {
-                return $oznacenie;
+            $oznacenie = trim((string) ($m['oznacenie'] ?? ''));
+            $umysel    = trim((string) ($m['umysel']    ?? ''));
+            if ($oznacenie === '' && $umysel === '') {
+                continue;
             }
+            $cas = trim((string) ($m['cas'] ?? ''));
+            $line = $cas;
+            if ($oznacenie !== '') {
+                $line .= ($line === '' ? '' : ' ') . $oznacenie;
+            }
+            if ($umysel !== '') {
+                $line .= ($line === '' ? '' : ' — ') . $umysel;
+            }
+            $notes[] = trim($line);
         }
-        return '';
+        return $notes;
     }
 }
