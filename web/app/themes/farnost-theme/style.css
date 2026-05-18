@@ -652,8 +652,20 @@ body > * { position: relative; z-index: 1; }
   color: var(--wp--preset--color--muted);
   margin-bottom: 1px;
 }
+/* Úradné hodiny — výraznejší obsah, stále vnútri Farský úrad widgetu.
+   Hairline nad label hovorí "súvisí, ale je to iná informácia". */
+.farnost-contact-line.farnost-contact-hours {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--wp--preset--color--rule);
+}
 .farnost-contact-hours-text {
   white-space: pre-line;
+  font-family: var(--wp--preset--font-family--display);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--wp--preset--color--ink);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Quote widget */
