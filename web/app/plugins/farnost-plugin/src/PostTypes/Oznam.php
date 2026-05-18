@@ -16,6 +16,12 @@ final class Oznam
 
     public static function register(): void
     {
+        // Gutenberg detektuje že user nemá publish_posts (náš lockdown) a UI prepne
+        // tlačidlo "Update/Publish" na "Submit for Review", ktoré posiela status=pending.
+        // Pre oznam to nedáva zmysel — žiadny review flow nemáme. Filter zachová
+        // pôvodný status (future/publish/draft) pri každom update.
+        add_filter('wp_insert_post_data', [self::class, 'preserveStatusOnUpdate'], 10, 2);
+
         register_post_type(self::POST_TYPE, [
             'labels'       => [
                 'name'          => __('Oznamy', 'farnost-plugin'),
@@ -58,6 +64,31 @@ final class Oznam
             ],
             'map_meta_cap' => true,
         ]);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string, mixed> $postarr
+     * @return array<string, mixed>
+     */
+    public static function preserveStatusOnUpdate(array $data, array $postarr): array
+    {
+        if (($data['post_type'] ?? '') !== self::POST_TYPE) {
+            return $data;
+        }
+        // Iba pre update, nie create.
+        if (empty($postarr['ID'])) {
+            return $data;
+        }
+        // Reagujeme len keď Gutenberg downgrade-uje na pending.
+        if (($data['post_status'] ?? '') !== 'pending') {
+            return $data;
+        }
+        $original = get_post_status((int) $postarr['ID']);
+        if (is_string($original) && in_array($original, ['draft', 'future', 'publish', 'private'], true)) {
+            $data['post_status'] = $original;
+        }
+        return $data;
     }
 
     public static function registerMeta(): void
