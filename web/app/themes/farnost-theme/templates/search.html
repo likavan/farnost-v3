@@ -1,0 +1,44 @@
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","className":"site-main","layout":{"type":"default"}} -->
+<main class="wp-block-group site-main">
+	<!-- wp:group {"className":"farnost-page","layout":{"type":"constrained"}} -->
+	<div class="wp-block-group farnost-page">
+		<!-- wp:html -->
+		<header class="farnost-page-header">
+			<div class="farnost-page-eyebrow">Vyhľadávanie</div>
+			<h1 class="farnost-page-title">Výsledky hľadania</h1>
+		</header>
+		<!-- /wp:html -->
+
+		<!-- wp:query {"queryId":1,"query":{"perPage":20,"postType":"any","order":"desc","orderBy":"date","inherit":true}} -->
+		<div class="wp-block-query">
+			<!-- wp:post-template -->
+				<!-- wp:group {"className":"farnost-search-result","layout":{"type":"constrained"}} -->
+				<div class="wp-block-group farnost-search-result">
+					<!-- wp:post-date {"className":"farnost-search-date"} /-->
+					<!-- wp:post-title {"level":2,"isLink":true,"className":"farnost-search-title"} /-->
+					<!-- wp:post-excerpt {"className":"farnost-search-excerpt"} /-->
+				</div>
+				<!-- /wp:group -->
+			<!-- /wp:post-template -->
+
+			<!-- wp:query-no-results -->
+				<!-- wp:paragraph -->
+				<p>Žiadne výsledky pre vaše hľadanie. Skúste iné kľúčové slovo alebo prejdite na <a href="/">úvodnú stránku</a>.</p>
+				<!-- /wp:paragraph -->
+			<!-- /wp:query-no-results -->
+
+			<!-- wp:query-pagination {"layout":{"type":"flex","justifyContent":"center"}} -->
+				<!-- wp:query-pagination-previous /-->
+				<!-- wp:query-pagination-numbers /-->
+				<!-- wp:query-pagination-next /-->
+			<!-- /wp:query-pagination -->
+		</div>
+		<!-- /wp:query -->
+	</div>
+	<!-- /wp:group -->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
