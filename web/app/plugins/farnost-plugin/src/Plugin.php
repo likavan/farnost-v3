@@ -15,6 +15,8 @@ use Farnost\Plugin\Blocks\MassWidget;
 use Farnost\Plugin\Blocks\QuoteWidget;
 use Farnost\Plugin\Blocks\RozpisSnapshot;
 use Farnost\Plugin\Blocks\ScheduleTable;
+use Farnost\Plugin\Blocks\SiteBrand;
+use Farnost\Plugin\Blocks\SiteFooter;
 use Farnost\Plugin\Oznam\BufferManager;
 use Farnost\Plugin\Admin\CommentsHide;
 use Farnost\Plugin\Admin\EditorAssets;
@@ -76,6 +78,8 @@ final class Plugin
         ScheduleTable::register();
         ArchiveList::register();
         MainNav::register();
+        SiteBrand::register();
+        SiteFooter::register();
         AutoTemplate::register();
         BufferManager::register();
         Upratovanie::register();
