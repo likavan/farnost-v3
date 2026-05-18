@@ -66,10 +66,10 @@ final class SiteFooter
                     if ($cislo === '') { continue; }
                 ?>
                     <div class="farnost-footer-line farnost-footer-contact">
-                        <a href="tel:<?php echo esc_attr(preg_replace('/\s+/', '', $cislo)); ?>"><?php echo esc_html($cislo); ?></a>
                         <?php if ($popis !== '') : ?>
-                            <span class="farnost-footer-muted"> · <?php echo esc_html($popis); ?></span>
+                            <span class="farnost-footer-muted"><?php echo esc_html($popis); ?> · </span>
                         <?php endif; ?>
+                        <a href="tel:<?php echo esc_attr(preg_replace('/\s+/', '', $cislo)); ?>"><?php echo esc_html($cislo); ?></a>
                     </div>
                 <?php endforeach; ?>
                 <?php foreach ($emaily as $row) :
@@ -79,10 +79,10 @@ final class SiteFooter
                     if ($adr === '') { continue; }
                 ?>
                     <div class="farnost-footer-line farnost-footer-contact">
-                        <a href="mailto:<?php echo esc_attr($adr); ?>"><?php echo esc_html($adr); ?></a>
                         <?php if ($popis !== '') : ?>
-                            <span class="farnost-footer-muted"> · <?php echo esc_html($popis); ?></span>
+                            <span class="farnost-footer-muted"><?php echo esc_html($popis); ?> · </span>
                         <?php endif; ?>
+                        <a href="mailto:<?php echo esc_attr($adr); ?>"><?php echo esc_html($adr); ?></a>
                     </div>
                 <?php endforeach; ?>
             </div>

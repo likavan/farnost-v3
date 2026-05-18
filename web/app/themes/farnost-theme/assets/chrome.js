@@ -100,10 +100,107 @@
         });
     }
 
+    /**
+     * Mobile sidebar drawer — sidebar je default skrytý mimo viewport-u
+     * (CSS `transform: translateX(100%)` v mobile breakpointe). Peek tab
+     * pripnutý na pravom okraji slúži ako pozvánka („Bohoslužby & kontakt"),
+     * klik otvorí drawer s backdrop-om; backdrop click / Esc / X zatvára.
+     *
+     * Peek + backdrop sa generujú JS-om aby template-parts ostali clean —
+     * potrebné iba na mobile a sidebar.html nemá kde elegantne pridať.
+     */
+    function initMobileSidebar() {
+        var sidebar = document.querySelector('.farnost-sidebar');
+        if (!sidebar) {
+            return;
+        }
+        var mq = window.matchMedia('(max-width: 980px)');
+
+        var peek = document.createElement('button');
+        peek.type = 'button';
+        peek.className = 'farnost-sidebar-peek';
+        peek.setAttribute('aria-expanded', 'false');
+        peek.setAttribute('aria-controls', 'farnost-sidebar-drawer');
+        peek.innerHTML = '<span class="farnost-sidebar-peek__label">Bohoslužby &amp; kontakt</span>';
+
+        var backdrop = document.createElement('div');
+        backdrop.className = 'farnost-sidebar-backdrop';
+        backdrop.setAttribute('aria-hidden', 'true');
+
+        var closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'farnost-sidebar-close';
+        closeBtn.setAttribute('aria-label', 'Zavrieť');
+        closeBtn.innerHTML = '✕'; // ✕
+        sidebar.insertBefore(closeBtn, sidebar.firstChild);
+
+        sidebar.id = 'farnost-sidebar-drawer';
+
+        // Portal: pri mobile mode presunieme sidebar do <body> aby bol sibling
+        // backdropu — inak môže byť skrytý pod ním kvôli stacking context-u
+        // ktorý vytvára `.site-main` grid + template-part wrapper. Pri prepnutí
+        // do desktop mode vrátime sidebar na pôvodné miesto v DOM.
+        var sidebarHome = sidebar.parentNode;
+        var sidebarAnchor = sidebar.nextSibling;
+
+        var setMobile = function (mobile) {
+            document.body.classList.toggle('farnost-has-sidebar-drawer', mobile);
+            if (mobile) {
+                if (sidebar.parentNode !== document.body) {
+                    document.body.appendChild(sidebar);
+                }
+            } else {
+                close();
+                if (sidebar.parentNode === document.body && sidebarHome) {
+                    sidebarHome.insertBefore(sidebar, sidebarAnchor);
+                }
+            }
+        };
+
+        var open = function () {
+            sidebar.classList.add('is-open');
+            backdrop.classList.add('is-open');
+            peek.setAttribute('aria-expanded', 'true');
+            document.body.classList.add('farnost-drawer-open');
+        };
+        var close = function () {
+            sidebar.classList.remove('is-open');
+            backdrop.classList.remove('is-open');
+            peek.setAttribute('aria-expanded', 'false');
+            document.body.classList.remove('farnost-drawer-open');
+        };
+
+        peek.addEventListener('click', function () {
+            if (sidebar.classList.contains('is-open')) {
+                close();
+            } else {
+                open();
+            }
+        });
+        closeBtn.addEventListener('click', close);
+        backdrop.addEventListener('click', close);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && sidebar.classList.contains('is-open')) {
+                close();
+            }
+        });
+
+        document.body.appendChild(backdrop);
+        document.body.appendChild(peek);
+
+        setMobile(mq.matches);
+        if (mq.addEventListener) {
+            mq.addEventListener('change', function (e) { setMobile(e.matches); });
+        } else if (mq.addListener) {
+            mq.addListener(function (e) { setMobile(e.matches); });
+        }
+    }
+
     function boot() {
         document.querySelectorAll('.farnost-search').forEach(initSearch);
         initAlertDismiss();
         initNavToggle();
+        initMobileSidebar();
     }
 
     if (document.readyState === 'loading') {
