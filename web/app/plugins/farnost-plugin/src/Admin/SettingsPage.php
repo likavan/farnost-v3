@@ -188,6 +188,34 @@ final class SettingsPage
                     </tr>
                 </table>
 
+                <h2><?php esc_html_e('Odkazy vo päte webu', 'farnost-plugin'); ?></h2>
+                <table class="form-table" role="presentation">
+                    <tr>
+                        <th scope="row"><?php esc_html_e('Externé odkazy', 'farnost-plugin'); ?></th>
+                        <td>
+                            <div class="fp-repeater" data-field="odkazy" data-popis-placeholder="<?php esc_attr_e('napr. Banskobystrická diecéza', 'farnost-plugin'); ?>" data-value-placeholder="https://..." data-value-name="url">
+                                <?php
+                                $odkazy = is_array($s['odkazy'] ?? null) ? $s['odkazy'] : [];
+                                if (empty($odkazy)) {
+                                    $odkazy = [['popis' => '', 'url' => '']];
+                                }
+                                foreach ($odkazy as $i => $row) :
+                                    $popis = isset($row['popis']) ? (string) $row['popis'] : '';
+                                    $url   = isset($row['url'])   ? (string) $row['url']   : '';
+                                ?>
+                                    <div class="fp-repeater-row">
+                                        <input type="text" class="regular-text" name="farnost_settings[odkazy][<?php echo (int) $i; ?>][popis]" value="<?php echo esc_attr($popis); ?>" placeholder="<?php esc_attr_e('napr. Banskobystrická diecéza', 'farnost-plugin'); ?>">
+                                        <input type="url" class="regular-text" name="farnost_settings[odkazy][<?php echo (int) $i; ?>][url]" value="<?php echo esc_attr($url); ?>" placeholder="https://...">
+                                        <button type="button" class="button-link-delete fp-repeater-remove" aria-label="<?php esc_attr_e('Odstrániť', 'farnost-plugin'); ?>">✕</button>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <button type="button" class="button button-secondary fp-repeater-add" data-target="odkazy"><?php esc_html_e('+ Pridať odkaz', 'farnost-plugin'); ?></button>
+                            <p class="description"><?php esc_html_e('Odkaz na ochranu osobných údajov KBS sa pridáva automaticky na koniec.', 'farnost-plugin'); ?></p>
+                        </td>
+                    </tr>
+                </table>
+
                 <h2><?php esc_html_e('Logo a farby', 'farnost-plugin'); ?></h2>
                 <table class="form-table" role="presentation">
                     <tr>
@@ -376,7 +404,8 @@ final class SettingsPage
         $out['financie']['majitel'] = isset($input['financie']['majitel']) ? sanitize_text_field((string) $input['financie']['majitel']) : '';
         $out['financie']['ico']     = isset($input['financie']['ico']) ? sanitize_text_field((string) $input['financie']['ico']) : '';
 
-        $out['socialne'] = self::sanitizeSocialne($input['socialne'] ?? []);
+        $out['socialne'] = self::sanitizeUrlList($input['socialne'] ?? []);
+        $out['odkazy']   = self::sanitizeUrlList($input['odkazy']   ?? []);
 
         $out['branding']['logo_id']       = isset($input['branding']['logo_id']) ? max(0, (int) $input['branding']['logo_id']) : 0;
         $out['branding']['primary_color'] = isset($input['branding']['primary_color']) ? self::sanitizeColor((string) $input['branding']['primary_color']) : '#1e40af';
@@ -452,10 +481,12 @@ final class SettingsPage
     }
 
     /**
+     * Repeater [{popis, url}] — používané pre sociálne siete aj externé odkazy.
+     *
      * @param mixed $input
      * @return list<array{popis: string, url: string}>
      */
-    private static function sanitizeSocialne(mixed $input): array
+    private static function sanitizeUrlList(mixed $input): array
     {
         if (!is_array($input)) {
             return [];

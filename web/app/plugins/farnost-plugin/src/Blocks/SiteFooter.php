@@ -12,14 +12,15 @@ if (!defined('ABSPATH')) {
 
 /**
  * Dynamic block `farnost/site-footer` — 3-stĺpcový footer grid + spodný
- * copyright riadok. Načíta z farnost_settings.identita, kontakt, financie.
- *
- * Odkazy (Banskobystrická diecéza, KBS, Liturgia hodín atď.) sú statické
- * v markupe — domén-konštantné, žiadny dôvod ich admin-editovať.
+ * copyright riadok. Načíta z farnost_settings.identita, kontakt, financie,
+ * odkazy. GDPR KBS link je vždy posledný (default, nemení sa cez admin).
  */
 final class SiteFooter
 {
     public const NAME = 'farnost/site-footer';
+
+    private const GDPR_LINK = 'https://gdpr.kbs.sk/';
+    private const GDPR_LABEL = 'Ochrana osobných údajov';
 
     public static function register(): void
     {
@@ -40,23 +41,13 @@ final class SiteFooter
         $nazov   = trim((string) ($s['identita']['nazov'] ?? '')) ?: (string) get_bloginfo('name');
         $adresa  = trim((string) ($s['kontakt']['adresa'] ?? ''));
         $iban    = trim((string) ($s['financie']['iban'] ?? ''));
-        $banka   = trim((string) ($s['financie']['banka'] ?? ''));
         $telefony = is_array($s['kontakt']['telefony'] ?? null) ? $s['kontakt']['telefony'] : [];
-        $emaily   = is_array($s['kontakt']['emaily'] ?? null) ? $s['kontakt']['emaily'] : [];
+        $emaily   = is_array($s['kontakt']['emaily']   ?? null) ? $s['kontakt']['emaily']   : [];
         $year     = (int) current_datetime()->format('Y');
 
-        $contactBits = [];
-        foreach ($telefony as $row) {
-            if (is_array($row) && !empty($row['cislo'])) {
-                $contactBits[] = (string) $row['cislo'];
-            }
-        }
-        foreach ($emaily as $row) {
-            if (is_array($row) && !empty($row['adresa'])) {
-                $contactBits[] = (string) $row['adresa'];
-            }
-        }
-        $contactLine = implode(' · ', $contactBits);
+        $odkazy = is_array($s['odkazy'] ?? null) ? $s['odkazy'] : [];
+        // GDPR KBS odkaz vždy posledný — admin si naň nemusí pamätať.
+        $odkazy[] = ['popis' => __(self::GDPR_LABEL, 'farnost-plugin'), 'url' => self::GDPR_LINK];
 
         ob_start();
         ?>
@@ -66,17 +57,44 @@ final class SiteFooter
                 <?php if ($adresa !== '') : ?>
                     <div class="farnost-footer-line"><?php echo esc_html($adresa); ?></div>
                 <?php endif; ?>
-                <?php if ($contactLine !== '') : ?>
-                    <div class="farnost-footer-line"><?php echo esc_html($contactLine); ?></div>
-                <?php endif; ?>
+                <?php foreach ($telefony as $row) :
+                    if (!is_array($row)) { continue; }
+                    $popis = trim((string) ($row['popis'] ?? ''));
+                    $cislo = trim((string) ($row['cislo'] ?? ''));
+                    if ($cislo === '') { continue; }
+                ?>
+                    <div class="farnost-footer-line farnost-footer-contact">
+                        <a href="tel:<?php echo esc_attr(preg_replace('/\s+/', '', $cislo)); ?>"><?php echo esc_html($cislo); ?></a>
+                        <?php if ($popis !== '') : ?>
+                            <span class="farnost-footer-muted"> · <?php echo esc_html($popis); ?></span>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+                <?php foreach ($emaily as $row) :
+                    if (!is_array($row)) { continue; }
+                    $popis = trim((string) ($row['popis'] ?? ''));
+                    $adr   = trim((string) ($row['adresa'] ?? ''));
+                    if ($adr === '') { continue; }
+                ?>
+                    <div class="farnost-footer-line farnost-footer-contact">
+                        <a href="mailto:<?php echo esc_attr($adr); ?>"><?php echo esc_html($adr); ?></a>
+                        <?php if ($popis !== '') : ?>
+                            <span class="farnost-footer-muted"> · <?php echo esc_html($popis); ?></span>
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
             </div>
             <div>
                 <h3 class="farnost-footer-title"><?php esc_html_e('Odkazy', 'farnost-plugin'); ?></h3>
                 <ul class="farnost-footer-list">
-                    <li><a href="https://www.bbdieceza.sk/" rel="noopener" target="_blank">Banskobystrická diecéza</a></li>
-                    <li><a href="https://www.kbs.sk/" rel="noopener" target="_blank">Konferencia biskupov Slovenska</a></li>
-                    <li><a href="https://lh.kbs.sk/" rel="noopener" target="_blank">Liturgia hodín</a></li>
-                    <li><a href="https://dennyevanjelista.sk/" rel="noopener" target="_blank">Denný evanjelista</a></li>
+                    <?php foreach ($odkazy as $row) :
+                        if (!is_array($row)) { continue; }
+                        $popis = trim((string) ($row['popis'] ?? ''));
+                        $url   = trim((string) ($row['url'] ?? ''));
+                        if ($url === '' || $popis === '') { continue; }
+                    ?>
+                        <li><a href="<?php echo esc_url($url); ?>" rel="noopener" target="_blank"><?php echo esc_html($popis); ?></a></li>
+                    <?php endforeach; ?>
                 </ul>
             </div>
             <?php if ($iban !== '') : ?>

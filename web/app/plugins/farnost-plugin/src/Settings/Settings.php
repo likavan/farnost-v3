@@ -53,6 +53,9 @@ final class Settings
             // Repeater pole [{popis, url}] — admin pridá ľubovoľné siete
             // (FB, IG, YT, X, TikTok, ...). Žiadny mapping na fixed kľúče.
             'socialne'   => [],
+            // Externé odkazy v päte (BB diecéza, KBS, Liturgia hodín, ...).
+            // GDPR link sa pridáva render-time ako posledný, nie v defaultoch.
+            'odkazy'     => [],
             'branding'   => [
                 'logo_id'       => 0,
                 'primary_color' => '#1e40af',
@@ -141,6 +144,16 @@ final class Settings
                     ],
                 ],
                 'socialne'    => [
+                    'type'  => 'array',
+                    'items' => [
+                        'type'       => 'object',
+                        'properties' => [
+                            'popis' => ['type' => 'string'],
+                            'url'   => ['type' => 'string'],
+                        ],
+                    ],
+                ],
+                'odkazy'      => [
                     'type'  => 'array',
                     'items' => [
                         'type'       => 'object',
