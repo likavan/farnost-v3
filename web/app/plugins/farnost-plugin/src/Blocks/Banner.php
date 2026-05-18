@@ -39,6 +39,16 @@ final class Banner
             return '';
         }
 
+        // Server-side dismiss check — ak má user cookie s aktuálnym banner ID,
+        // banner sa nerenderuje vôbec. Tým sa vyhneme FOUC (Flash Of Unstyled
+        // Content), kde banner krátko bliknul pred tým, než ho JS skryl.
+        $dismissedId = isset($_COOKIE['farnost_banner_dismissed'])
+            ? (string) wp_unslash($_COOKIE['farnost_banner_dismissed'])
+            : '';
+        if ($dismissedId !== '' && $dismissedId === $data['id']) {
+            return '';
+        }
+
         ob_start();
         ?>
         <div class="farnost-alert" role="status" data-banner-id="<?php echo esc_attr($data['id']); ?>">

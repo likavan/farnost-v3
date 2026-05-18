@@ -57,14 +57,10 @@
         if (!close) {
             return;
         }
-        // Skry banner ak má user uloženú dismiss cookie pre toto ID.
+        // Server (Banner block) skontroluje dismiss cookie pred renderom,
+        // tým je banner v DOM-e iba ak má byť viditeľný — žiadny FOUC.
+        // JS rieši len klik na close: skryje + uloží cookie pre ďalšie loads.
         var id = bar.getAttribute('data-banner-id') || '';
-        try {
-            if (id && document.cookie.indexOf('farnost_banner_dismissed=' + id) !== -1) {
-                bar.style.display = 'none';
-                return;
-            }
-        } catch (e) {}
         close.addEventListener('click', function () {
             bar.style.display = 'none';
             if (id) {
