@@ -87,13 +87,20 @@ final class Feed
     private static function renderPost(WP_Post $post): string
     {
         $variant = self::variantFor($post);
-        $meta = self::renderMeta($post, $variant);
+        $type = self::typeMeta($post, $variant);
+        $meta = self::renderMeta($post, $type);
         $title = esc_html(get_the_title($post));
         $permalink = esc_url(get_permalink($post));
+        // Farba kategórie sa aplikuje na celý article ako custom property —
+        // CSS ju použije pre top-border. Ak chýba (oznam alebo post bez
+        // viditeľnej kategórie), CSS sa preklopí na variant-default.
+        $styleAttr = $type['color'] !== ''
+            ? ' style="--farnost-cat-color: ' . esc_attr($type['color']) . '"'
+            : '';
 
         ob_start();
         ?>
-        <article id="post-<?php echo (int) $post->ID; ?>" class="farnost-post farnost-post--<?php echo esc_attr($variant); ?>">
+        <article id="post-<?php echo (int) $post->ID; ?>" class="farnost-post farnost-post--<?php echo esc_attr($variant); ?>"<?php echo $styleAttr; ?>>
             <?php echo $meta; // already escaped ?>
             <?php if ($variant === 'udalost') : ?>
                 <?php echo self::renderUdalostGrid($post); ?>
@@ -123,19 +130,18 @@ final class Feed
         return 'text';
     }
 
-    private static function renderMeta(WP_Post $post, string $variant): string
+    /**
+     * @param array{label: string, color: string} $type
+     */
+    private static function renderMeta(WP_Post $post, array $type): string
     {
-        $type = self::typeMeta($post, $variant);
         $dateLabel = self::formatDateSlovak((string) $post->post_date);
         $author = self::authorName($post);
-        $styleAttr = $type['color'] !== ''
-            ? ' style="--farnost-cat-color: ' . esc_attr($type['color']) . '"'
-            : '';
 
         ob_start();
         ?>
         <div class="farnost-post-meta">
-            <span class="farnost-post-type"<?php echo $styleAttr; // safely escaped above ?>><?php echo esc_html($type['label']); ?></span>
+            <span class="farnost-post-type"><?php echo esc_html($type['label']); ?></span>
             <span class="farnost-post-meta-dot">·</span>
             <span class="farnost-post-date"><?php echo esc_html($dateLabel); ?></span>
             <?php if ($author !== '') : ?>

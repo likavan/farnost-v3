@@ -346,6 +346,9 @@ body > * { position: relative; z-index: 1; }
   gap: var(--wp--custom--post-gap, 32px);
 }
 .farnost-post {
+  /* Variant default — preflauje sa keď článok má --farnost-cat-color z inline
+     style (post s viditeľnou WP kategóriou cez farnost_color term meta). */
+  --farnost-variant-color: var(--wp--preset--color--accent);
   position: relative;
   background: var(--wp--preset--color--surface);
   border: 1px solid var(--wp--preset--color--rule);
@@ -353,6 +356,10 @@ body > * { position: relative; z-index: 1; }
   border-radius: 2px;
   box-shadow: 0 1px 0 rgba(28, 22, 16, 0.04);
 }
+.farnost-post--oznamy    { --farnost-variant-color: var(--wp--preset--color--ink); }
+.farnost-post--udalost   { --farnost-variant-color: var(--wp--preset--color--accent); }
+.farnost-post--text      { --farnost-variant-color: var(--wp--preset--color--muted); }
+.farnost-post--text-foto { --farnost-variant-color: var(--wp--preset--color--accent-soft); }
 .farnost-post::before {
   content: "";
   position: absolute;
@@ -360,12 +367,8 @@ body > * { position: relative; z-index: 1; }
   left: -1px;
   right: -1px;
   height: 3px;
-  background: var(--wp--preset--color--accent);
+  background: var(--farnost-cat-color, var(--farnost-variant-color));
 }
-.farnost-post--oznamy::before    { background: var(--wp--preset--color--ink); }
-.farnost-post--udalost::before   { background: var(--wp--preset--color--accent); }
-.farnost-post--text::before      { background: var(--wp--preset--color--muted); }
-.farnost-post--text-foto::before { background: var(--wp--preset--color--accent-soft); }
 
 .farnost-post-meta {
   display: flex;
@@ -376,8 +379,8 @@ body > * { position: relative; z-index: 1; }
   margin-bottom: 16px;
 }
 .farnost-post-type {
-  /* --farnost-cat-color: inline style z meta riadka, fallback accent */
-  color: var(--farnost-cat-color, var(--wp--preset--color--accent));
+  /* Uniform pre všetky kategórie — farba kategórie ide len na top-border. */
+  color: var(--wp--preset--color--accent);
   font-weight: 700;
   font-size: 11.5px;
   letter-spacing: 0.22em;
@@ -393,7 +396,7 @@ body > * { position: relative; z-index: 1; }
   display: inline-block;
   width: 6px;
   height: 6px;
-  background: var(--farnost-cat-color, var(--wp--preset--color--accent));
+  background: var(--wp--preset--color--accent);
   transform: rotate(45deg);
   flex-shrink: 0;
 }
