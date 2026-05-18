@@ -125,11 +125,13 @@ final class Menu
             [self::class, 'renderUpratovacie']
         );
 
-        // Submenu: Nastavenia (vyžaduje vyššie oprávnenie)
+        // Submenu: Nastavenie farnosti (vyžaduje vyššie oprávnenie).
+        // Zámerne odlišný názov od WP core "Nastavenia" aby farár vedel
+        // čo má v menu Farnosť otvoriť (#51).
         add_submenu_page(
             self::SLUG,
-            __('Nastavenia', 'farnost-plugin'),
-            __('Nastavenia', 'farnost-plugin'),
+            __('Nastavenie farnosti', 'farnost-plugin'),
+            __('Nastavenie farnosti', 'farnost-plugin'),
             'manage_options',
             'farnost-nastavenia',
             [self::class, 'renderSettings']

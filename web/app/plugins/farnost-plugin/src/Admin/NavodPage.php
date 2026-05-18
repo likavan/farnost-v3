@@ -208,7 +208,7 @@ final class NavodPage
                     <p><?php esc_html_e('Všetky tieto údaje sú v Nastaveniach a aktualizujú sa naraz po celom webe.', 'farnost-plugin'); ?></p>
                     <p>
                         <a class="button" href="<?php echo esc_url(admin_url('admin.php?page=farnost-nastavenia')); ?>">
-                            <?php esc_html_e('Otvoriť Nastavenia', 'farnost-plugin'); ?>
+                            <?php esc_html_e('Otvoriť Nastavenie farnosti', 'farnost-plugin'); ?>
                         </a>
                     </p>
                 </details>
@@ -289,13 +289,13 @@ final class NavodPage
                 'title' => __('Vyplniť názov farnosti', 'farnost-plugin'),
                 'done'  => $nazovFilled,
                 'url'   => admin_url('admin.php?page=farnost-nastavenia'),
-                'cta'   => __('Nastavenia', 'farnost-plugin'),
+                'cta'   => __('Nastavenie farnosti', 'farnost-plugin'),
             ],
             [
                 'title' => __('Vyplniť kontakt (adresa, telefón alebo e-mail)', 'farnost-plugin'),
                 'done'  => $kontaktFilled,
                 'url'   => admin_url('admin.php?page=farnost-nastavenia'),
-                'cta'   => __('Nastavenia', 'farnost-plugin'),
+                'cta'   => __('Nastavenie farnosti', 'farnost-plugin'),
             ],
             [
                 'title' => __('Pridať aspoň jeden kostol s rozpisom omší', 'farnost-plugin'),

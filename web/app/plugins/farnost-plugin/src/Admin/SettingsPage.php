@@ -41,7 +41,7 @@ final class SettingsPage
 
         ?>
         <div class="wrap">
-            <h1><?php esc_html_e('Nastavenia farnosti', 'farnost-plugin'); ?></h1>
+            <h1><?php esc_html_e('Nastavenie farnosti', 'farnost-plugin'); ?></h1>
 
             <?php if ($saved) : ?>
                 <div class="notice notice-success is-dismissible">

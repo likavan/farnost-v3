@@ -99,11 +99,22 @@ function getMonthGrid( year, monthIdx0 ) {
  * Výnimka: úmysel je inline meta `farnost_umysel` na CPT `omsa_vynimka`. Save = update
  * meta, Odstrániť = vyprázdni meta.
  */
-function UmyselModal( { mass, onClose, onSaved } ) {
+function UmyselModal( { mass, kostoly, onClose, onSaved } ) {
 	const [ text, setText ] = useState( mass.umysel || '' );
 	const [ anonymny, setAnonymny ] = useState( !! mass.anonymny );
+	// Pre výnimky povolíme editovať aj čas, kostol a označenie. Pre pravidelnú
+	// omšu z rozpisu sú tieto polia disabled — úprava ide cez Farnosť → Kostoly.
+	const [ cas, setCas ] = useState( mass.time || '' );
+	const [ kostolId, setKostolId ] = useState( String( mass.kostol_id || '' ) );
+	const [ oznacenie, setOznacenie ] = useState( mass.oznacenie || '' );
 	const [ saving, setSaving ] = useState( false );
 	const [ error, setError ] = useState( null );
+
+	const isVynimka = mass.source === 'vynimka';
+	const kostolOptions = ( kostoly || [] ).map( ( k ) => ( {
+		label: k.title.rendered,
+		value: String( k.id ),
+	} ) );
 
 	// Zmazanie celej mimoriadnej omše (vynimka). Pravidelná (rozpis) sa odtiaľto
 	// mazať nedá — rozpis sa upravuje v Farnosť → Kostoly.
@@ -131,11 +142,28 @@ function UmyselModal( { mass, onClose, onSaved } ) {
 		setError( null );
 		try {
 			if ( mass.source === 'vynimka' ) {
+				// Validácia času pre výnimku (formát HH:MM, 24h).
+				if ( ! /^([01]\d|2[0-3]):[0-5]\d$/.test( cas ) ) {
+					setError( __( 'Čas musí byť vo formáte HH:MM (napr. 18:00).', 'farnost-plugin' ) );
+					setSaving( false );
+					return;
+				}
+				const kostolIdNum = parseInt( kostolId, 10 );
+				if ( ! kostolIdNum ) {
+					setError( __( 'Zvoľ kostol.', 'farnost-plugin' ) );
+					setSaving( false );
+					return;
+				}
 				await apiFetch( {
 					path: `/wp/v2/omsa-vynimky/${ mass.vynimka_id }`,
 					method: 'POST',
 					data: {
-						meta: { farnost_umysel: text },
+						meta: {
+							farnost_cas:       cas,
+							farnost_kostol_id: kostolIdNum,
+							farnost_oznacenie: oznacenie,
+							farnost_umysel:    text,
+						},
 					},
 				} );
 			} else if ( mass.umysel_id ) {
@@ -200,13 +228,48 @@ function UmyselModal( { mass, onClose, onSaved } ) {
 			style={ { maxWidth: 520 } }
 		>
 			<div style={ { marginBottom: 12, color: '#374151', fontSize: 13 } }>
-				<div><strong>{ formattedDate }</strong> · { mass.time }</div>
-				<div style={ { color: '#6b7280', marginTop: 2 } }>
-					{ mass.kostol_title }
-					{ mass.oznacenie && <span> · { mass.oznacenie }</span> }
-					{ mass.source === 'vynimka' && <span> · { __( 'mimoriadna omša', 'farnost-plugin' ) }</span> }
-				</div>
+				<div><strong>{ formattedDate }</strong>{ ! isVynimka && <span> · { mass.time }</span> }</div>
+				{ ! isVynimka && (
+					<div style={ { color: '#6b7280', marginTop: 2 } }>
+						{ mass.kostol_title }
+						{ mass.oznacenie && <span> · { mass.oznacenie }</span> }
+					</div>
+				) }
+				{ isVynimka && (
+					<div style={ { color: '#6b7280', marginTop: 2 } }>
+						{ __( 'mimoriadna omša', 'farnost-plugin' ) }
+					</div>
+				) }
 			</div>
+
+			{ isVynimka && (
+				<div style={ { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 } }>
+					<TextControl
+						label={ __( 'Čas', 'farnost-plugin' ) }
+						value={ cas }
+						onChange={ setCas }
+						placeholder="18:00"
+						__nextHasNoMarginBottom
+					/>
+					<SelectControl
+						label={ __( 'Kostol', 'farnost-plugin' ) }
+						value={ kostolId }
+						options={ [ { label: __( '— vyberte —', 'farnost-plugin' ), value: '' }, ...kostolOptions ] }
+						onChange={ setKostolId }
+						__nextHasNoMarginBottom
+					/>
+				</div>
+			) }
+
+			{ isVynimka && (
+				<TextControl
+					label={ __( 'Označenie omše', 'farnost-plugin' ) }
+					value={ oznacenie }
+					onChange={ setOznacenie }
+					placeholder={ __( 'napr. pohrebná, svadobná, detská', 'farnost-plugin' ) }
+					__nextHasNoMarginBottom
+				/>
+			) }
 
 			<TextareaControl
 				label={ __( 'Text úmyslu', 'farnost-plugin' ) }
@@ -218,6 +281,7 @@ function UmyselModal( { mass, onClose, onSaved } ) {
 					? __( 'Prázdny text = úmysel sa odstráni.', 'farnost-plugin' )
 					: undefined }
 				__nextHasNoMarginBottom
+				style={ { marginTop: 12 } }
 			/>
 
 			{ showAnonymousToggle && (
@@ -697,6 +761,7 @@ function App() {
 			{ openMass && (
 				<UmyselModal
 					mass={ openMass }
+					kostoly={ kostoly }
 					onClose={ () => setOpenMass( null ) }
 					onSaved={ () => {
 						setOpenMass( null );
