@@ -353,6 +353,9 @@ body > * { position: relative; z-index: 1; }
   gap: 64px;
   align-items: start;
 }
+/* Grid items (feed + sidebar template-part wrapper) nesmú mať WP block-gap
+   margin-top — gap rieši grid sám, margin posúva sidebar 24px dolu. */
+.site-main.has-sidebar > * { margin-top: 0; }
 .site-main-content { min-width: 0; }
 
 /* ─── Post cards (feed) ──────────────────────────────────────────────────── */
