@@ -418,7 +418,8 @@ final class SettingsPage
         $den = isset($input['oznamy']['publikacny_den']) ? (string) $input['oznamy']['publikacny_den'] : 'sunday';
         $out['oznamy']['publikacny_den'] = array_key_exists($den, self::days()) ? $den : 'sunday';
         $cas = isset($input['oznamy']['publikacny_cas']) ? (string) $input['oznamy']['publikacny_cas'] : '08:00';
-        $out['oznamy']['publikacny_cas'] = preg_match('/^\d{2}:\d{2}$/', $cas) === 1 ? $cas : '08:00';
+        // Striktný rozsah HH:MM (00-23:00-59). Predošlý regex \d{2}:\d{2} prepustil aj 99:99.
+        $out['oznamy']['publikacny_cas'] = preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $cas) === 1 ? $cas : '08:00';
         $dopredne = isset($input['oznamy']['dopredne_drafty']) ? (int) $input['oznamy']['dopredne_drafty'] : 2;
         $out['oznamy']['dopredne_drafty'] = max(1, min(4, $dopredne));
 
