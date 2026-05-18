@@ -133,16 +133,21 @@
         var HEADER_OFFSET = 24;
         var lastY = window.scrollY;
         var offset = 0;
-        // naturalTopAbs = page-coord top of sidebar without any translate.
-        // Cache-ujeme aby sme nezávisleli od grid layout offset-u.
+        // Cache-ujeme tieto v page-coords aby update() nevolal
+        // getBoundingClientRect() na každý frame (triggeruje layout).
         var naturalTopAbs = 0;
+        var wrapperBottomAbs = 0;
+        var sidebarHeight = 0;
         var ticking = false;
 
-        var computeNatural = function () {
+        var measure = function () {
             var prevTransform = sidebar.style.transform;
             sidebar.style.transform = '';
-            var rect = sidebar.getBoundingClientRect();
-            naturalTopAbs = window.scrollY + rect.top;
+            var sRect = sidebar.getBoundingClientRect();
+            naturalTopAbs = window.scrollY + sRect.top;
+            sidebarHeight = sidebar.offsetHeight;
+            var wRect = wrapper.getBoundingClientRect();
+            wrapperBottomAbs = window.scrollY + wRect.bottom;
             sidebar.style.transform = prevTransform;
         };
 
@@ -152,33 +157,25 @@
             var dir = y > lastY ? 'down' : (y < lastY ? 'up' : null);
             lastY = y;
 
-            var sh = sidebar.offsetHeight;
+            var sh = sidebarHeight;
             var vh = window.innerHeight;
-            var wrapperRect = wrapper.getBoundingClientRect();
-            var wrapperBotAbs = y + wrapperRect.bottom;
-            // Max offset — sidebar nesmie vyjsť z wrapper-u dolu.
-            var maxOffset = Math.max(0, wrapperBotAbs - naturalTopAbs - sh);
-
+            var maxOffset = Math.max(0, wrapperBottomAbs - naturalTopAbs - sh);
             var vpTopAbs = y + HEADER_OFFSET;
             var vpBotAbs = y + vh;
 
-            // Krátky sidebar → sticky-top via offset.
             if (sh + HEADER_OFFSET <= vh) {
                 offset = Math.max(0, Math.min(maxOffset, vpTopAbs - naturalTopAbs));
-                sidebar.style.transform = 'translateY(' + offset + 'px)';
-                return;
+            } else {
+                var sidebarTopAbs = naturalTopAbs + offset;
+                var sidebarBotAbs = sidebarTopAbs + sh;
+                if (dir === 'down' && sidebarBotAbs < vpBotAbs) {
+                    offset = vpBotAbs - sh - naturalTopAbs;
+                } else if (dir === 'up' && sidebarTopAbs > vpTopAbs) {
+                    offset = vpTopAbs - naturalTopAbs;
+                }
+                offset = Math.max(0, Math.min(maxOffset, offset));
             }
-
-            var sidebarTopAbs = naturalTopAbs + offset;
-            var sidebarBotAbs = sidebarTopAbs + sh;
-
-            if (dir === 'down' && sidebarBotAbs < vpBotAbs) {
-                offset = vpBotAbs - sh - naturalTopAbs;
-            } else if (dir === 'up' && sidebarTopAbs > vpTopAbs) {
-                offset = vpTopAbs - naturalTopAbs;
-            }
-            offset = Math.max(0, Math.min(maxOffset, offset));
-            sidebar.style.transform = 'translateY(' + offset + 'px)';
+            sidebar.style.transform = 'translate3d(0,' + Math.round(offset) + 'px,0)';
         };
 
         var onScroll = function () {
@@ -191,12 +188,14 @@
         var onResize = function () {
             offset = 0;
             sidebar.style.transform = '';
-            computeNatural();
+            measure();
             lastY = window.scrollY;
             update();
         };
 
-        computeNatural();
+        // Initial measurement po load + jedna ďalšia po images/fonts paint.
+        measure();
+        window.addEventListener('load', measure);
         window.addEventListener('scroll', onScroll, { passive: true });
         window.addEventListener('resize', onResize, { passive: true });
         update();
