@@ -338,3 +338,39 @@ Idea pre budúcnosť: vlastné UI v users edit screen, kde farár môže **per k
 V editore oznamu sa rozpis omší upravuje **klikom priamo do textu** (Notion-style). Klik na „18:00" alebo na text úmyslu zmení daný kúsok na input, prepíše sa, klik mimo uloží. Žiadne pencil ikony, žiadny sidebar mirror.
 
 Akceptujeme miernu cenu v discoverability — farár sa to za prvé 1–2 oznamy naučí a potom je to najrýchlejší možný workflow.
+
+## Lockdown oznam lifecycle
+
+Oznamy nie sú voľne editovateľné na status úrovni — lifecycle je výhradne
+automatický:
+
+- **Create** — len cez `BufferManager` (auto-vytvára N budúcich oznamov, defaultne 2).
+  Admin nevidí „Pridať oznam" tlačidlo v listingu ani v admin bare.
+- **Publish** — len cez WP cron pri dosiahnutí `post_date`. Manuálne tlačidlo
+  Publish je preč. Pre Gutenberg-driven autorov bez `publish_posts` cap WP
+  nahradzuje Publish tlačidlo „Submit for Review" → poslalo by `status=pending`,
+  ale `Oznam::preserveStatusOnUpdate` filter zachytí a vráti pôvodný status.
+  Plus gettext filter premapuje labely („Submit for Review" → „Uložiť",
+  „Submitted for review" → „Uložené") aby UI nemýtilo.
+- **Delete** — `capabilities: delete_posts / delete_published_posts /
+  delete_others_posts / delete_private_posts → do_not_allow`. Move to Trash
+  a bulk delete v admin UI zmiznú. Aj REST DELETE vráti 403.
+- **Manuálny override** — admin môže cez WP-CLI `wp post delete <id> --force`
+  (CLI nemá user context, obíde cap check).
+
+Tým je rotácia upratovania a buffer počet vždy konzistentné — admin omylom
+nezmaže oznam, ktorý drží pointer.
+
+## Timezone a Activator
+
+Pri prvej aktivácii pluginu `Activator::ensureSlovakTimezone()` nastaví
+`timezone_string` na `Europe/Bratislava`, ak admin nemá vlastný timezone.
+Default WP UTC by spôsoboval že banner expiry zadaný v admin form-e (HTML5
+datetime-local input, lokálny čas) sa interpretuje ako UTC — pre slovenského
+užívateľa v CEST (UTC+2) by banner v máji-októbri zmizol o 2 hodiny neskôr
+než očakával.
+
+Aktivačná logika je idempotentná — ak admin už explicitne nastavil iný
+timezone (Settings → General), Activator nezasahuje. Frontend kód
+(`BufferManager`, `MassWidget`, `Banner`) vždy konzistentne používa
+`wp_timezone()` / `current_datetime()`.

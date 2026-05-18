@@ -109,75 +109,93 @@ Všetka **dátová a funkčná** logika farského webu. Plugin musí byť aktív
 
 ```
 farnost-plugin/
-├─ farnost-plugin.php          # plugin header + bootstrap
-├─ composer.json              # PSR-4 autoload pre src/
-├─ package.json               # @wordpress/scripts pre bloky
-├─ readme.txt                 # WP plugin readme
-├─ uninstall.php              # cleanup pri zmazaní
+├─ farnost-plugin.php          # plugin header + PSR-4 autoloader + boot
+├─ composer.json
+├─ package.json                # @wordpress/scripts
 │
-├─ src/                       # PHP, PSR-4 (Farnost\Plugin\*)
-│  ├─ Plugin.php              # main bootstrap, hooks
-│  ├─ Activation.php          # default kategórie, capabilities, flush rewrite
-│  ├─ Deactivation.php
+├─ src/                        # PHP, PSR-4 (Farnost\Plugin\*)
+│  ├─ Plugin.php               # main bootstrap, hooks pre všetky moduly
+│  ├─ Activator.php            # rola, caps, default kategórie, timezone, refill
 │  │
-│  ├─ PostTypes/              # registrácia CPT
-│  │  ├─ Kostol.php
-│  │  ├─ Oznam.php
-│  │  ├─ OmsaVynimka.php
-│  │  └─ Umysel.php
+│  ├─ PostTypes/               # registrácia CPT
+│  │  ├─ Kostol.php            # public=false, custom-fields, vlastný admin UI
+│  │  ├─ Oznam.php             # public=true, capabilities lockdown, status preserve
+│  │  ├─ OmsaVynimka.php       # show_in_menu=false, vzniká z kalendára
+│  │  ├─ Umysel.php            # capability_type=[umysel,umysly]
+│  │  └─ UpratovaciaSkupina.php
 │  │
-│  ├─ Meta/                   # registrácia post meta + term meta
-│  │  ├─ KostolMeta.php
-│  │  ├─ PostUdalostMeta.php  # farnost_event_when, farnost_event_where
-│  │  └─ CategoryMeta.php     # farnost_color, farnost_show_in_menu
+│  ├─ Meta/                    # post meta + term meta
+│  │  ├─ PostMeta.php          # farnost_event_when/where, farnost_show_in_menu pre page
+│  │  └─ CategoryMeta.php      # farnost_color, farnost_show_in_menu
 │  │
-│  ├─ Schedule/               # logika vyhodnotenia rozpisu omší
-│  │  ├─ Resolver.php         # for_date($date, $kostol_id)
-│  │  └─ ScheduleItem.php     # value object
+│  ├─ Schedule/                # logika rozpisu omší
+│  │  ├─ Resolver.php          # pure, mergeuje rozpis + výnimky, time-numeric sort
+│  │  ├─ RozpisReader.php      # WP adaptér, per-date query
+│  │  └─ WeeklyResolver.php    # batch query pre celý týždeň + viac kostolov
 │  │
-│  ├─ Settings/               # per-farnosť settings
-│  │  ├─ SettingsPage.php     # admin stránka
-│  │  └─ SettingsRest.php     # /wp-json/farnost/v1/settings
+│  ├─ Settings/
+│  │  └─ Settings.php          # farnost_settings option + schema + defaults
 │  │
-│  ├─ Rest/                   # custom REST endpointy
-│  │  └─ ScheduleController.php  # /wp-json/farnost/v1/schedule
+│  ├─ Rest/                    # custom REST endpointy /wp-json/farnost/v1/
+│  │  ├─ SettingsController.php       # GET /settings (verejné)
+│  │  ├─ ScheduleController.php       # GET /schedule?date=&kostol_id=
+│  │  ├─ BannerController.php         # GET /banner
+│  │  ├─ SnapshotController.php       # POST /snapshot/build
+│  │  └─ RotationPointerController.php # POST /rotation-pointer
 │  │
-│  ├─ Admin/                  # admin UX rozšírenia
-│  │  ├─ CategoryFields.php   # color picker, show in menu checkbox
-│  │  └─ MenuStructure.php    # vlastné top-level menu „Farnosť"
+│  ├─ Admin/                   # admin UX rozšírenia
+│  │  ├─ Menu.php              # top-level „Farnosť" + submenu
+│  │  ├─ SettingsPage.php      # Farnosť → Nastavenia (PHP form)
+│  │  ├─ WizardPage.php        # plnoobrazovkový setup wizard
+│  │  ├─ KostolyPage.php       # custom React obrazovka (build/kostoly.js)
+│  │  ├─ UpratovacieSkupinyPage.php   # custom React (build/upratovacie.js)
+│  │  ├─ MimoriadnyOznamPage.php      # rich text + expiry form
+│  │  ├─ NavodPage.php         # statická knowledge base + checklist
+│  │  ├─ CategoryAdmin.php     # color picker + show-in-menu na taxonomy
+│  │  ├─ EditorAssets.php      # enqueue per-CPT editor entries + site-blocks
+│  │  ├─ BlockCategory.php     # „Farnosť" kategória v block insert
+│  │  ├─ PostRelabel.php       # natívny `post` → „Udalosti" labels
+│  │  ├─ CommentsHide.php      # odstavenie komentárov
+│  │  └─ SetupNotice.php       # admin notice ak wizard nedokončený
 │  │
-│  ├─ Roles/                  # vlastná rola „asistent"
-│  │  └─ AsistentRole.php
+│  ├─ Oznam/                   # business logika oznamov
+│  │  ├─ BufferManager.php     # auto-create budúcich oznamov + cron
+│  │  ├─ AutoTemplate.php      # prefil obsahu pri novom ozname (fallback)
+│  │  ├─ SnapshotBuilder.php   # zostavenie dni pre rozpis-snapshot block
+│  │  └─ Upratovanie.php       # rotácia upratovacích skupín
 │  │
-│  └─ Blocks/                 # PHP registrácia blokov
-│     └─ BlocksRegistry.php
+│  ├─ MimoriadnyOznam/
+│  │  └─ Banner.php            # data layer pre option-stored banner
+│  │
+│  └─ Blocks/                  # dynamic blocks (server-side render)
+│     ├─ Banner.php            # farnost/banner
+│     ├─ Feed.php              # farnost/feed
+│     ├─ MainNav.php           # farnost/main-nav (auto z Pages)
+│     ├─ MassWidget.php        # farnost/mass-widget
+│     ├─ ContactWidget.php     # farnost/contact-widget
+│     ├─ QuoteWidget.php       # farnost/quote-widget
+│     ├─ ScheduleTable.php     # farnost/schedule-table
+│     ├─ ArchiveList.php       # farnost/archive-list
+│     ├─ SiteBrand.php         # farnost/site-brand (logo + nazov)
+│     ├─ SiteHeader.php        # farnost/site-header (composition)
+│     ├─ SiteFooter.php        # farnost/site-footer (3-col grid)
+│     └─ RozpisSnapshot.php    # farnost/rozpis-snapshot (oznam content)
 │
-├─ blocks/                    # zdrojový kód blokov (JSX, CSS)
-│  ├─ rozpis-omsi/
-│  │  ├─ block.json
-│  │  ├─ edit.tsx
-│  │  ├─ save.tsx
-│  │  ├─ render.php           # server-side render
-│  │  └─ style.scss
-│  ├─ aktualne-dianie/        # kombinovaný feed oznamov + udalostí
-│  ├─ najnovsi-oznam/
-│  ├─ umysly-list/
-│  ├─ farnost-menu/            # auto-generované menu
-│  └─ ...
+├─ editor/                     # JSX entry points
+│  ├─ panel-oznam/             # per-CPT editor sidebar panely
+│  ├─ panel-vynimka/
+│  ├─ panel-umysel/
+│  ├─ panel-udalost/
+│  ├─ block-rozpis-snapshot/   # editor pre dynamic rozpis-snapshot block
+│  ├─ calendar/                # custom admin obrazovka (Kalendár omší)
+│  ├─ kostoly/                 # custom admin (Kostoly)
+│  ├─ upratovacie/             # custom admin (Upratovacie skupiny)
+│  ├─ wizard/                  # setup wizard
+│  └─ site-blocks/             # ServerSideRender previews pre site bloky
 │
-├─ editor/                    # JSX pre sidebar panely v editore
-│  ├─ panels/
-│  │  ├─ RozpisOmsiPanel.tsx  # editor sidebar na CPT `kostol`
-│  │  ├─ OznamPanel.tsx
-│  │  ├─ VynimkaPanel.tsx
-│  │  ├─ UmyselPanel.tsx
-│  │  └─ UdalostPanel.tsx     # sidebar na bežných postoch
-│  └─ index.tsx               # registerPlugin entry point
-│
-├─ languages/                 # .pot + preklady
-│  └─ farnost-plugin.pot
-│
-└─ build/                     # gitignored — výstup wp-scripts
+├─ build/                      # gitignored: výstup wp-scripts (committed v3)
+└─ languages/
+   └─ farnost-plugin.pot
 ```
 
 ### Plugin header (vzor)
@@ -210,57 +228,49 @@ farnost-plugin/
 
 Vzhľad a layout. **Žiadna business logika.** Téma môže byť plne nahradená inou — dáta v plugine zostanú.
 
-### Štruktúra (block theme)
+### Štruktúra (block theme — aktuálny stav po Etape 3)
 
 ```
 farnost-theme/
-├─ style.css                  # theme header + minimálne CSS
-├─ theme.json                 # design tokens (farby, fonty, spacing)
-├─ functions.php              # enqueue, supports, theme-only filters
-├─ package.json               # voliteľný frontend build
-├─ readme.txt
+├─ style.css                  # theme header + frontend CSS (paper noise, brand,
+│                             # search, nav, alert, post cards, sidebar, footer,
+│                             # responsive 980/760 breakpointy)
+├─ theme.json                 # v3 schema: krémová+burgundská paleta, Cormorant
+│                             # Garamond + Source Serif 4, font-sizes, spacing
+├─ functions.php              # enqueue Google Fonts + style + chrome.js,
+│                             # register_block_pattern_category
 │
-├─ templates/                 # FSE templates (HTML s block markupom)
-│  ├─ index.html              # default fallback
-│  ├─ front-page.html         # úvodná stránka
-│  ├─ singular.html           # default pre single posty/stránky
-│  ├─ single-oznam.html       # detail oznamu
-│  ├─ single-kostol.html      # detail kostola
-│  ├─ archive-oznam.html      # archív oznamov
-│  ├─ archive-kostol.html
-│  ├─ archive-umysel.html
-│  ├─ category.html           # archív kategórie postov
-│  └─ 404.html
+├─ assets/
+│  └─ chrome.js               # search expand/collapse + banner dismiss +
+│                             # mobile hamburger toggle
 │
-├─ parts/                     # template parts (header, footer, ...)
-│  ├─ header.html             # obsahuje blok <Farské menu />
-│  ├─ footer.html             # obsahuje settings: kontakt, IBAN, sociálne
-│  └─ sidebar.html
+├─ templates/                 # FSE templates
+│  ├─ index.html              # home (header + feed + sidebar + footer)
+│  ├─ single.html             # generický single (post / oznam / ...)
+│  ├─ page.html               # farnost-page wrapper pre patterns
+│  ├─ search.html             # wp:query výsledky
+│  └─ 404.html                # page-header + CTA
 │
-├─ patterns/                  # block patterns pre znovupoužitie
-│  ├─ hero-uvod.php
-│  ├─ kostol-info.php
-│  ├─ feed-aktualne.php
-│  └─ ...
+├─ parts/                     # template parts
+│  ├─ header.html             # <!-- wp:farnost/site-header /-->
+│  ├─ footer.html             # <!-- wp:farnost/site-footer /-->
+│  └─ sidebar.html            # composition 3 widgetov
 │
-├─ assets/                    # statika
-│  ├─ css/                    # SCSS → CSS (build)
-│  ├─ js/                     # voliteľne
-│  ├─ images/
-│  └─ fonts/
+├─ patterns/                  # patterns pre sub-pages
+│  ├─ page-o-farnosti.php
+│  ├─ page-bohosluzby.php     # + wp:farnost/schedule-table
+│  ├─ page-sviatosti.php
+│  ├─ page-kontakt.php        # 2-col grid + form
+│  └─ page-oznamy-archiv.php  # + wp:farnost/archive-list
 │
-├─ styles/                    # FSE style variations — DIZAJNOVÁ STRATÉGIA
-│  ├─ klasicka.json
-│  ├─ marianska.json
-│  ├─ minimalistic.json
-│  ├─ rustikalna.json
-│  ├─ moderna-svetla.json
-│  ├─ tradicna-tmava.json
-│  └─ ...                     # cieľ: 5–10 variantov
-│
-└─ languages/
-   └─ farnost-theme.pot
+└─ (styles/ + screenshots — naplánované pre v3.1)
 ```
+
+Téma je **tenká** — všetka business logika (rendering feedu, mass widget,
+contact widget, atď.) žije v plugine ako dynamic blocks. Template parts
+header/footer obsahujú jediný riadok s blokom; templates sú minimálne layout
+wrappre. Tým je téma vymeniteľná — admin si môže nahodiť inú a celý dynamic
+obsah (z pluginu) ostane funkčný.
 
 ### Dizajnová stratégia: style variations only
 

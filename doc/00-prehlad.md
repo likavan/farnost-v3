@@ -63,7 +63,10 @@ Mimo scope vo v3 (možné v ďalších verziách):
 - [`02-datovy-model.md`](02-datovy-model.md) — CPT, post meta, custom bloky.
 - [`03-architektura.md`](03-architektura.md) — tech stack, štruktúra repa, distribučný model.
 - [`04-obsah-a-roly.md`](04-obsah-a-roly.md) — kto a ako spravuje obsah, používateľské roly.
-- [`05-roadmap.md`](05-roadmap.md) — etapy implementácie.
+- [`05-roadmap.md`](05-roadmap.md) — etapy implementácie (0–3 hotové, 4 čaká).
+- [`06-struktura-stranky.md`](06-struktura-stranky.md) — frontend layout (homepage, sidebar, header, footer, menu).
+- [`07-admin-ux.md`](07-admin-ux.md) — admin UX (oznam workflow, kalendár, setup wizard, lockdown, timezone).
+- [`08-feedback.md`](08-feedback.md) — open backlog z reálneho používania po Etape 3.
 - [`farsky-web-plan.md`](farsky-web-plan.md) — pôvodný plán z rozhovoru v Claude Chate, ešte pod predošlým pracovným názvom „Farský web" (archív / referencia).
 
 ## Otvorené otázky

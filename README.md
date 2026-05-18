@@ -6,7 +6,13 @@ Repo obsahuje **Bedrock-based WordPress projekt**, v ktorom sa vyvíja a testuje
 
 ## Stav
 
-**Etapa 0 (Bootstrap) hotová.** Bedrock + DDEV beží lokálne, plugin `farnost-plugin` a téma `farnost-theme` sú aktivované a frontend zobrazuje „Hello world".
+**Etapy 0–3 hotové** (máj 2026):
+- **0** Bootstrap — Bedrock + DDEV + plugin/téma scaffold.
+- **1** Dátová vrstva — CPT (oznam, kostol, omsa_vynimka, umysel, upratovacia_skupina), meta, settings, REST endpointy, Resolver.
+- **2** Admin UX — vlastné Farnosť menu, Kalendár omší (React), Kostoly (React + drag-and-drop rozpis), Mimoriadny oznam, Setup wizard, Návod.
+- **3** Téma a frontend — block theme, 12 dynamic blocks (banner, feed, main-nav, mass-widget, contact-widget, quote-widget, schedule-table, archive-list, site-brand, site-header, site-footer, rozpis-snapshot), 5 sub-page patterns, hamburger mobile, auto-menu z page hierarchie.
+
+Open backlog v [`doc/08-feedback.md`](doc/08-feedback.md). Ďalšia Etapa 4 (pilotná farnosť) čaká na výber farnosti.
 
 ## Dokumentácia
 
@@ -18,7 +24,8 @@ Začni v [`doc/00-prehlad.md`](doc/00-prehlad.md). Ostatné dokumenty:
 - [`doc/04-obsah-a-roly.md`](doc/04-obsah-a-roly.md) — používateľské roly a workflow.
 - [`doc/05-roadmap.md`](doc/05-roadmap.md) — etapy implementácie a otvorené otázky.
 - [`doc/06-struktura-stranky.md`](doc/06-struktura-stranky.md) — frontend layout a stránky.
-- [`doc/07-admin-ux.md`](doc/07-admin-ux.md) — admin UX (oznam workflow, kalendár, setup wizard).
+- [`doc/07-admin-ux.md`](doc/07-admin-ux.md) — admin UX (oznam workflow, kalendár, setup wizard, lockdown, timezone).
+- [`doc/08-feedback.md`](doc/08-feedback.md) — open backlog z reálneho používania (po Etape 3).
 
 ## Lokálne rozbehnutie
 

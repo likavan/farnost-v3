@@ -58,33 +58,59 @@ Etapy implementácie pre v3. Časové odhady sú orientačné a počítajú s je
 
 **Definícia hotovosti**: druhá osoba (nie autor) vytvorí cez wp-admin: kostol s rozpisom, oznam s pripnutím, výnimku s režimom „náhrada", úmysel, udalosť s kategóriou a dátumom — bez dokumentácie, len intuitívne.
 
-## Etapa 3 — Téma a frontend
+## Etapa 3 — Téma a frontend ✅ (MVP)
 
 **Cieľ**: verejný frontend zobrazuje obsah, je responzívny, dosahuje Lighthouse > 90 mobile, vyzerá ako farský web a nie ako prázdna WP šablóna.
 
-- [ ] **`theme.json`** (base): farby, fonty, spacing scale, layout sizes — neutrálne defaulty.
-- [ ] **5–10 style variations** v `styles/*.json` (klasická, mariánska, minimalistic, rustikálna, moderná svetlá, tradičná tmavá, …). Štruktúra layoutu je vo všetkých rovnaká — odlišné sú farby, typografia, spacing, per‑block štýly.
-- [ ] **Náhľadové screenshoty** každej variant v `styles/screenshots/<slug>.webp` pre setup wizard.
-- [ ] **Templates**:
-  - [ ] `front-page.html` — hero, kombinovaný feed, najbližšie omše.
-  - [ ] `singular.html`, `single-oznam.html`, `single-kostol.html`, `single.html` (pre posty/udalosti).
-  - [ ] `archive-oznam.html`, `archive-kostol.html`, `archive-umysel.html`, `category.html`.
-  - [ ] `404.html`.
-- [ ] **Template parts**: `header.html` (s blokom `<Farské menu />`), `footer.html` (settings: kontakt, IBAN, sociálne).
-- [ ] **Custom bloky v plugine** (`blocks/`):
-  - [ ] `rozpis-omsi` — najbližších 7 dní pre vybraný kostol.
-  - [ ] `aktualne-dianie` — kombinovaný feed oznamov + WP postov, sticky pripnuté, farebné badge kategórií.
-  - [ ] `najnovsi-oznam` — najnovší publikovaný oznam.
-  - [ ] `umysly-list` — najbližšie 4 týždne úmyslov.
-  - [ ] `farnost-menu` — auto-generovaná navigácia.
-  - [ ] `kostol-info` — kontakt + mapa pre stránku kostola.
-  - [ ] `kontakt-farnost` — settings.kontakt do päty.
-- [ ] **Block patterns** v téme: hero, feed sekcia, kontakt sekcia, modlitba pred omšou (voliteľné).
-- [ ] **SEO**: Yoast nakonfigurovaný, sitemap, OG tags, schema.org JSON-LD pre `kostol` (Place + Church) a `oznam` (Article).
-- [ ] **Prístupnosť**: kontrola WCAG 2.1 AA pre hlavné stránky (axe-core, manuálne s klávesnicou).
-- [ ] **Performance**: Lighthouse run, optimalizácia (lazyload obrázkov, kritické CSS, minifikácia).
+Etapa 3 bola implementovaná v máji 2026 vo **4 vlnách** (A–D) podľa Claude
+Design handoff bundle-u (`Farnost.html`):
 
-**Definícia hotovosti**: stránka prejde Lighthouse > 90 na mobile pre Domov, vyzerá ako produkcia, a farár vie cez Site Editor vymeniť hero patron na vlastný.
+- [x] **`theme.json`** (base): krémová `#f1e8d4` + burgundská `#7a1f25` paleta, Cormorant Garamond display + Source Serif 4 body fonty, fluid font-sizes, spacing scale.
+- [x] **Templates**:
+  - [x] `index.html` — kombinovaný feed (oznam + post) + sidebar
+  - [x] `single.html` — generický single pre oznam / post
+  - [x] `page.html` — `farnost-page` wrapper pre patterns
+  - [x] `search.html` — `wp:query` výsledky vyhľadávania
+  - [x] `404.html` — page header s "404" + CTA späť
+- [x] **Template parts**:
+  - [x] `header.html` — jediný riadok `<!-- wp:farnost/site-header /-->`
+  - [x] `footer.html` — jediný riadok `<!-- wp:farnost/site-footer /-->`
+  - [x] `sidebar.html` — composition 3 widgetov
+- [x] **Patterns** pre sub-pages (`patterns/`):
+  - [x] `page-o-farnosti.php`
+  - [x] `page-bohosluzby.php` (so `<!-- wp:farnost/schedule-table /-->`)
+  - [x] `page-sviatosti.php` (7 sviatostí so štítkami)
+  - [x] `page-kontakt.php` (2-col grid info + form)
+  - [x] `page-oznamy-archiv.php` (so `<!-- wp:farnost/archive-list /-->`)
+- [x] **Custom dynamic bloky v plugine** (`src/Blocks/`):
+  - [x] `farnost/banner` — mimoriadny oznam, server-side cookie dismiss
+  - [x] `farnost/feed` — kombinovaný feed oznam + post chronologicky, 4 varianty (oznamy/text/text-foto/udalost), top-border vo farbe kategórie (`farnost_color`), title link na permalink + "Čítať viac →"
+  - [x] `farnost/main-nav` — auto-generované menu z WP Pages parent/child + `farnost_show_in_menu` flag, hamburger pri ≤760px
+  - [x] `farnost/mass-widget` — týždenný rozpis omší pre všetky kostoly, skryje dni bez omší, zobrazí úmysly výnimiek
+  - [x] `farnost/contact-widget` — kontakt zo settings (adresa, telefóny, e-maily, label stack nad value)
+  - [x] `farnost/quote-widget` — rotácia citátov zo settings podľa dňa v roku
+  - [x] `farnost/schedule-table` — kompletný týždenný rozpis tabuľka pre stránku Bohoslužby
+  - [x] `farnost/archive-list` — listing publish oznamov DESC pre archív
+  - [x] `farnost/site-brand` — logo z `branding.logo_id` (fallback cross pattée SVG) + názov + sub-line
+  - [x] `farnost/site-header` — composition brand + search + nav + banner
+  - [x] `farnost/site-footer` — 3-col grid (kontakt / odkazy / banka) zo settings
+  - [x] `farnost/rozpis-snapshot` — existing block (Etapa 2)
+- [x] **Editor preview pre dynamic blocks** — `editor/site-blocks/index.js` registruje všetkých 11 server-side blokov s `<ServerSideRender>` v Site Editori.
+- [x] **Performance**: `WeeklyResolver::forWeek` batch query — 2 queries celkom namiesto 1+N×7 pre N kostolov.
+- [x] **Activator**: default timezone `Europe/Bratislava` (default WP UTC by spôsoboval že banner expiry v lokálnom čase nefunguje správne).
+- [x] **i18n**: všetky stringy cez `__()`, scope-ovaný `gettext` filter premapuje Gutenberg "Submit for Review" labely na "Uložiť" pre oznam editor.
+
+**Nedokončené z plánu (ostáva na ďalšie iterácie):**
+
+- [ ] **5–10 style variations** v `styles/*.json` + náhľadové screenshoty pre setup wizard. Aktuálne 1 variant (default).
+- [ ] **`front-page.html` separát** — aktuálne `index.html` slúži ako home. Hero sekcia (chat2.md) bola explicitne vypnutá — homepage začína rovno feedom.
+- [ ] **Špecifické archive templates** — `archive-oznam.html`, `archive-kostol.html`, `category.html`. Aktuálne fallback na `index.html`.
+- [ ] **SEO**: Yoast, schema.org JSON-LD pre `kostol` (Place + Church) a `oznam` (Article).
+- [ ] **Prístupnosť**: WCAG 2.1 AA audit cez axe-core, manuálna kontrola.
+- [ ] **Performance audit**: Lighthouse mobile pre Domov (target ≥ 90).
+- [ ] **Backlog z pilotu**: open backlog v [`08-feedback.md`](08-feedback.md) — formát oznamov vo feede, vlastná galéria, single template pre oznam, úradné hodiny v sidebare, atď.
+
+**Definícia hotovosti MVP splnená**: téma renderuje brand + nav + feed + 3 sidebar widgety + footer zo `farnost_settings`. Multi-level menu funguje cez parent/child hierarchiu Pages s hamburgerom na mobile. Site Editor zobrazuje plné náhľady všetkých dynamic blokov.
 
 ## Etapa 4 — Pilotná farnosť a polish
 

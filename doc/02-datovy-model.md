@@ -230,6 +230,17 @@ Term meta polia sú editovateľné v admine `Príspevky → Kategórie` v sekcii
 - **Farba** — `<input type="color">` (HTML5 native picker), fallback text input s validáciou hex.
 - **Zobraziť v menu** — checkbox.
 
+## Stránky (`page`) — meta pre menu
+
+| Meta key                 | Typ          | Default      | Popis                                                        |
+| ------------------------ | ------------ | ------------ | ------------------------------------------------------------ |
+| `farnost_show_in_menu`   | bool         | `true`       | Či sa stránka zobrazí v automatickom hlavnom menu webu       |
+
+Hlavné menu sa generuje automaticky cez `farnost/main-nav` dynamic block z
+publish stránok podľa `post_parent` hierarchie. Stránka má `farnost_show_in_menu = true` štandardne — admin ju vie skryť cez Pages → Quick Edit alebo cez
+Gutenberg Custom Fields panel. Žiadne klasické WP Vzhľad → Menu sa nepoužíva
+(eliminujeme „ako pridám stránku do menu" trecie body).
+
 ## Per‑farnosť settings
 
 Plugin registruje **jednu WP option** `farnost_settings` (JSON) cez `register_setting`. Editovaná cez vlastnú admin stránku `Farnosť → Nastavenia` postavenú na `@wordpress/components` (`OptionsPanel` pattern).
@@ -260,6 +271,7 @@ Plugin registruje **jednu WP option** `farnost_settings` (JSON) cez `register_se
   },
   "financie": {
     "iban": "SK00 1100 0000 0000 0000 0000",
+    "banka": "Slovenská sporiteľňa, a. s.",
     "dva_percenta": "12345678/1234",
     "ico": "00000000"
   },
