@@ -89,6 +89,7 @@ final class Feed
         $variant = self::variantFor($post);
         $meta = self::renderMeta($post, $variant);
         $title = esc_html(get_the_title($post));
+        $permalink = esc_url(get_permalink($post));
 
         ob_start();
         ?>
@@ -97,7 +98,7 @@ final class Feed
             <?php if ($variant === 'udalost') : ?>
                 <?php echo self::renderUdalostGrid($post); ?>
             <?php endif; ?>
-            <h2 class="farnost-post-title"><?php echo $title; ?></h2>
+            <h2 class="farnost-post-title"><a href="<?php echo $permalink; ?>"><?php echo $title; ?></a></h2>
             <div class="farnost-post-body">
                 <?php echo apply_filters('the_content', $post->post_content); ?>
             </div>
@@ -124,7 +125,7 @@ final class Feed
 
     private static function renderMeta(WP_Post $post, string $variant): string
     {
-        $typeLabel = self::typeLabel($variant);
+        $typeLabel = self::typeLabel($post, $variant);
         $dateLabel = self::formatDateSlovak((string) $post->post_date);
         $author = self::authorName($post);
 
@@ -170,10 +171,27 @@ final class Feed
         return (string) ob_get_clean();
     }
 
-    private static function typeLabel(string $variant): string
+    private static function typeLabel(WP_Post $post, string $variant): string
     {
+        // Oznam má fixný label — nemá WP kategórie (CPT bez taxonomy).
+        if ($variant === 'oznamy') {
+            return __('Farské oznamy', 'farnost-plugin');
+        }
+        // Pre natívny `post` zobraziť reálne kategórie (Udalosti / Zo života
+        // farnosti / Pozvánky atď. — definované v Activator + farba per kat).
+        // Filter "farnost_show_in_menu" zachová len tie ktoré admin chce
+        // verejne — uncategorized a interné kat sa nezobrazia.
+        $cats = get_the_category($post->ID);
+        $visible = array_filter($cats, static function (\WP_Term $c): bool {
+            $flag = get_term_meta($c->term_id, 'farnost_show_in_menu', true);
+            return ($flag === '' || $flag === null) ? true : (bool) $flag;
+        });
+        if (!empty($visible)) {
+            $names = array_map(static fn(\WP_Term $c): string => $c->name, $visible);
+            return implode(' · ', $names);
+        }
+        // Fallback ak post nemá viditeľnú kategóriu.
         return match ($variant) {
-            'oznamy'    => __('Farské oznamy', 'farnost-plugin'),
             'udalost'   => __('Pozvánka', 'farnost-plugin'),
             'text-foto' => __('Pripomenutie', 'farnost-plugin'),
             default     => __('Oznam', 'farnost-plugin'),

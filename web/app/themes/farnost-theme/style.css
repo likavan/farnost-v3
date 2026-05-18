@@ -419,6 +419,14 @@ body > * { position: relative; z-index: 1; }
   text-wrap: balance;
   letter-spacing: -0.005em;
 }
+.farnost-post-title a {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.farnost-post-title a:hover {
+  color: var(--wp--preset--color--accent);
+}
 
 .farnost-post-body { color: var(--wp--preset--color--ink); font-size: 17px; line-height: 1.7; }
 .farnost-post-body p { margin: 0 0 1em; }
