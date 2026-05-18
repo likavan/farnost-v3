@@ -659,6 +659,13 @@ body > * { position: relative; z-index: 1; }
   padding-top: 12px;
   border-top: 1px solid var(--wp--preset--color--rule);
 }
+.farnost-contact-line.farnost-contact-hours .farnost-contact-label {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--wp--preset--color--ink);
+  margin-bottom: 6px;
+}
 .farnost-contact-hours-text {
   white-space: pre-line;
   font-family: var(--wp--preset--font-family--display);
