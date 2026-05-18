@@ -100,10 +100,70 @@
         });
     }
 
+    /**
+     * Twin-sticky sidebar — pri scroll dole sa spodok sidebar-u pripne
+     * na spodok viewport-u; pri scroll hore sa vrch pripne na vrch
+     * viewport-u. Funguje len keď je sidebar vyšší než viewport, inak
+     * default CSS sticky-top stačí.
+     *
+     * Mechanizmus: tracking scroll direction + translateY offset
+     * sidebar-u v rozsahu [-(sh - vh + 24), 0].
+     */
+    function initStickySidebar() {
+        var sidebar = document.querySelector('.farnost-sidebar');
+        if (!sidebar) {
+            return;
+        }
+        var lastY = window.scrollY;
+        var translate = 0;
+        var ticking = false;
+
+        var update = function () {
+            ticking = false;
+            var y = window.scrollY;
+            var dy = y - lastY;
+            lastY = y;
+
+            var sh = sidebar.offsetHeight;
+            var vh = window.innerHeight;
+            // Sidebar krátky → žiadny twin-sticky, default CSS sticky-top.
+            if (sh <= vh - 24) {
+                if (translate !== 0) {
+                    translate = 0;
+                    sidebar.style.transform = '';
+                }
+                return;
+            }
+            // Rozsah: 0 (vrch sidebar-u na vp top + 24) → -(sh - vh + 24)
+            // (spodok sidebar-u na vp bottom).
+            var minOffset = -(sh - vh + 24);
+            translate = Math.max(minOffset, Math.min(0, translate - dy));
+            sidebar.style.transform = 'translateY(' + translate + 'px)';
+        };
+
+        var onScroll = function () {
+            if (!ticking) {
+                window.requestAnimationFrame(update);
+                ticking = true;
+            }
+        };
+
+        var onResize = function () {
+            translate = 0;
+            sidebar.style.transform = '';
+            lastY = window.scrollY;
+            update();
+        };
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onResize, { passive: true });
+    }
+
     function boot() {
         document.querySelectorAll('.farnost-search').forEach(initSearch);
         initAlertDismiss();
         initNavToggle();
+        initStickySidebar();
     }
 
     if (document.readyState === 'loading') {

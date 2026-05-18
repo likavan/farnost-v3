@@ -545,6 +545,8 @@ body > * { position: relative; z-index: 1; }
   gap: 36px;
   position: sticky;
   top: 24px;
+  align-self: start;
+  will-change: transform;
 }
 .farnost-widget {
   border-top: 2px solid var(--wp--preset--color--ink);
