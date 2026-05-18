@@ -75,3 +75,6 @@ build/
 
 # Claude Code agent worktrees (interná vec, nikdy nepatria do repa)
 .claude/
+
+# Playwright MCP screenshoty (dev artefakty)
+.playwright-mcp/

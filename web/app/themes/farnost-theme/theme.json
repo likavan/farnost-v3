@@ -3,40 +3,128 @@
   "version": 3,
   "settings": {
     "appearanceTools": true,
+    "useRootPaddingAwareAlignments": true,
     "layout": {
-      "contentSize": "720px",
+      "contentSize": "680px",
       "wideSize": "1200px"
     },
     "color": {
+      "defaultPalette": false,
+      "defaultGradients": false,
       "palette": [
-        { "slug": "background", "color": "#ffffff", "name": "Pozadie" },
-        { "slug": "foreground", "color": "#1a1a1a", "name": "Text" },
-        { "slug": "primary", "color": "#1e40af", "name": "Primárna" },
-        { "slug": "muted", "color": "#6b7280", "name": "Tlmená" }
+        { "slug": "bg",          "color": "#f1e8d4", "name": "Pozadie" },
+        { "slug": "surface",     "color": "#fdf8ec", "name": "Karta" },
+        { "slug": "ink",         "color": "#1c1610", "name": "Text" },
+        { "slug": "muted",       "color": "#7a6f60", "name": "Tlmený text" },
+        { "slug": "accent",      "color": "#7a1f25", "name": "Burgundská" },
+        { "slug": "accent-deep", "color": "#4a1115", "name": "Burgundská tmavá" },
+        { "slug": "accent-soft", "color": "#b85056", "name": "Burgundská svetlá" },
+        { "slug": "gold",        "color": "#b88a3a", "name": "Zlatá" },
+        { "slug": "rule",        "color": "#d2c4a3", "name": "Hairline" }
       ]
     },
     "typography": {
+      "defaultFontSizes": false,
+      "fluid": false,
       "fontFamilies": [
         {
-          "slug": "system",
-          "name": "Systémové písmo",
-          "fontFamily": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+          "slug": "display",
+          "name": "Display (Cormorant Garamond)",
+          "fontFamily": "'Cormorant Garamond', Georgia, serif"
+        },
+        {
+          "slug": "body",
+          "name": "Body (Source Serif 4)",
+          "fontFamily": "'Source Serif 4', Georgia, serif"
         }
+      ],
+      "fontSizes": [
+        { "slug": "small",    "size": "13px",   "name": "Malé" },
+        { "slug": "meta",     "size": "12px",   "name": "Meta" },
+        { "slug": "medium",   "size": "17px",   "name": "Základ" },
+        { "slug": "large",    "size": "1.25rem","name": "Veľké" },
+        { "slug": "h3",       "size": "1.5rem", "name": "H3" },
+        { "slug": "h2",       "size": "1.75rem","name": "H2" },
+        { "slug": "h1",       "size": "2.75rem","name": "H1" }
       ]
+    },
+    "spacing": {
+      "spacingScale": { "steps": 0 },
+      "spacingSizes": [
+        { "slug": "10", "size": "4px",  "name": "1 – 4px"  },
+        { "slug": "20", "size": "8px",  "name": "2 – 8px"  },
+        { "slug": "30", "size": "16px", "name": "3 – 16px" },
+        { "slug": "40", "size": "24px", "name": "4 – 24px" },
+        { "slug": "50", "size": "32px", "name": "5 – 32px" },
+        { "slug": "60", "size": "40px", "name": "6 – 40px" },
+        { "slug": "70", "size": "56px", "name": "7 – 56px" },
+        { "slug": "80", "size": "80px", "name": "8 – 80px" }
+      ]
+    },
+    "custom": {
+      "feedW":    "680px",
+      "sidebarW": "320px",
+      "postGap":  "32px"
     }
   },
   "styles": {
     "color": {
-      "background": "var(--wp--preset--color--background)",
-      "text": "var(--wp--preset--color--foreground)"
+      "background": "var(--wp--preset--color--bg)",
+      "text": "var(--wp--preset--color--ink)"
     },
     "typography": {
-      "fontFamily": "var(--wp--preset--font-family--system)",
-      "lineHeight": "1.6"
+      "fontFamily": "var(--wp--preset--font-family--body)",
+      "fontSize":   "var(--wp--preset--font-size--medium)",
+      "lineHeight": "1.65"
+    },
+    "spacing": {
+      "padding": {
+        "top": "0",
+        "right": "var(--wp--preset--spacing--60)",
+        "bottom": "0",
+        "left":  "var(--wp--preset--spacing--60)"
+      }
+    },
+    "elements": {
+      "link": {
+        "color": { "text": "var(--wp--preset--color--accent)" },
+        ":hover": { "typography": { "textDecoration": "underline" } }
+      },
+      "h1": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--display)",
+          "fontWeight": "600",
+          "fontSize":   "var(--wp--preset--font-size--h1)",
+          "lineHeight": "1.15",
+          "letterSpacing": "-0.005em"
+        }
+      },
+      "h2": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--display)",
+          "fontWeight": "500",
+          "fontStyle":  "italic",
+          "fontSize":   "var(--wp--preset--font-size--h2)",
+          "lineHeight": "1.12",
+          "letterSpacing": "-0.005em"
+        }
+      },
+      "h3": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--display)",
+          "fontWeight": "600",
+          "fontSize":   "var(--wp--preset--font-size--h3)",
+          "lineHeight": "1.2"
+        }
+      }
     }
   },
   "templateParts": [
-    { "name": "header", "title": "Hlavička", "area": "header" },
-    { "name": "footer", "title": "Päta", "area": "footer" }
+    { "name": "header",  "title": "Hlavička", "area": "header" },
+    { "name": "footer",  "title": "Päta",     "area": "footer" },
+    { "name": "sidebar", "title": "Bočný stĺpec", "area": "uncategorized" }
+  ],
+  "customTemplates": [
+    { "name": "page", "title": "Stránka",   "postTypes": ["page", "post"] }
   ]
 }

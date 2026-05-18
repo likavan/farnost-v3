@@ -1,5 +1,90 @@
-<!-- wp:group {"layout":{"type":"constrained"}} -->
-<div class="wp-block-group">
-    <!-- wp:site-title /-->
+<!-- wp:html -->
+<div class="site-header-inner">
+	<div class="site-header-top">
+		<a class="farnost-brand" href="/" aria-label="Domov">
+			<span class="farnost-brand-mark" aria-hidden="true">
+				<svg width="24" height="24" viewBox="0 0 24 24">
+					<path d="M10 2 L14 2 L13.4 8.6 L20.4 8 L22 10 L22 14 L20.4 16 L13.4 15.4 L14 22 L10 22 L10.6 15.4 L3.6 16 L2 14 L2 10 L3.6 8 L10.6 8.6 Z" fill="currentColor"/>
+				</svg>
+			</span>
+			<span class="farnost-brand-text">
+				<span class="farnost-brand-name">Farnosť svätého Martina</span>
+				<span class="farnost-brand-city">Banská Bystrica · od r. 1255</span>
+			</span>
+		</a>
+		<div class="site-header-utility">
+			<form class="farnost-search" role="search" method="get" action="/">
+				<button type="submit" class="farnost-search-trigger" aria-label="Hľadať">
+					<svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+						<circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/>
+						<line x1="12.6" y1="12.6" x2="17" y2="17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+					</svg>
+				</button>
+				<input class="farnost-search-field" type="search" name="s" placeholder="Hľadať v oznamoch…" aria-label="Hľadať" aria-hidden="true" tabindex="-1" />
+			</form>
+		</div>
+	</div>
+
+	<nav class="site-nav" aria-label="Hlavné menu">
+		<ul class="site-nav-list">
+			<li class="site-nav-item"><a class="site-nav-link" href="/">Domov</a></li>
+			<li class="site-nav-item has-children">
+				<a class="site-nav-link" href="/o-farnosti/">O farnosti</a>
+				<ul class="site-nav-submenu">
+					<li><a href="/o-farnosti/historia/">História farnosti</a></li>
+					<li><a href="/o-farnosti/patron/">Patrón sv. Martin</a></li>
+					<li><a href="/o-farnosti/duchovni/">Duchovní pôsobiaci</a></li>
+					<li><a href="/o-farnosti/rada/">Farská rada</a></li>
+				</ul>
+			</li>
+			<li class="site-nav-item has-children">
+				<a class="site-nav-link" href="/bohosluzby/">Bohoslužby</a>
+				<ul class="site-nav-submenu">
+					<li><a href="/bohosluzby/tyzdenny-rozpis/">Týždenný rozpis</a></li>
+					<li><a href="/bohosluzby/nedelne/">Nedeľné sv. omše</a></li>
+					<li><a href="/bohosluzby/sviatky/">Sviatky a slávnosti</a></li>
+					<li><a href="/bohosluzby/adoracie/">Adorácie a pobožnosti</a></li>
+				</ul>
+			</li>
+			<li class="site-nav-item has-children">
+				<a class="site-nav-link" href="/sviatosti/">Sviatosti</a>
+				<ul class="site-nav-submenu">
+					<li><a href="/sviatosti/krst/">Krst</a></li>
+					<li><a href="/sviatosti/zmierenie/">Sviatosť zmierenia</a></li>
+					<li><a href="/sviatosti/eucharistia/">Eucharistia</a></li>
+					<li><a href="/sviatosti/birmovanie/">Birmovanie</a></li>
+					<li><a href="/sviatosti/manzelstvo/">Manželstvo</a></li>
+					<li><a href="/sviatosti/pomazanie/">Pomazanie chorých</a></li>
+				</ul>
+			</li>
+			<li class="site-nav-item has-children">
+				<a class="site-nav-link" href="/oznamy/">Oznamy</a>
+				<ul class="site-nav-submenu">
+					<li><a href="/oznamy/">Aktuálne</a></li>
+					<li><a href="/oznamy/archiv/">Archív</a></li>
+				</ul>
+			</li>
+			<li class="site-nav-item has-children">
+				<a class="site-nav-link" href="/kontakt/">Kontakt</a>
+				<ul class="site-nav-submenu">
+					<li><a href="/kontakt/">Farský úrad</a></li>
+					<li><a href="/kontakt/uradne-hodiny/">Úradné hodiny</a></li>
+					<li><a href="/kontakt/formular/">Napíšte nám</a></li>
+					<li><a href="/kontakt/banka/">Bankové spojenie</a></li>
+				</ul>
+			</li>
+		</ul>
+	</nav>
+
+	<div class="farnost-alert" role="status" data-banner-id="placeholder">
+		<div class="farnost-alert-inner">
+			<span class="farnost-alert-mark" aria-hidden="true">!</span>
+			<span class="farnost-alert-eyebrow">Mimoriadny oznam</span>
+			<span class="farnost-alert-sep" aria-hidden="true"></span>
+			<span class="farnost-alert-text">Zajtra o 18:00 mimoriadna svätá omša za pokoj a obete povodní. Po nej eucharistická adorácia do 20:00.</span>
+			<a class="farnost-alert-link" href="#">Viac informácií →</a>
+			<button class="farnost-alert-close" type="button" aria-label="Zavrieť oznam">✕</button>
+		</div>
+	</div>
 </div>
-<!-- /wp:group -->
+<!-- /wp:html -->
