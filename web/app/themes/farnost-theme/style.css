@@ -485,6 +485,138 @@ body > * { position: relative; z-index: 1; }
   color: var(--wp--preset--color--accent);
 }
 
+/* Rozpis-snapshot — editorial bulletin: per deň hlavička, kostoly s
+   kompaktným zoznamom časov a úmyslov, kostol farba ako vertical accent. */
+.farnost-rozpis-snapshot {
+  margin: 22px 0 8px;
+  font-family: var(--wp--preset--font-family--body);
+}
+.farnost-rozpis-snapshot__day {
+  padding: 16px 0;
+  border-top: 1px solid var(--wp--preset--color--rule);
+}
+.farnost-rozpis-snapshot__day:last-child {
+  border-bottom: 1px solid var(--wp--preset--color--rule);
+}
+.farnost-rozpis-snapshot__day--empty { opacity: 0.55; }
+
+.farnost-rozpis-snapshot__day-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.farnost-rozpis-snapshot__day-name {
+  font-family: var(--wp--preset--font-family--display);
+  font-size: 1.25rem;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--wp--preset--color--ink);
+  letter-spacing: -0.005em;
+}
+.farnost-rozpis-snapshot__day-date {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--wp--preset--color--muted);
+  font-variant-numeric: tabular-nums;
+}
+.farnost-rozpis-snapshot__sviatok {
+  font-family: var(--wp--preset--font-family--display);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--wp--preset--color--accent);
+  flex-basis: 100%;
+}
+
+.farnost-rozpis-snapshot__empty {
+  margin: 4px 0 0;
+  font-style: italic;
+  font-size: 14px;
+  color: var(--wp--preset--color--muted);
+}
+
+.farnost-rozpis-snapshot__kostoly {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.farnost-rozpis-snapshot__kostol {
+  border-left: 2px solid var(--frs-kostol-color, var(--wp--preset--color--rule));
+  padding: 0 0 0 12px;
+}
+.farnost-rozpis-snapshot__kostol-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 16px;
+  font-size: 15px;
+  color: var(--wp--preset--color--ink);
+}
+.farnost-rozpis-snapshot__kostol-name {
+  font-family: var(--wp--preset--font-family--display);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--wp--preset--color--ink);
+  margin-right: auto;
+}
+.farnost-rozpis-snapshot__times {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  align-items: baseline;
+}
+.farnost-rozpis-snapshot__time {
+  font-family: var(--wp--preset--font-family--body);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  color: var(--wp--preset--color--ink);
+  white-space: nowrap;
+}
+.farnost-rozpis-snapshot__time.is-vynimka {
+  color: var(--wp--preset--color--accent);
+  font-style: italic;
+}
+.farnost-rozpis-snapshot__oznacenie {
+  font-style: italic;
+  font-size: 13px;
+  color: var(--wp--preset--color--muted);
+  margin-left: 4px;
+  font-variant-numeric: normal;
+}
+
+.farnost-rozpis-snapshot__intents {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--wp--preset--color--muted);
+}
+.farnost-rozpis-snapshot__intents li {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  column-gap: 10px;
+  align-items: baseline;
+}
+.farnost-rozpis-snapshot__intent-time {
+  font-variant-numeric: tabular-nums;
+  color: var(--wp--preset--color--muted);
+}
+.farnost-rozpis-snapshot__intent-text {
+  font-family: var(--wp--preset--font-family--display);
+  font-style: italic;
+  color: var(--wp--preset--color--ink);
+}
+
 /* Oznamy list */
 .farnost-oznamy-list {
   list-style: none;

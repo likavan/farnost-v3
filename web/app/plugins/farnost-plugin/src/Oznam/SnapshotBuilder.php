@@ -34,7 +34,23 @@ final class SnapshotBuilder
     private const DAY_KEYS = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 
     /**
-     * @return array<int, array{date: string, dayKey: string, sviatok: string, omse: array<int, array{kostol_title: string, time: string, oznacenie: string, umysel: string, source: string}>}>
+     * Vracia per-deň pole s `kostoly[]` (každý kostol so svojím zoznamom omší).
+     * Tým editorial render v RozpisSnapshot môže zobraziť omše v kontexte kostola
+     * (kostol_title viditeľný, farba badge, kompaktný layout) namiesto flat zoznamu
+     * kde nie je jasné kde je ktorá omša.
+     *
+     * Shape:
+     *   [
+     *     {
+     *       date: 'YYYY-MM-DD', dayKey: 'mon', sviatok: '',
+     *       kostoly: [
+     *         { id, title, color, omse: [ {cas, oznacenie, umysel, source}, ... ] },
+     *         ...
+     *       ]
+     *     }, ... 7×
+     *   ]
+     *
+     * @return list<array{date: string, dayKey: string, sviatok: string, kostoly: list<array{id: int, title: string, color: string, omse: list<array{cas: string, oznacenie: string, umysel: string, source: string}>}>}>
      */
     public static function buildForWeek(string $tyzdenOd, string $tyzdenDo): array
     {
@@ -54,14 +70,14 @@ final class SnapshotBuilder
                 'date'    => $iso,
                 'dayKey'  => self::dayKey($date),
                 'sviatok' => '',
-                'omse'    => self::massesForDate($iso, $kostoly),
+                'kostoly' => self::kostolyForDate($iso, $kostoly),
             ];
         }
         return $dni;
     }
 
     /**
-     * @return array<int, array{id: int, title: string, rozpis: array<int, array<string, mixed>>}>
+     * @return list<array{id: int, title: string, color: string, rozpis: list<array<string, mixed>>}>
      */
     private static function loadKostoly(): array
     {
@@ -69,9 +85,13 @@ final class SnapshotBuilder
             'post_type'      => Kostol::POST_TYPE,
             'posts_per_page' => -1,
             'post_status'    => 'publish',
+            'orderby'        => 'menu_order title',
+            'order'          => 'ASC',
             'no_found_rows'  => true,
         ]);
-        $out = [];
+        // Hlavný kostol na začiatok (matches widget order).
+        $main = [];
+        $rest = [];
         foreach ($posts as $p) {
             $raw    = (string) get_post_meta($p->ID, 'farnost_rozpis', true);
             $rozpis = [];
@@ -81,52 +101,58 @@ final class SnapshotBuilder
                     $rozpis = $decoded;
                 }
             }
-            $out[] = [
+            $row = [
                 'id'     => (int) $p->ID,
                 'title'  => (string) $p->post_title,
+                'color'  => (string) get_post_meta($p->ID, 'farnost_color', true),
                 'rozpis' => $rozpis,
             ];
+            if ((bool) get_post_meta($p->ID, 'farnost_je_hlavny', true)) {
+                $main[] = $row;
+            } else {
+                $rest[] = $row;
+            }
         }
-        return $out;
+        return array_values(array_merge($main, $rest));
     }
 
     /**
-     * @param array<int, array{id: int, title: string, rozpis: array<int, array<string, mixed>>}> $kostoly
-     * @return array<int, array{kostol_title: string, time: string, oznacenie: string, umysel: string, source: string}>
+     * Pre daný dátum vráti zoznam kostolov s omšami (len kostoly ktoré majú aspoň
+     * jednu omšu daný deň — kostoly bez omší nevkladáme do snapshot-u).
+     *
+     * @param list<array{id: int, title: string, color: string, rozpis: list<array<string, mixed>>}> $kostoly
+     * @return list<array{id: int, title: string, color: string, omse: list<array{cas: string, oznacenie: string, umysel: string, source: string}>}>
      */
-    private static function massesForDate(string $date, array $kostoly): array
+    private static function kostolyForDate(string $date, array $kostoly): array
     {
-        $masses = [];
+        $out = [];
         foreach ($kostoly as $k) {
             $vynimky = self::loadVynimky($k['id'], $date);
             $resolved = Resolver::resolve($k['rozpis'], $vynimky, $date);
-
+            if (empty($resolved)) {
+                continue;
+            }
+            $omse = [];
             foreach ($resolved as $m) {
                 $umysel = (string) ($m['umysel'] ?? '');
-                if ($m['zdroj'] === 'rozpis' && $umysel === '') {
+                if (($m['zdroj'] ?? '') === 'rozpis' && $umysel === '') {
                     $umysel = self::loadUmysel($k['id'], $date, (string) ($m['cas'] ?? ''));
                 }
-                $masses[] = [
-                    'kostol_title' => $k['title'],
-                    'time'         => (string) ($m['cas'] ?? ''),
-                    'oznacenie'    => (string) ($m['oznacenie'] ?? ''),
-                    'umysel'       => $umysel,
-                    'source'       => (string) ($m['zdroj'] ?? 'rozpis'),
+                $omse[] = [
+                    'cas'       => (string) ($m['cas'] ?? ''),
+                    'oznacenie' => (string) ($m['oznacenie'] ?? ''),
+                    'umysel'    => $umysel,
+                    'source'    => (string) ($m['zdroj'] ?? 'rozpis'),
                 ];
             }
+            $out[] = [
+                'id'    => (int) $k['id'],
+                'title' => (string) $k['title'],
+                'color' => (string) $k['color'],
+                'omse'  => $omse,
+            ];
         }
-
-        // Stabilné poradie: čas (numericky, nie lex — "6:30" < "18:00"), potom názov kostola.
-        usort($masses, static function (array $a, array $b): int {
-            $byTime = \Farnost\Plugin\Schedule\Resolver::timeKey((string) $a['time'])
-                <=> \Farnost\Plugin\Schedule\Resolver::timeKey((string) $b['time']);
-            if ($byTime !== 0) {
-                return $byTime;
-            }
-            return strcmp((string) $a['kostol_title'], (string) $b['kostol_title']);
-        });
-
-        return $masses;
+        return $out;
     }
 
     /**
