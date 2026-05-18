@@ -125,6 +125,16 @@ final class Menu
             [self::class, 'renderUpratovacie']
         );
 
+        // Submenu: Citáty (pre sidebar widget)
+        add_submenu_page(
+            self::SLUG,
+            __('Citáty', 'farnost-plugin'),
+            __('Citáty', 'farnost-plugin'),
+            self::CAPABILITY,
+            CitatyPage::SLUG,
+            [self::class, 'renderCitaty']
+        );
+
         // Submenu: Nastavenie farnosti (vyžaduje vyššie oprávnenie).
         // Zámerne odlišný názov od WP core "Nastavenia" aby farár vedel
         // čo má v menu Farnosť otvoriť (#51).
@@ -168,7 +178,8 @@ final class Menu
             // a editora oznamu (doc/07-admin-ux.md:190). show_in_menu=false v
             // OmsaVynimka aj Umysel CPT.
             UpratovacieSkupinyPage::SLUG,                     // Upratovacie skupiny (custom obrazovka)
-            'farnost-nastavenia',                             // Nastavenia
+            CitatyPage::SLUG,                                 // Citáty
+            'farnost-nastavenia',                             // Nastavenie farnosti
             'farnost-navod',                                  // Návod
         ];
 
@@ -212,6 +223,11 @@ final class Menu
     public static function renderUpratovacie(): void
     {
         UpratovacieSkupinyPage::render();
+    }
+
+    public static function renderCitaty(): void
+    {
+        CitatyPage::render();
     }
 
     public static function renderKostoly(): void

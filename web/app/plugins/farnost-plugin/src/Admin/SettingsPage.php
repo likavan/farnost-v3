@@ -269,17 +269,6 @@ final class SettingsPage
                     </tr>
                 </table>
 
-                <h2><?php esc_html_e('Citáty pre sidebar', 'farnost-plugin'); ?></h2>
-                <table class="form-table" role="presentation">
-                    <tr>
-                        <th scope="row"><label for="fp-citaty"><?php esc_html_e('Zoznam citátov', 'farnost-plugin'); ?></label></th>
-                        <td>
-                            <textarea id="fp-citaty" name="farnost_settings[citaty]" rows="8" class="large-text code" placeholder="Boh je láska. | 1 Jn 4,8"><?php echo esc_textarea(self::citatyToText($s['citaty'])); ?></textarea>
-                            <p class="description"><?php esc_html_e('Jeden citát = jeden riadok. Voliteľný autor / zdroj sa oddeľuje znakom „|" (napr. „Boh je láska. | 1 Jn 4,8"). Plugin obsahuje prednastavený zoznam, sem si môžete dopísať vlastné.', 'farnost-plugin'); ?></p>
-                        </td>
-                    </tr>
-                </table>
-
                 <p class="submit">
                     <button type="submit" class="button button-primary"><?php esc_html_e('Uložiť zmeny', 'farnost-plugin'); ?></button>
                 </p>
@@ -418,18 +407,20 @@ final class SettingsPage
         $dopredne = isset($input['oznamy']['dopredne_drafty']) ? (int) $input['oznamy']['dopredne_drafty'] : 2;
         $out['oznamy']['dopredne_drafty'] = max(1, min(4, $dopredne));
 
-        $citatyText = isset($input['citaty']) && is_string($input['citaty']) ? $input['citaty'] : '';
-        $out['citaty'] = self::citatyFromText($citatyText);
+        // Citáty sa spravujú cez vlastnú obrazovku Farnosť → Citáty (CitatyPage).
+        // Zachovať existujúce hodnoty pri save Nastavení farnosti.
 
         // Polia, ktoré sa nespravujú cez tento form — zachovať z aktuálnych settings,
         // aby ich save neprepísal na defaults:
         // - `setup.completed` — riadi setup wizard
         // - `moduly` — sekcia v SettingsPage je skrytá (feature flags pre menu visibility, zatiaľ ghost)
         // - `upratovanie.dalsia_skupina` — pointer rotácie, edituje sa cez Farnosť → Upratovacie
+        // - `citaty` — edituje sa cez Farnosť → Citáty (CitatyPage)
         $current = Settings::get();
         $out['setup']       = $current['setup']       ?? $defaults['setup'];
         $out['moduly']      = $current['moduly']      ?? $defaults['moduly'];
         $out['upratovanie'] = $current['upratovanie'] ?? $defaults['upratovanie'];
+        $out['citaty']      = $current['citaty']      ?? $defaults['citaty'];
 
         return $out;
     }
@@ -513,43 +504,6 @@ final class SettingsPage
             return strtolower($value);
         }
         return '#1e40af';
-    }
-
-    /**
-     * @param array<int, array{text: string, autor?: string}> $citaty
-     */
-    private static function citatyToText(array $citaty): string
-    {
-        $lines = [];
-        foreach ($citaty as $c) {
-            $text = isset($c['text']) ? (string) $c['text'] : '';
-            $autor = isset($c['autor']) ? (string) $c['autor'] : '';
-            if ($text === '') {
-                continue;
-            }
-            $lines[] = $autor === '' ? $text : "{$text} | {$autor}";
-        }
-        return implode("\n", $lines);
-    }
-
-    /**
-     * @return array<int, array{text: string, autor: string}>
-     */
-    private static function citatyFromText(string $text): array
-    {
-        $out = [];
-        foreach (preg_split('/\r?\n/', $text) ?: [] as $line) {
-            $line = trim($line);
-            if ($line === '') {
-                continue;
-            }
-            $parts = array_map('trim', explode('|', $line, 2));
-            $out[] = [
-                'text'  => sanitize_text_field((string) $parts[0]),
-                'autor' => isset($parts[1]) ? sanitize_text_field((string) $parts[1]) : '',
-            ];
-        }
-        return $out;
     }
 
 }
