@@ -41,6 +41,7 @@ detaily / scope si dohodneme pred implementáciou každej.
 | # | Položka | Stav | Poznámka |
 |---|---|---|---|
 | 40 | **Settings: upraviť popisky** | open | Niektoré labely v Farnosť → Nastavenia potrebujú úpravu. Upresniť ktoré sekcie / polia. |
+| 46 | **Settings sekcia Moduly — ghost toggles** | open | `farnost_settings.moduly.*` flags (oznamy_zapnute, umysly_zapnute, rozpis_omsi_zapnuty, zdielanie_zapnute) sa zapisujú ale nikde sa nečítajú. Doc/07-admin-ux.md sľubuje že ovplyvňujú menu. Rozhodnutie: implementovať alebo skryť sekciu. |
 | 41 | **Skryť niektoré bloky z inserter-u** | open | Filtrovať dostupné Gutenberg bloky cez `allowed_block_types_all`. Upresniť ktoré skryť (napr. social-icons, embeds, core/calendar) a v ktorých post typoch. |
 | 42 | **Kalendár omší: edit kostol + označenie omše** | open | V admin React UI pri editácii omše (modal s úmyslom) doplniť možnosť meniť aj kostol a označenie omše. Pre výnimky (`omsa_vynimka`) ide o meta `farnost_kostol_id` a `farnost_oznacenie`. Pre pravidelné omše editácia ide cez Kostoly admin. |
 
