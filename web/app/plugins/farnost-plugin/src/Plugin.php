@@ -6,6 +6,11 @@ namespace Farnost\Plugin;
 
 use Farnost\Plugin\Admin\BlockCategory;
 use Farnost\Plugin\Admin\CategoryAdmin;
+use Farnost\Plugin\Blocks\Banner as BannerBlock;
+use Farnost\Plugin\Blocks\ContactWidget;
+use Farnost\Plugin\Blocks\Feed;
+use Farnost\Plugin\Blocks\MassWidget;
+use Farnost\Plugin\Blocks\QuoteWidget;
 use Farnost\Plugin\Blocks\RozpisSnapshot;
 use Farnost\Plugin\Oznam\BufferManager;
 use Farnost\Plugin\Admin\CommentsHide;
@@ -60,6 +65,11 @@ final class Plugin
         // Gutenberg block kategória + bloky + oznam workflow.
         BlockCategory::register();
         RozpisSnapshot::register();
+        BannerBlock::register();
+        Feed::register();
+        MassWidget::register();
+        ContactWidget::register();
+        QuoteWidget::register();
         AutoTemplate::register();
         BufferManager::register();
         Upratovanie::register();

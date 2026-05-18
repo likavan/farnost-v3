@@ -68,8 +68,22 @@ final class Resolver
             ];
         }
 
-        usort($masses, static fn(array $a, array $b): int => strcmp($a['cas'], $b['cas']));
+        usort($masses, static fn(array $a, array $b): int =>
+            self::timeKey($a['cas']) <=> self::timeKey($b['cas'])
+        );
         return $masses;
+    }
+
+    /**
+     * Vráti minúty od polnoci pre proper numerické zoradenie časov.
+     * "6:30" → 390, "18:00" → 1080. strcmp by tieto poradil naopak ("1" < "6").
+     */
+    public static function timeKey(string $time): int
+    {
+        if (preg_match('/^\s*(\d{1,2}):(\d{2})\s*$/', $time, $m)) {
+            return (int) $m[1] * 60 + (int) $m[2];
+        }
+        return PHP_INT_MAX;
     }
 
     public static function dayKeyForDate(string $date): string

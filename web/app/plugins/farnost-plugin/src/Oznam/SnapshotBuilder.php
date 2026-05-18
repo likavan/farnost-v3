@@ -116,9 +116,10 @@ final class SnapshotBuilder
             }
         }
 
-        // Stabilné poradie: čas, potom názov kostola.
+        // Stabilné poradie: čas (numericky, nie lex — "6:30" < "18:00"), potom názov kostola.
         usort($masses, static function (array $a, array $b): int {
-            $byTime = strcmp((string) $a['time'], (string) $b['time']);
+            $byTime = \Farnost\Plugin\Schedule\Resolver::timeKey((string) $a['time'])
+                <=> \Farnost\Plugin\Schedule\Resolver::timeKey((string) $b['time']);
             if ($byTime !== 0) {
                 return $byTime;
             }

@@ -110,3 +110,22 @@ test('dayKeyForDate: ISO day mapping', function () {
 test('dayKeyForDate: nesprávny vstup vracia prázdny reťazec', function () {
     expect(Resolver::dayKeyForDate('not-a-date'))->toBe('');
 });
+
+test('zoradenie zmiešaných 1-ciferných a 2-ciferných hodín numericky', function () {
+    // strcmp by "18:00" zaradil pred "6:30" (lex), čo nechceme.
+    $rozpis = [
+        ['day_of_week' => 'sun', 'time' => '18:00'],
+        ['day_of_week' => 'sun', 'time' => '6:30'],
+        ['day_of_week' => 'sun', 'time' => '10:30'],
+    ];
+    $result = Resolver::resolve($rozpis, [], '2026-05-17');
+    expect(array_column($result, 'cas'))->toBe(['6:30', '10:30', '18:00']);
+});
+
+test('timeKey: HH:MM → minúty od polnoci', function () {
+    expect(Resolver::timeKey('6:30'))->toBe(390);
+    expect(Resolver::timeKey('18:00'))->toBe(1080);
+    expect(Resolver::timeKey('00:00'))->toBe(0);
+    expect(Resolver::timeKey('23:59'))->toBe(1439);
+    expect(Resolver::timeKey('not-a-time'))->toBe(PHP_INT_MAX);
+});
