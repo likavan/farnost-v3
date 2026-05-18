@@ -376,7 +376,8 @@ body > * { position: relative; z-index: 1; }
   margin-bottom: 16px;
 }
 .farnost-post-type {
-  color: var(--wp--preset--color--accent);
+  /* --farnost-cat-color: inline style z meta riadka, fallback accent */
+  color: var(--farnost-cat-color, var(--wp--preset--color--accent));
   font-weight: 700;
   font-size: 11.5px;
   letter-spacing: 0.22em;
@@ -392,7 +393,7 @@ body > * { position: relative; z-index: 1; }
   display: inline-block;
   width: 6px;
   height: 6px;
-  background: var(--wp--preset--color--accent);
+  background: var(--farnost-cat-color, var(--wp--preset--color--accent));
   transform: rotate(45deg);
   flex-shrink: 0;
 }

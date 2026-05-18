@@ -125,14 +125,17 @@ final class Feed
 
     private static function renderMeta(WP_Post $post, string $variant): string
     {
-        $typeLabel = self::typeLabel($post, $variant);
+        $type = self::typeMeta($post, $variant);
         $dateLabel = self::formatDateSlovak((string) $post->post_date);
         $author = self::authorName($post);
+        $styleAttr = $type['color'] !== ''
+            ? ' style="--farnost-cat-color: ' . esc_attr($type['color']) . '"'
+            : '';
 
         ob_start();
         ?>
         <div class="farnost-post-meta">
-            <span class="farnost-post-type"><?php echo esc_html($typeLabel); ?></span>
+            <span class="farnost-post-type"<?php echo $styleAttr; // safely escaped above ?>><?php echo esc_html($type['label']); ?></span>
             <span class="farnost-post-meta-dot">·</span>
             <span class="farnost-post-date"><?php echo esc_html($dateLabel); ?></span>
             <?php if ($author !== '') : ?>
@@ -171,31 +174,54 @@ final class Feed
         return (string) ob_get_clean();
     }
 
-    private static function typeLabel(WP_Post $post, string $variant): string
+    /**
+     * Vráti label + farbu kategórie pre meta riadok.
+     *
+     * Oznam CPT má fixný label "Farské oznamy" bez farby (akcent default).
+     * Natívny `post` použije primárnu (prvú podľa term_id ASC) WP kategóriu
+     * filtrovanú cez farnost_show_in_menu. Farba pochádza z term meta
+     * farnost_color — admin ju editoval v Príspevky → Kategórie (CategoryAdmin
+     * color picker). Ak nie je nastavená, vraciame '' a CSS prefere accent.
+     *
+     * @return array{label: string, color: string}
+     */
+    private static function typeMeta(WP_Post $post, string $variant): array
     {
-        // Oznam má fixný label — nemá WP kategórie (CPT bez taxonomy).
         if ($variant === 'oznamy') {
-            return __('Farské oznamy', 'farnost-plugin');
+            return ['label' => __('Farské oznamy', 'farnost-plugin'), 'color' => ''];
         }
-        // Pre natívny `post` zobraziť reálne kategórie (Udalosti / Zo života
-        // farnosti / Pozvánky atď. — definované v Activator + farba per kat).
-        // Filter "farnost_show_in_menu" zachová len tie ktoré admin chce
-        // verejne — uncategorized a interné kat sa nezobrazia.
         $cats = get_the_category($post->ID);
         $visible = array_filter($cats, static function (\WP_Term $c): bool {
             $flag = get_term_meta($c->term_id, 'farnost_show_in_menu', true);
             return ($flag === '' || $flag === null) ? true : (bool) $flag;
         });
+        // Sortne podľa term_id ASC — stabilná „primárna" kategória.
+        usort($visible, static fn(\WP_Term $a, \WP_Term $b): int => $a->term_id <=> $b->term_id);
         if (!empty($visible)) {
-            $names = array_map(static fn(\WP_Term $c): string => $c->name, $visible);
-            return implode(' · ', $names);
+            $primary = reset($visible);
+            $color = (string) get_term_meta($primary->term_id, 'farnost_color', true);
+            return [
+                'label' => (string) $primary->name,
+                'color' => self::sanitizeHexColor($color),
+            ];
         }
-        // Fallback ak post nemá viditeľnú kategóriu.
-        return match ($variant) {
+        $fallback = match ($variant) {
             'udalost'   => __('Pozvánka', 'farnost-plugin'),
             'text-foto' => __('Pripomenutie', 'farnost-plugin'),
             default     => __('Oznam', 'farnost-plugin'),
         };
+        return ['label' => $fallback, 'color' => ''];
+    }
+
+    private static function sanitizeHexColor(string $color): string
+    {
+        $color = trim($color);
+        if ($color === '') {
+            return '';
+        }
+        return preg_match('/^#([A-Fa-f0-9]{3}|[A-Fa-f0-9]{6})$/', $color) === 1
+            ? strtolower($color)
+            : '';
     }
 
     private static function authorName(WP_Post $post): string
