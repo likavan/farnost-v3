@@ -77,7 +77,12 @@ final class MassWidget
                 ?>
                 <div class="farnost-kostol-section">
                     <?php if (count($kostoly) > 1) : ?>
-                        <h4 class="farnost-kostol-section-title"><?php echo esc_html($k['title']); ?></h4>
+                        <h4 class="farnost-kostol-section-title">
+                            <?php if (!empty($k['is_main'])) : ?>
+                                <span class="farnost-kostol-badge"><?php esc_html_e('Farský', 'farnost-plugin'); ?></span>
+                            <?php endif; ?>
+                            <?php echo esc_html($k['title']); ?>
+                        </h4>
                     <?php endif; ?>
                     <ul class="farnost-mass-list">
                         <?php for ($i = 0; $i < 7; $i++) :
@@ -115,7 +120,7 @@ final class MassWidget
     /**
      * Hlavný kostol prvý, ostatné podľa menu_order.
      *
-     * @return list<array{id: int, title: string}>
+     * @return list<array{id: int, title: string, is_main: bool}>
      */
     private static function loadKostoly(): array
     {
@@ -133,8 +138,12 @@ final class MassWidget
         $main = [];
         $rest = [];
         foreach ($posts as $p) {
-            $row = ['id' => (int) $p->ID, 'title' => (string) $p->post_title];
             $isHlavny = (bool) get_post_meta($p->ID, 'farnost_je_hlavny', true);
+            $row = [
+                'id'      => (int) $p->ID,
+                'title'   => (string) $p->post_title,
+                'is_main' => $isHlavny,
+            ];
             if ($isHlavny) {
                 $main[] = $row;
             } else {

@@ -761,6 +761,20 @@ body > * { position: relative; z-index: 1; }
   margin: 0 0 8px;
   line-height: 1.2;
 }
+.farnost-kostol-badge {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 2px 7px;
+  font-family: var(--wp--preset--font-family--body);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--wp--preset--color--surface);
+  background: var(--wp--preset--color--accent);
+  border-radius: 2px;
+  vertical-align: 2px;
+}
 
 /* Contact widget — stack label nad hodnotou, dovolí ľubovoľne dlhý popis
    (telefon/email popis je voľný text editovaný adminom). Fixed-width inline
