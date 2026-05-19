@@ -52,6 +52,16 @@ detaily / scope si dohodneme pred implementáciou každej.
 | 41 | **Skryť niektoré bloky z inserter-u** | open | Filtrovať dostupné Gutenberg bloky cez `allowed_block_types_all`. Upresniť ktoré skryť (napr. social-icons, embeds, core/calendar) a v ktorých post typoch. |
 | 42 | **Kalendár omší: edit kostol + označenie omše** | open | V admin React UI pri editácii omše (modal s úmyslom) doplniť možnosť meniť aj kostol a označenie omše. Pre výnimky (`omsa_vynimka`) ide o meta `farnost_kostol_id` a `farnost_oznacenie`. Pre pravidelné omše editácia ide cez Kostoly admin. |
 
+## Layout / responsive (zápisky 2026-05-18)
+
+| # | Položka | Stav | Poznámka |
+|---|---|---|---|
+| 73 | **Šírka containera — doladiť** | open | `.site-main` má `max-width: 1200px` + padding 56px/40px. Upresniť či je container príliš úzky/široký, či sa paddingy zarovnávajú s feed kartami, alebo či sa zmení sidebar šírka (`--sidebar-w: 320px`). |
+| 74 | **Sidebar: časy omší wrap na 2 riadky** | open | `.farnost-mass-time { white-space: nowrap }` v kombinácii s `.farnost-mass-times { display: inline-flex; flex-wrap: wrap }` — pri viacerých časoch (napr. nedeľa 7:30 · 9:30 · 11:00 · 18:00) sa wrap nemusí spustiť cleanly. Overiť že separátor `·` neostane sám na začiatku riadku. |
+| 75 | **Tooltip popup na mobile zúžiť** | open | Aktuálne tooltip má `left: 0; right: 0` (plnej šírke `.farnost-mass-row` = plnej šírke widgetu). V mobile drawer (360px) je to príliš. Constraint na cca 200-240px (max-width) + zarovnať k row left, alebo center pod čas. |
+| 76 | **Mobile menu fullscreen overlay** | open | `.site-nav-list.is-open` je dropdown pod hamburger button-om. User chce full-screen overlay — navigácia centrovaná, plus close X, prípadne backdrop blur (podobný pattern ako sidebar drawer). |
+| 77 | **Detail stránka: menšie bočné paddingy** | open | `.farnost-page` (cez `templates/page.html`, `single-oznam.html`, `single.html`) má veľké side paddingy zdedené z `.site-main`. Zmenšiť na 32-48px max alebo plynulý cez `clamp()`. |
+
 ## Infraštruktúra / Kvalita
 
 | # | Položka | Stav | Poznámka |
