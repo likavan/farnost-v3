@@ -34,6 +34,21 @@ final class Gallery
         // Force-lightbox na core/image — share rovnaký carousel JS ako gallery,
         // aby UX bol konzistentný (single image otvorí lightbox bez šípok/counter).
         add_filter('render_block_core/image', [self::class, 'augmentCoreImage'], 10, 2);
+        // WP 7 regression workaround: wp.media gallery edit modal renderuje
+        // filename cez .attachment::after content rule, ktorý sa vizuálne
+        // prekrýva s .describe caption input. Filename ostáva v aria-label
+        // (screen readers OK), visible je redundantný keď je tam caption.
+        add_action('admin_enqueue_scripts', [self::class, 'enqueueAdminMediaFix']);
+    }
+
+    public static function enqueueAdminMediaFix(): void
+    {
+        // `media-views` je WP core handle ktorý sa loaduje cez wp_enqueue_media()
+        // pri každom screen-e kde sa otvára media library / gallery edit modal.
+        wp_add_inline_style(
+            'media-views',
+            '.media-modal .attachments .attachment::after { display: none !important; }'
+        );
     }
 
     /**

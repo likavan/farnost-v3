@@ -24,12 +24,12 @@ import { __ } from '@wordpress/i18n';
 
 const ALLOWED_TYPES = [ 'image' ];
 
+// Zjednotené s PHP Gallery::variantFor — pre 3+ fotky vždy 1+2 mosaic.
+// 4+ figures sú v DOM ale skryté cez CSS, lightbox cez ne listuje.
 function variantFor( count ) {
 	if ( count <= 1 ) return 'count-1';
 	if ( count === 2 ) return 'count-2';
-	if ( count === 3 ) return 'count-3';
-	if ( count === 4 ) return 'count-4';
-	return 'many';
+	return 'count-3';
 }
 
 /**
@@ -85,8 +85,10 @@ function Edit( { attributes, setAttributes } ) {
 		);
 	}
 
-	const visible = variant === 'many' ? images.slice( 0, 4 ) : images;
-	const overflow = images.length - visible.length;
+	// Zjednotené s PHP render: pre count-3 variant je overlay „+N" na 3. fotke
+	// (index 2), kde overflow = count - 3. Render všetky figures aby boli
+	// k dispozícii pre lightbox; 4+ skryté cez CSS.
+	const overflow = variant === 'count-3' ? Math.max( 0, images.length - 3 ) : 0;
 
 	return (
 		<>
@@ -108,10 +110,60 @@ function Edit( { attributes, setAttributes } ) {
 				</PanelBody>
 			</InspectorControls>
 
+			{ /* Inline editor štýly — add_editor_style cestou má v WP 7 nižšiu
+			     specificity než editor core (`.wp-block` reset). Tieto pravidlá
+			     forcujú grid layout v iframed canvas-e a zopakujú frontend
+			     mosaic 1+2 pattern. Drag-reorder/inline captions sú ďalšia
+			     iterácia — teraz aspoň vizuálna konzistencia s frontendom. */ }
+			<style>{ `
+				.wp-block-farnost-gallery.farnost-gallery {
+					display: grid;
+					gap: 8px;
+					margin: 16px 0;
+				}
+				.wp-block-farnost-gallery .farnost-gallery__item {
+					position: relative;
+					margin: 0;
+					overflow: hidden;
+					background: #d2c4a3;
+				}
+				.wp-block-farnost-gallery .farnost-gallery__img {
+					display: block;
+					width: 100%;
+					height: 100%;
+					object-fit: cover;
+				}
+				.wp-block-farnost-gallery .farnost-gallery__overlay {
+					position: absolute;
+					inset: 0;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					background: rgba(28, 22, 16, 0.55);
+					color: #fdf8ec;
+					font-size: 2rem;
+					font-weight: 600;
+					backdrop-filter: blur(2px);
+				}
+				.wp-block-farnost-gallery.farnost-gallery--count-1 .farnost-gallery__item { aspect-ratio: 16 / 9; max-height: 540px; }
+				.wp-block-farnost-gallery.farnost-gallery--count-2 { grid-template-columns: 1fr 1fr; }
+				.wp-block-farnost-gallery.farnost-gallery--count-2 .farnost-gallery__item { aspect-ratio: 1 / 1; }
+				.wp-block-farnost-gallery.farnost-gallery--count-3 {
+					grid-template-columns: 2fr 1fr;
+					grid-template-rows: 1fr 1fr;
+					aspect-ratio: 3 / 2;
+				}
+				.wp-block-farnost-gallery.farnost-gallery--count-3 .farnost-gallery__item:nth-child(1) {
+					grid-row: span 2; aspect-ratio: auto;
+				}
+				.wp-block-farnost-gallery.farnost-gallery--count-3 .farnost-gallery__item:nth-child(n + 4) {
+					display: none;
+				}
+			` }</style>
+
 			<div { ...blockProps }>
-				{ visible.map( ( img, i ) => {
-					const isLast = i === visible.length - 1;
-					const hasOverlay = variant === 'many' && isLast && overflow > 0;
+				{ images.map( ( img, i ) => {
+					const hasOverlay = variant === 'count-3' && i === 2 && overflow > 0;
 					return (
 						<figure
 							key={ img.id ?? i }
